@@ -7,10 +7,10 @@ namespace RealEstateHubAPI.Controllers
 {
     [Route("api/users")]
     [ApiController]
-    public class UserApiController : ControllerBase
+    public class UserController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
-        public UserApiController(IUserRepository userRepository)
+        public UserController(IUserRepository userRepository)
         {
             _userRepository = userRepository;
         }
@@ -34,10 +34,10 @@ namespace RealEstateHubAPI.Controllers
         {
             try
             {
-                var product = await _userRepository.GetUserByIdAsync(id);
-                if (product == null)
+                var users = await _userRepository.GetUserByIdAsync(id);
+                if (users == null)
                     return NotFound();
-                return Ok(product);
+                return Ok(users);
             }
             catch (Exception ex)
             {
