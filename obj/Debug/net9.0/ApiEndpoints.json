@@ -1,0 +1,181 @@
+[
+  {
+    "ContainingType": "RealEstateHubAPI.Controllers.AreaApiController",
+    "Method": "GetAreas",
+    "RelativePath": "api/AreaApi",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "RealEstateHubAPI.Controllers.AreaApiController",
+    "Method": "AddArea",
+    "RelativePath": "api/AreaApi",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "area",
+        "Type": "RealEstateHubAPI.Model.Area",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "RealEstateHubAPI.Controllers.AreaApiController",
+    "Method": "GetAreaById",
+    "RelativePath": "api/AreaApi/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "RealEstateHubAPI.Controllers.AreaApiController",
+    "Method": "UpdateArea",
+    "RelativePath": "api/AreaApi/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "area",
+        "Type": "RealEstateHubAPI.Model.Area",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "RealEstateHubAPI.Controllers.AreaApiController",
+    "Method": "DeleteArea",
+    "RelativePath": "api/AreaApi/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "RealEstateHubAPI.Controllers.CategoryApiController",
+    "Method": "GetCategories",
+    "RelativePath": "api/CategoryApi",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "RealEstateHubAPI.Controllers.CategoryApiController",
+    "Method": "AddCategory",
+    "RelativePath": "api/CategoryApi",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "category",
+        "Type": "RealEstateHubAPI.Model.Category",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "RealEstateHubAPI.Controllers.CategoryApiController",
+    "Method": "GetCategoryById",
+    "RelativePath": "api/CategoryApi/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "RealEstateHubAPI.Controllers.CategoryApiController",
+    "Method": "UpdateCategory",
+    "RelativePath": "api/CategoryApi/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "category",
+        "Type": "RealEstateHubAPI.Model.Category",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "RealEstateHubAPI.Controllers.CategoryApiController",
+    "Method": "DeleteCategory",
+    "RelativePath": "api/CategoryApi/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "RealEstateHubAPI.Controllers.WeatherForecastController",
+    "Method": "Get",
+    "RelativePath": "WeatherForecast",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[RealEstateHubAPI.WeatherForecast, RealEstateHubAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ],
+    "EndpointName": "GetWeatherForecast"
+  }
+]
