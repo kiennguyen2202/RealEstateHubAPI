@@ -1,0 +1,58 @@
+body {
+	font-family: 'Roboto', sans-serif;
+}
+.form-group {
+	margin-top: 10px;
+}
+.mr-item {
+	margin-right: 5px;
+}
+.txt-title {
+	color: #6c757d;
+	font-weight: 400;
+	font-size: 15px;
+}
+.txt-bold {
+	font-weight: bold;
+}
+.mr-btn {
+	margin-right: 3px;
+}
+.margin {
+	margin-right: 30px !important;
+}
+.margin-item {
+	margin-right: 20px !important;
+}
+.margin-left {
+	margin-left: 30px !important;
+}
+input,
+input::placeholder {
+	font: 13px/3 sans-serif;
+}
+.message-error {
+	margin-top: 2px;
+	font-size: 15px;
+	font-weight: 400;
+	font-style: italic;
+	color: red;
+}
+select option {
+	color: #555;
+}
+.form-select {
+	color: #6c757d !important;
+}
+table tbody {
+	counter-reset: rowNumber;
+}
+
+table tbody tr {
+	counter-increment: rowNumber;
+}
+
+table tbody tr td:first-child::before {
+	min-width: 1em;
+	margin-right: 0.5em;
+}

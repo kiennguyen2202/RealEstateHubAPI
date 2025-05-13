@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>User-Management</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
+			rel="stylesheet"
+		/>
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
+			integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
+			crossorigin="anonymous"
+			referrerpolicy="no-referrer"
+		/>
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"
+			rel="stylesheet"
+			integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x"
+			crossorigin="anonymous"
+		/>
+		<link rel="stylesheet" href="./style.css" />
+    <!-- Add Notyf from CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/notyf@3.7.0/notyf.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
+	</head> 
+	<body>
+		<div class="container mt-3">
+			<h1 class="text-center">Thông tin người dùng</h1>
+			<form id="userForm">
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group">
+							<label for="name" class="form-label">Họ tên</label>
+							<input type="text" class="form-control" id="name" placeholder="Eg. Nguyễn Văn A" />
+							<div class="message-error" id="name-error"></div>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+							<label for="phone" class="form-label">Số điện thoại</label>
+							<input type="text" class="form-control" id="phone" placeholder="Eg. 0123456789" />
+							<div class="message-error" id="phone-error"></div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group">
+							<label for="email" class="form-label">Email</label>
+							<input type="email" class="form-control" id="email" placeholder="Eg. abc@gmail.com" />
+							<div class="message-error" id="email-error"></div>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+							<label for="password" class="form-label">Mật khẩu</label>
+							<input type="password" class="form-control" id="password" placeholder="******" />
+							<div class="message-error" id="password-error"></div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12">
+						<div class="form-group">
+							<input type="hidden" class="form-control" id="create" />
+						</div>
+					</div>
+				</div>
+				<div class="row mt-4">
+					<div class="col-6">
+						<button type="button" class="btn btn-success" id="btnAddUser">Thêm người dùng</button>
+					</div>
+					<div class="col-6 text-end">
+						<button type="button" class="btn btn-danger" id="btnDeleteUser">Xoá</button>
+						<button type="reset" class="btn btn-info text-white" id="btnResetUser">Reset</button>
+					</div>
+				</div>
+			</form>
+			<div class="container mt-5">
+				<h2>Danh sách người dùng</h2>
+				<table id="userTable" class="table table-striped">
+					<thead class="table-dark">
+						<tr>
+							<th>ID</th>
+							<th>Họ tên</th>
+							<th>Điện thoại</th>
+							<th>Email</th>
+							<th>Ngày tạo</th>
+							<th>Hành động</th>
+						</tr>
+					</thead>
+					<tbody id="userList"></tbody>
+				</table>
+			</div>
+		</div>
+		<script src="https://code.jquery.com/jquery-3.4.1.js" crossorigin="anonymous"></script>
+		<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" crossorigin="anonymous"></script>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
+		<!-- Remove SweetAlert2 and integrate Notyf here -->
+		<script src="main.js"></script>
+
+		<script>
+      // Initialize Notyf
+      const notyf = new Notyf({
+        duration: 3000, // 3 seconds
+        position: { x: 'center', y: 'top' },
+        ripple: true,
+        dismissible: true,
+      });
+      // Usage in your existing functions
+      document.getElementById('btnAddUser').addEventListener('click', function() {
+        // If successful
+        showSuccessMessage();
+      });
+
+      document.getElementById('btnDeleteUser').addEventListener('click', function() {
+        // If error occurs
+        showErrorMessage();
+      });
+		</script>
+	</body>
+</html>
