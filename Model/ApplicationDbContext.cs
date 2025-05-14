@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
+
 namespace RealEstateHubAPI.Model
 {
     public class ApplicationDbContext : DbContext
@@ -8,7 +9,11 @@ namespace RealEstateHubAPI.Model
         options) : base(options)
         { }
         public DbSet<Area> Areas { get; set; }
+         public DbSet<User> Users { get; set; }
         public DbSet<Category> Categories { get; set; }
 
     }
 }
+
+
+

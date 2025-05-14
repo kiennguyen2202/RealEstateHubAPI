@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RealEstateHubAPI.Model;
 
@@ -11,9 +12,11 @@ using RealEstateHubAPI.Model;
 namespace RealEstateHubAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250510135022_Initial")]
+    partial class Initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,52 +25,13 @@ namespace RealEstateHubAPI.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("RealEstateHubAPI.Model.Area", b =>
-            modelBuilder.Entity("RealEstateHubAPI.Model.Category", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-
-                    b.Property<string>("City")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("District")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Ward")
-
-                    b.Property<string>("Name")
-
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-
-                    b.ToTable("Areas");
-                });
-
-            modelBuilder.Entity("RealEstateHubAPI.Model.Category", b =>
-
-                    b.ToTable("Categories");
-                });
-
             modelBuilder.Entity("RealEstateHubAPI.Model.User", b =>
-
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-
 
                     b.Property<DateTime>("Create")
                         .HasColumnType("datetime2");
@@ -76,15 +40,9 @@ namespace RealEstateHubAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Categories");
 
                     b.Property<string>("Password")
                         .IsRequired()
@@ -97,7 +55,6 @@ namespace RealEstateHubAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
-
                 });
 #pragma warning restore 612, 618
         }
