@@ -52,5 +52,6 @@ namespace RealEstateHubAPI.Repositories
                 await _context.SaveChangesAsync();
             }
         }
+
     }
 }

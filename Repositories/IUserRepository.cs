@@ -9,5 +9,6 @@ namespace RealEstateHubAPI.Repositories
         Task AddUserAsync(User user);
         Task UpdateUserAsync(User user);
         Task DeleteUserAsync(int id);
+
     }
 }

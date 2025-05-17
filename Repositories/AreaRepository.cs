@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RealEstateHubAPI.Migrations;
 using RealEstateHubAPI.Model;
 
 namespace RealEstateHubAPI.Repositories
@@ -20,6 +21,7 @@ namespace RealEstateHubAPI.Repositories
         }
         public async Task AddAreaAsync(Area area)
         {
+            if (area == null) throw new ArgumentNullException(nameof(area));
             _context.Areas.Add(area);
             await _context.SaveChangesAsync();
         }
