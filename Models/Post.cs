@@ -19,13 +19,13 @@ namespace RealEstateHubAPI.Model
         public int UserId { get; set; }
         public int CategoryId { get; set; }
         public int AreaId { get; set; }
-        public int PostImageId { get; set; }
+       
 
         public virtual User? User { get; set; }
         public virtual Category? Category { get; set; }
         public virtual Area? Area { get; set; }
 
-        public List<PostImage>? PostImages { get; set; }
+        public List<PostImage>? Images { get; set; }
 
         
 

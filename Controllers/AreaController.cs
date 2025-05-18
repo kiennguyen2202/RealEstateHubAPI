@@ -46,7 +46,7 @@ namespace RealEstateHubAPI.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-        [Authorize]
+        //[Authorize]
         [HttpPost]
         public async Task<IActionResult> AddArea([FromBody] Area area)
         {

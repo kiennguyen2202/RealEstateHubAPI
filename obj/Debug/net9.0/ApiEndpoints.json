@@ -176,7 +176,7 @@
   {
     "ContainingType": "RealEstateHubAPI.Controllers.PostController",
     "Method": "GetAll",
-    "RelativePath": "api/Post",
+    "RelativePath": "api/posts",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -186,7 +186,7 @@
   {
     "ContainingType": "RealEstateHubAPI.Controllers.PostController",
     "Method": "Create",
-    "RelativePath": "api/Post",
+    "RelativePath": "api/posts",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
@@ -247,7 +247,7 @@
   {
     "ContainingType": "RealEstateHubAPI.Controllers.PostController",
     "Method": "Update",
-    "RelativePath": "api/Post/{id}",
+    "RelativePath": "api/posts/{id}",
     "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
@@ -268,7 +268,7 @@
   {
     "ContainingType": "RealEstateHubAPI.Controllers.PostController",
     "Method": "Delete",
-    "RelativePath": "api/Post/{id}",
+    "RelativePath": "api/posts/{id}",
     "HttpMethod": "DELETE",
     "IsController": true,
     "Order": 0,

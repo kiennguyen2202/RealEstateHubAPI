@@ -19,7 +19,7 @@ namespace RealEstateHubAPI.Repositories
                 .Include(p => p.Category)
                 .Include(p => p.Area)
                 .Include(p => p.User)
-                .Include(p => p.PostImages)
+                .Include(p => p.Images)
                 .ToListAsync();
         }
 
@@ -29,7 +29,7 @@ namespace RealEstateHubAPI.Repositories
                 .Include(p => p.Category)
                 .Include(p => p.Area)
                 .Include(p => p.User)
-                .Include(p => p.PostImages)
+                .Include(p => p.Images)
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 

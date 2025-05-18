@@ -91,9 +91,6 @@ namespace RealEstateHubAPI.Migrations
                     b.Property<string>("ImageURL")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PostImageId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Price")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -208,7 +205,7 @@ namespace RealEstateHubAPI.Migrations
             modelBuilder.Entity("RealEstateHubAPI.Model.PostImage", b =>
                 {
                     b.HasOne("RealEstateHubAPI.Model.Post", "Post")
-                        .WithMany("PostImages")
+                        .WithMany("Images")
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -218,7 +215,7 @@ namespace RealEstateHubAPI.Migrations
 
             modelBuilder.Entity("RealEstateHubAPI.Model.Post", b =>
                 {
-                    b.Navigation("PostImages");
+                    b.Navigation("Images");
                 });
 #pragma warning restore 612, 618
         }

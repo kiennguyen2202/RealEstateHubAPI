@@ -51,7 +51,7 @@ namespace RealEstateHubAPI.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-        [Authorize]
+        //[Authorize]
         // Thêm mới một danh mục
         [HttpPost]
         public async Task<IActionResult> AddCategory([FromBody] Category category)

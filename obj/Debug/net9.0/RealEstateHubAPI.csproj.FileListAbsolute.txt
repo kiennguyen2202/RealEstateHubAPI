@@ -8,6 +8,7 @@ C:\Users\ADMIN\RealEstateHubAPI\obj\Debug\net9.0\RealEstateHubAPI.MvcApplication
 C:\Users\ADMIN\RealEstateHubAPI\obj\Debug\net9.0\RealEstateHubAPI.sourcelink.json
 C:\Users\ADMIN\RealEstateHubAPI\bin\Debug\net9.0\appsettings.Development.json
 C:\Users\ADMIN\RealEstateHubAPI\bin\Debug\net9.0\appsettings.json
+C:\Users\ADMIN\RealEstateHubAPI\bin\Debug\net9.0\RealEstateHubAPI.staticwebassets.runtime.json
 C:\Users\ADMIN\RealEstateHubAPI\bin\Debug\net9.0\RealEstateHubAPI.staticwebassets.endpoints.json
 C:\Users\ADMIN\RealEstateHubAPI\bin\Debug\net9.0\RealEstateHubAPI.exe
 C:\Users\ADMIN\RealEstateHubAPI\bin\Debug\net9.0\RealEstateHubAPI.deps.json
@@ -277,4 +278,3 @@ C:\Users\ADMIN\RealEstateHubAPI\obj\Debug\net9.0\refint\RealEstateHubAPI.dll
 C:\Users\ADMIN\RealEstateHubAPI\obj\Debug\net9.0\RealEstateHubAPI.pdb
 C:\Users\ADMIN\RealEstateHubAPI\obj\Debug\net9.0\RealEstateHubAPI.genruntimeconfig.cache
 C:\Users\ADMIN\RealEstateHubAPI\obj\Debug\net9.0\ref\RealEstateHubAPI.dll
-C:\Users\ADMIN\RealEstateHubAPI\bin\Debug\net9.0\RealEstateHubAPI.staticwebassets.runtime.json

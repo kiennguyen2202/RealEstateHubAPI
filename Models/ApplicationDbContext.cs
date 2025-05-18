@@ -19,28 +19,28 @@ namespace RealEstateHubAPI.Model
         {
             base.OnModelCreating(modelBuilder);
 
-            
+
             modelBuilder.Entity<PostImage>()
                 .HasOne(pi => pi.Post)
-                .WithMany(p => p.PostImages)
+                .WithMany(p => p.Images)
                 .HasForeignKey(pi => pi.PostId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-           
+
             modelBuilder.Entity<Post>()
                 .HasOne(p => p.Category)
-                .WithMany() 
+                .WithMany()
                 .HasForeignKey(p => p.CategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-           
+
             modelBuilder.Entity<Post>()
                 .HasOne(p => p.Area)
                 .WithMany()
                 .HasForeignKey(p => p.AreaId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-           
+
             modelBuilder.Entity<Post>()
                 .HasOne(p => p.User)
                 .WithMany()

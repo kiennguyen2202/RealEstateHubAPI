@@ -6,7 +6,7 @@ using RealEstateHubAPI.Models;
 namespace RealEstateHubAPI.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/posts")]
     public class PostController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -22,14 +22,16 @@ namespace RealEstateHubAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
+
             var posts = await _context.Posts
                 .Include(p => p.Category)
                 .Include(p => p.Area)
                 .Include(p => p.User)
-                .Include(p => p.PostImages)
+                .Include(p => p.Images)
                 .ToListAsync();
 
             return Ok(posts);
+
         }
 
         // POST: api/post
@@ -48,7 +50,7 @@ namespace RealEstateHubAPI.Controllers
                 CategoryId = dto.CategoryId,
                 AreaId = dto.AreaId,
                 UserId = dto.UserId,
-                PostImages = new List<PostImage>()
+                Images = new List<PostImage>()
             };
 
             // Lưu ảnh nếu có
@@ -66,7 +68,7 @@ namespace RealEstateHubAPI.Controllers
                         await image.CopyToAsync(stream);
                     }
 
-                    post.PostImages.Add(new PostImage { Url = $"/uploads/{fileName}" });
+                    post.Images.Add(new PostImage { Url = $"/uploads/{fileName}" });
                 }
             }
 
@@ -102,11 +104,11 @@ namespace RealEstateHubAPI.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var post = await _context.Posts
-                .Include(p => p.PostImages)
+                .Include(p => p.Images)
                 .FirstOrDefaultAsync(p => p.Id == id);
             if (post == null) return NotFound();
 
-            _context.PostImages.RemoveRange(post.PostImages);
+            _context.PostImages.RemoveRange(post.Images);
             _context.Posts.Remove(post);
 
             await _context.SaveChangesAsync();

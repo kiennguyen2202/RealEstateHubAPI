@@ -12,8 +12,8 @@ using RealEstateHubAPI.Model;
 namespace RealEstateHubAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250517080748_postandpostimages")]
-    partial class postandpostimages
+    [Migration("20250517132728_zaz")]
+    partial class zaz
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -69,8 +69,11 @@ namespace RealEstateHubAPI.Migrations
 
             modelBuilder.Entity("RealEstateHubAPI.Model.Post", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("AreaId")
                         .HasColumnType("int");
@@ -90,9 +93,6 @@ namespace RealEstateHubAPI.Migrations
 
                     b.Property<string>("ImageURL")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("PostImageId")
-                        .HasColumnType("int");
 
                     b.Property<string>("Price")
                         .IsRequired()
@@ -126,14 +126,14 @@ namespace RealEstateHubAPI.Migrations
 
             modelBuilder.Entity("RealEstateHubAPI.Model.PostImage", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("PostId")
                         .HasColumnType("int");
-
-                    b.Property<string>("PostId1")
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Url")
                         .IsRequired()
@@ -141,7 +141,7 @@ namespace RealEstateHubAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PostId1");
+                    b.HasIndex("PostId");
 
                     b.ToTable("PostImages");
                 });
@@ -183,19 +183,19 @@ namespace RealEstateHubAPI.Migrations
                     b.HasOne("RealEstateHubAPI.Model.Area", "Area")
                         .WithMany()
                         .HasForeignKey("AreaId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("RealEstateHubAPI.Model.Category", "Category")
                         .WithMany()
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("RealEstateHubAPI.Model.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Area");
@@ -208,15 +208,17 @@ namespace RealEstateHubAPI.Migrations
             modelBuilder.Entity("RealEstateHubAPI.Model.PostImage", b =>
                 {
                     b.HasOne("RealEstateHubAPI.Model.Post", "Post")
-                        .WithMany("Images")
-                        .HasForeignKey("PostId1");
+                        .WithMany("PostImages")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Post");
                 });
 
             modelBuilder.Entity("RealEstateHubAPI.Model.Post", b =>
                 {
-                    b.Navigation("Images");
+                    b.Navigation("PostImages");
                 });
 #pragma warning restore 612, 618
         }

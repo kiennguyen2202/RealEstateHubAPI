@@ -286,7 +286,7 @@
         }
       }
     },
-    "/api/Post": {
+    "/api/posts": {
       "get": {
         "tags": [
           "Post"
@@ -389,7 +389,7 @@
         }
       }
     },
-    "/api/Post/{id}": {
+    "/api/posts/{id}": {
       "put": {
         "tags": [
           "Post"
@@ -681,10 +681,6 @@
             "type": "integer",
             "format": "int32"
           },
-          "postImageId": {
-            "type": "integer",
-            "format": "int32"
-          },
           "user": {
             "$ref": "#/components/schemas/User"
           },
@@ -694,7 +690,7 @@
           "area": {
             "$ref": "#/components/schemas/Area"
           },
-          "postImages": {
+          "images": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/PostImage"
@@ -718,9 +714,6 @@
           "url": {
             "type": "string",
             "nullable": true
-          },
-          "post": {
-            "$ref": "#/components/schemas/Post"
           }
         },
         "additionalProperties": false

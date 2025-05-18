@@ -12,8 +12,8 @@ using RealEstateHubAPI.Model;
 namespace RealEstateHubAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250517121409_zz")]
-    partial class zz
+    [Migration("20250517130733_za")]
+    partial class za
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
