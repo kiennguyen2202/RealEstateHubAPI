@@ -18,7 +18,7 @@ namespace RealEstateHubAPI.Model
         public DbSet<Report> Reports { get; set; }
         public DbSet<Message> Messages { get; set; }
 
-
+        public DbSet<Favorite> Favorites { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
