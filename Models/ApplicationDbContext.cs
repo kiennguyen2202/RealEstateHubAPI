@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RealEstateHubAPI.Models;
 
 
 namespace RealEstateHubAPI.Model
@@ -13,7 +14,7 @@ namespace RealEstateHubAPI.Model
         public DbSet<Category> Categories { get; set; }
         public DbSet<Post> Posts { get; set; }
         public DbSet<PostImage> PostImages { get; set; }
-
+        public DbSet<Favorite> Favorites { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
