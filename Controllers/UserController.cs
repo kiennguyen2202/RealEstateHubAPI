@@ -7,7 +7,7 @@ namespace RealEstateHubAPI.Controllers
 {
     [Route("api/users")]
     [ApiController]
-    [Authorize]
+    
     public class UserController : ControllerBase
     {
         private readonly IUserRepository _userRepository;

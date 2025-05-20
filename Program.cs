@@ -17,6 +17,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IAreaRepository, AreaRepository>();
 builder.Services.AddScoped<IPostRepository, PostRepository>();
+//builder.Services.AddScoped<IReportRepository, ReportRepository>();
 
 
 builder.Services.AddScoped<IAuthService, AuthService>();

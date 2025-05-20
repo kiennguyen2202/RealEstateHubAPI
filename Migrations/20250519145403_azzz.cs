@@ -5,25 +5,25 @@
 namespace RealEstateHubAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class zaz : Migration
+    public partial class azzz : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "PostImageId",
-                table: "Posts");
+                name: "Name",
+                table: "Areas");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<int>(
-                name: "PostImageId",
-                table: "Posts",
-                type: "int",
+            migrationBuilder.AddColumn<string>(
+                name: "Name",
+                table: "Areas",
+                type: "nvarchar(max)",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: "");
         }
     }
 }

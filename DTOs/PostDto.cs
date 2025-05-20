@@ -1,4 +1,4 @@
-﻿namespace RealEstateHubAPI.Models
+﻿namespace RealEstateHubAPI.DTOs
 {
     public class CreatePostDto
     {

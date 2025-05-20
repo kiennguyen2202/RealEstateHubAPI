@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "5WR2ax26uBV0zS1Arrco/WTR54R43z+ZBuc2kEAQ6bg=",
+  "Hash": "SZScc2S+AddxVGrrmbmMRIee0p02QEJ5n8gaDqcEXA8=",
   "Source": "RealEstateHubAPI",
   "BasePath": "_content/RealEstateHubAPI",
   "Mode": "Default",
@@ -143,6 +143,27 @@
       "OriginalItemSpec": "wwwroot\\uploads\\6ecd46dd-7816-49ed-a4ff-083a9e087962_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg"
     },
     {
+      "Identity": "C:\\Users\\ADMIN\\RealEstateHubAPI\\wwwroot\\uploads\\705d5d60-212d-469e-8aa9-f0b71ee76f28_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
+      "SourceId": "RealEstateHubAPI",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\ADMIN\\RealEstateHubAPI\\wwwroot\\",
+      "BasePath": "_content/RealEstateHubAPI",
+      "RelativePath": "uploads/705d5d60-212d-469e-8aa9-f0b71ee76f28_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379#[.{fingerprint}]?.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "6sxw6pw28q",
+      "Integrity": "+kLWr8JR4nfgXyEvHG47GVqvHLGrIx9zpjzA1ai6zd4=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\705d5d60-212d-469e-8aa9-f0b71ee76f28_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg"
+    },
+    {
       "Identity": "C:\\Users\\ADMIN\\RealEstateHubAPI\\wwwroot\\uploads\\81533998-f4c5-45b0-9077-94eac99a809f_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
       "SourceId": "RealEstateHubAPI",
       "SourceType": "Discovered",
@@ -209,7 +230,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sat, 17 May 2025 12:13:05 GMT"
+          "Value": "Sun, 18 May 2025 04:47:00 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -254,7 +275,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sat, 17 May 2025 12:13:05 GMT"
+          "Value": "Sun, 18 May 2025 04:47:00 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -291,7 +312,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sat, 17 May 2025 12:04:30 GMT"
+          "Value": "Sun, 18 May 2025 04:47:00 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -336,7 +357,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sat, 17 May 2025 12:04:30 GMT"
+          "Value": "Sun, 18 May 2025 04:47:00 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -373,7 +394,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sat, 17 May 2025 13:13:28 GMT"
+          "Value": "Sun, 18 May 2025 04:47:29 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -418,7 +439,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sat, 17 May 2025 13:13:28 GMT"
+          "Value": "Sun, 18 May 2025 04:47:29 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -455,7 +476,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sat, 17 May 2025 13:29:09 GMT"
+          "Value": "Sun, 18 May 2025 04:47:29 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -500,7 +521,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sat, 17 May 2025 13:29:09 GMT"
+          "Value": "Sun, 18 May 2025 04:47:29 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -537,7 +558,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 18 May 2025 04:08:03 GMT"
+          "Value": "Sun, 18 May 2025 04:47:29 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -582,7 +603,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 18 May 2025 04:08:03 GMT"
+          "Value": "Sun, 18 May 2025 04:47:29 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -619,7 +640,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sat, 17 May 2025 12:01:19 GMT"
+          "Value": "Sun, 18 May 2025 04:47:00 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -664,7 +685,89 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sat, 17 May 2025 12:01:19 GMT"
+          "Value": "Sun, 18 May 2025 04:47:00 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-+kLWr8JR4nfgXyEvHG47GVqvHLGrIx9zpjzA1ai6zd4="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/705d5d60-212d-469e-8aa9-f0b71ee76f28_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.6sxw6pw28q.jpg",
+      "AssetFile": "C:\\Users\\ADMIN\\RealEstateHubAPI\\wwwroot\\uploads\\705d5d60-212d-469e-8aa9-f0b71ee76f28_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "114778"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"+kLWr8JR4nfgXyEvHG47GVqvHLGrIx9zpjzA1ai6zd4=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 19 May 2025 14:55:18 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "6sxw6pw28q"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/705d5d60-212d-469e-8aa9-f0b71ee76f28_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-+kLWr8JR4nfgXyEvHG47GVqvHLGrIx9zpjzA1ai6zd4="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/705d5d60-212d-469e-8aa9-f0b71ee76f28_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
+      "AssetFile": "C:\\Users\\ADMIN\\RealEstateHubAPI\\wwwroot\\uploads\\705d5d60-212d-469e-8aa9-f0b71ee76f28_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "114778"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"+kLWr8JR4nfgXyEvHG47GVqvHLGrIx9zpjzA1ai6zd4=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 19 May 2025 14:55:18 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -701,7 +804,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 18 May 2025 04:15:33 GMT"
+          "Value": "Sun, 18 May 2025 04:47:29 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -746,7 +849,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 18 May 2025 04:15:33 GMT"
+          "Value": "Sun, 18 May 2025 04:47:29 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -783,7 +886,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sat, 17 May 2025 12:00:45 GMT"
+          "Value": "Sun, 18 May 2025 04:47:00 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -828,7 +931,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sat, 17 May 2025 12:00:45 GMT"
+          "Value": "Sun, 18 May 2025 04:47:00 GMT"
         },
         {
           "Name": "Cache-Control",

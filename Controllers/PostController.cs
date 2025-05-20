@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using RealEstateHubAPI.DTOs;
 using RealEstateHubAPI.Model;
-using RealEstateHubAPI.Models;
 
 namespace RealEstateHubAPI.Controllers
 {
@@ -18,72 +18,110 @@ namespace RealEstateHubAPI.Controllers
             _env = env;
         }
 
-        // GET: api/post
+        // GET: api/posts
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
+            try
+            {
+                var posts = await _context.Posts
+                    .Include(p => p.Category)
+                    .Include(p => p.Area)
+                    .Include(p => p.User)
+                    .Include(p => p.Images)
+                    .ToListAsync();
 
-            var posts = await _context.Posts
-                .Include(p => p.Category)
-                .Include(p => p.Area)
-                .Include(p => p.User)
-                .Include(p => p.Images)
-                .ToListAsync();
-
-            return Ok(posts);
-
+                return Ok(posts);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error.");
+            }
         }
 
-        // POST: api/post
+        // GET: api/posts/{id}
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            try
+            {
+                var post = await _context.Posts
+                    .Include(p => p.Category)
+                    .Include(p => p.Area)
+                    .Include(p => p.User)
+                    .Include(p => p.Images)
+                    .FirstOrDefaultAsync(p => p.Id == id);
+
+                if (post == null)
+                    return NotFound();
+
+                return Ok(post);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error.");
+            }
+        }
+
+        // POST: api/posts
         [HttpPost]
         public async Task<IActionResult> Create([FromForm] CreatePostDto dto)
         {
-            var post = new Post
+            try
             {
-                Title = dto.Title,
-                Description = dto.Description,
-                Price = dto.Price,
-                Status = dto.Status,
-                Street_Name = dto.Street_Name,
-                Area_Size = dto.Area_Size,
-                Created = DateTime.Now,
-                CategoryId = dto.CategoryId,
-                AreaId = dto.AreaId,
-                UserId = dto.UserId,
-                Images = new List<PostImage>()
-            };
-
-            // Lưu ảnh nếu có
-            if (dto.Images != null && dto.Images.Any())
-            {
-                foreach (var image in dto.Images)
+                var post = new Post
                 {
-                    var fileName = $"{Guid.NewGuid()}_{image.FileName}";
-                    var filePath = Path.Combine(_env.WebRootPath, "uploads", fileName);
+                    Title = dto.Title,
+                    Description = dto.Description,
+                    Price = dto.Price,
+                    Status = dto.Status,
+                    Street_Name = dto.Street_Name,
+                    Area_Size = dto.Area_Size,
+                    Created = DateTime.Now,
+                    CategoryId = dto.CategoryId,
+                    AreaId = dto.AreaId,
+                    UserId = dto.UserId,
+                    Images = new List<PostImage>()
+                };
 
-                    Directory.CreateDirectory(Path.GetDirectoryName(filePath)); // Đảm bảo folder tồn tại
-
-                    using (var stream = new FileStream(filePath, FileMode.Create))
+                if (dto.Images != null && dto.Images.Any())
+                {
+                    foreach (var image in dto.Images)
                     {
-                        await image.CopyToAsync(stream);
+                        var fileName = $"{Guid.NewGuid()}_{image.FileName}";
+                        var filePath = Path.Combine(_env.WebRootPath, "uploads", fileName);
+                        Directory.CreateDirectory(Path.GetDirectoryName(filePath)!);
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await image.CopyToAsync(stream);
+                        }
+
+                        post.Images.Add(new PostImage { Url = $"/uploads/{fileName}" });
                     }
-
-                    post.Images.Add(new PostImage { Url = $"/uploads/{fileName}" });
                 }
+
+                _context.Posts.Add(post);
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction(nameof(GetById), new { id = post.Id }, post);
             }
-
-            _context.Posts.Add(post);
-            await _context.SaveChangesAsync();
-
-            return Ok(post);
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error.");
+            }
         }
 
-        // PUT: api/post/5
+        // PUT: api/posts/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] Post updatePost)
         {
+            if (id != updatePost.Id)
+                return BadRequest("ID không khớp.");
+
             var post = await _context.Posts.FindAsync(id);
-            if (post == null) return NotFound();
+            if (post == null)
+                return NotFound();
 
             post.Title = updatePost.Title;
             post.Description = updatePost.Description;
@@ -96,17 +134,18 @@ namespace RealEstateHubAPI.Controllers
             post.UserId = updatePost.UserId;
 
             await _context.SaveChangesAsync();
-            return Ok(post);
+            return NoContent();
         }
 
-        // DELETE: api/post/5
+        // DELETE: api/posts/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             var post = await _context.Posts
                 .Include(p => p.Images)
                 .FirstOrDefaultAsync(p => p.Id == id);
-            if (post == null) return NotFound();
+            if (post == null)
+                return NotFound();
 
             _context.PostImages.RemoveRange(post.Images);
             _context.Posts.Remove(post);

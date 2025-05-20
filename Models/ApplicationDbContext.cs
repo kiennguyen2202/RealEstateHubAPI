@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RealEstateHubAPI.Models;
 
 
 namespace RealEstateHubAPI.Model
@@ -13,6 +14,10 @@ namespace RealEstateHubAPI.Model
         public DbSet<Category> Categories { get; set; }
         public DbSet<Post> Posts { get; set; }
         public DbSet<PostImage> PostImages { get; set; }
+
+        public DbSet<Report> Reports { get; set; }
+        public DbSet<Message> Messages { get; set; }
+
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -49,6 +54,22 @@ namespace RealEstateHubAPI.Model
             modelBuilder.Entity<Post>()
                 .Property(p => p.Id)
                 .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<Report>()
+                .Property(r => r.Type)
+                .HasConversion<int>();
+
+            modelBuilder.Entity<Message>()
+                .HasOne(m => m.Sender)
+                .WithMany()
+                .HasForeignKey(m => m.SenderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Message>()
+                .HasOne(m => m.Receiver)
+                .WithMany()
+                .HasForeignKey(m => m.ReceiverId)
+                .OnDelete(DeleteBehavior.Restrict);
 
         }
     }
