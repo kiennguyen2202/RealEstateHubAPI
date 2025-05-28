@@ -1,0 +1,89 @@
+.property-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  overflow: hidden;
+  transition: transform 0.3s;
+}
+
+.property-card:hover {
+  transform: translateY(-4px);
+}
+
+.property-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.property-image {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+}
+
+.property-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.verified-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #4CAF50;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.property-info {
+  padding: 15px;
+}
+
+.property-title {
+  margin: 0 0 10px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.property-price {
+  color: #f60;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.property-details {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 10px;
+  color: #666;
+  font-size: 14px;
+}
+
+.property-location {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.property-location i {
+  margin-right: 5px;
+  color: #999;
+}
+
+.property-meta {
+  display: flex;
+  justify-content: space-between;
+  color: #999;
+  font-size: 12px;
+  border-top: 1px solid #eee;
+  padding-top: 10px;
+} 
