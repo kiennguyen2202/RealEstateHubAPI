@@ -12,6 +12,13 @@ const Header = () => {
     navigate('/');
   };
 
+  const handlePostClick = (e) => {
+    if (!user) {
+      e.preventDefault();
+      navigate('/login');
+    }
+  };
+
   return (
     <header className="header">
       <div className="header-container">
@@ -31,25 +38,30 @@ const Header = () => {
         </nav>
 
         <div className="user-actions">
+          <Link 
+            to="/dang-tin" 
+            className="post-button"
+            onClick={handlePostClick}
+          >
+            Đăng tin
+          </Link>
+          
           {user ? (
-            <>
-              
-              <div className="user-menu">
-                <button className="user-menu-button">
-                  <img src={user.avatar || '/default-avatar.png'} alt="Avatar" className="user-avatar" />
-                  <span>{user.name}</span>
-                </button>
-                <div className="user-dropdown">
-                  <Link to="/profile">Tài khoản của tôi</Link>
-                  <Link to="/messages">Tin nhắn</Link>
-                  {user.role === 'admin' && <Link to="/admin">Quản trị</Link>}
-                  <button onClick={handleLogout}>Đăng xuất</button>
-                </div>
+            <div className="user-menu">
+              <button className="user-menu-button">
+                <img src={user.avatar || '/default-avatar.png'} alt="Avatar" className="user-avatar" />
+                <span>{user.name}</span>
+              </button>
+              <div className="user-dropdown">
+                <Link to="/profile">Tài khoản của tôi</Link>
+                <Link to="/messages">Tin nhắn</Link>
+                <Link to="/my-posts">Tin đã đăng</Link>
+                {user.role === 'admin' && <Link to="/admin">Quản trị</Link>}
+                <button onClick={handleLogout}>Đăng xuất</button>
               </div>
-            </>
+            </div>
           ) : (
             <>
-              <Link to="/dang-tin" className="post-button">Đăng tin</Link>
               <Link to="/login" className="login-button">Đăng nhập</Link>
               <Link to="/register" className="register-button">Đăng ký</Link>
             </>

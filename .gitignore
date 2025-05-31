@@ -1,6 +1,4 @@
-﻿################################################################################
-# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
-################################################################################
-
-/.vs
-
+﻿# Visual Studio temp files
+.vs/
+api/obj/
+api/bin/

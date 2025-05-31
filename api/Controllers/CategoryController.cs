@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using RealEstateHubAPI.Model;
+using RealEstateHubAPI.Models;
 using RealEstateHubAPI.Repositories;
 
 namespace RealEstateHubAPI.Controllers
@@ -12,10 +14,12 @@ namespace RealEstateHubAPI.Controllers
     public class CategoryController : ControllerBase
     {
         private readonly ICategoryRepository _categoryRepository;
+        private readonly ApplicationDbContext _context;
 
-        public CategoryController(ICategoryRepository categoryRepository)
+        public CategoryController(ICategoryRepository categoryRepository, ApplicationDbContext context)
         {
             _categoryRepository = categoryRepository;
+            _context = context;
         }
 
         // Lấy danh sách tất cả các danh mục
@@ -102,6 +106,24 @@ namespace RealEstateHubAPI.Controllers
             {
                 // Handle exception
                 return StatusCode(500, "Internal server error");
+            }
+        }
+
+        // GET: api/categories/all
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAll()
+        {
+            try
+            {
+                var categories = await _context.Categories
+                    .Where(c => c.IsActive)
+                    .ToListAsync();
+
+                return Ok(categories);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
     }

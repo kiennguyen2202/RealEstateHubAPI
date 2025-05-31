@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "FMD59xbAr9tiLLnvxhTvh5UsMyS+Jr95NWGhdLS3ric=",
+  "Hash": "R3SvjIJmKmc+P/2ejQJ5In2hYdPVJzP++ujGGoPjShI=",
   "Source": "RealEstateHubAPI",
   "BasePath": "_content/RealEstateHubAPI",
   "Mode": "Default",
@@ -248,6 +248,27 @@
       "OriginalItemSpec": "wwwroot\\uploads\\81533998-f4c5-45b0-9077-94eac99a809f_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg"
     },
     {
+      "Identity": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\98833cc1-d7d5-46b4-a9a4-2440307a2514_download.png",
+      "SourceId": "RealEstateHubAPI",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\",
+      "BasePath": "_content/RealEstateHubAPI",
+      "RelativePath": "uploads/98833cc1-d7d5-46b4-a9a4-2440307a2514_download#[.{fingerprint}]?.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "gcq54fc8lk",
+      "Integrity": "YAtK4hgmyhXuC4lmA/RhHRWMYDcFkPQ7+NU4Ax9m1Ec=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\98833cc1-d7d5-46b4-a9a4-2440307a2514_download.png"
+    },
+    {
       "Identity": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\a1006e0e-abda-444a-a129-02533f4abe25_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
       "SourceId": "RealEstateHubAPI",
       "SourceType": "Discovered",
@@ -267,6 +288,27 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\uploads\\a1006e0e-abda-444a-a129-02533f4abe25_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg"
+    },
+    {
+      "Identity": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\c4932bfa-a19b-4eee-b7f9-102b50f9f6ec_download.png",
+      "SourceId": "RealEstateHubAPI",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\",
+      "BasePath": "_content/RealEstateHubAPI",
+      "RelativePath": "uploads/c4932bfa-a19b-4eee-b7f9-102b50f9f6ec_download#[.{fingerprint}]?.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "gcq54fc8lk",
+      "Integrity": "YAtK4hgmyhXuC4lmA/RhHRWMYDcFkPQ7+NU4Ax9m1Ec=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\c4932bfa-a19b-4eee-b7f9-102b50f9f6ec_download.png"
     },
     {
       "Identity": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\e3b681dd-64cb-4a0e-9541-7ef88d423b07_499571983_722159726827549_1490790694470403240_n.jpg",
@@ -1194,6 +1236,88 @@
       ]
     },
     {
+      "Route": "uploads/98833cc1-d7d5-46b4-a9a4-2440307a2514_download.gcq54fc8lk.png",
+      "AssetFile": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\98833cc1-d7d5-46b4-a9a4-2440307a2514_download.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1900"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"YAtK4hgmyhXuC4lmA/RhHRWMYDcFkPQ7+NU4Ax9m1Ec=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 31 May 2025 02:12:05 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "gcq54fc8lk"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/98833cc1-d7d5-46b4-a9a4-2440307a2514_download.png"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-YAtK4hgmyhXuC4lmA/RhHRWMYDcFkPQ7+NU4Ax9m1Ec="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/98833cc1-d7d5-46b4-a9a4-2440307a2514_download.png",
+      "AssetFile": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\98833cc1-d7d5-46b4-a9a4-2440307a2514_download.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1900"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"YAtK4hgmyhXuC4lmA/RhHRWMYDcFkPQ7+NU4Ax9m1Ec=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 31 May 2025 02:12:05 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-YAtK4hgmyhXuC4lmA/RhHRWMYDcFkPQ7+NU4Ax9m1Ec="
+        }
+      ]
+    },
+    {
       "Route": "uploads/a1006e0e-abda-444a-a129-02533f4abe25_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.6sxw6pw28q.jpg",
       "AssetFile": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\a1006e0e-abda-444a-a129-02533f4abe25_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
       "Selectors": [],
@@ -1272,6 +1396,88 @@
         {
           "Name": "integrity",
           "Value": "sha256-+kLWr8JR4nfgXyEvHG47GVqvHLGrIx9zpjzA1ai6zd4="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/c4932bfa-a19b-4eee-b7f9-102b50f9f6ec_download.gcq54fc8lk.png",
+      "AssetFile": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\c4932bfa-a19b-4eee-b7f9-102b50f9f6ec_download.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1900"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"YAtK4hgmyhXuC4lmA/RhHRWMYDcFkPQ7+NU4Ax9m1Ec=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 30 May 2025 16:30:48 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "gcq54fc8lk"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/c4932bfa-a19b-4eee-b7f9-102b50f9f6ec_download.png"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-YAtK4hgmyhXuC4lmA/RhHRWMYDcFkPQ7+NU4Ax9m1Ec="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/c4932bfa-a19b-4eee-b7f9-102b50f9f6ec_download.png",
+      "AssetFile": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\c4932bfa-a19b-4eee-b7f9-102b50f9f6ec_download.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1900"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"YAtK4hgmyhXuC4lmA/RhHRWMYDcFkPQ7+NU4Ax9m1Ec=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 30 May 2025 16:30:48 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-YAtK4hgmyhXuC4lmA/RhHRWMYDcFkPQ7+NU4Ax9m1Ec="
         }
       ]
     },

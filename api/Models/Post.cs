@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using RealEstateHubAPI.Models;
 
 namespace RealEstateHubAPI.Model
 {
@@ -10,9 +11,10 @@ namespace RealEstateHubAPI.Model
         public int Id { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
-        public string Price { get; set; }
+        public decimal Price { get; set; }
         
         public PriceUnit PriceUnit { get; set; }
+        public TransactionType TransactionType { get; set; }
         public string Status { get; set; }
         public DateTime Created { get; set; } = DateTime.Now;
         public float Area_Size { get; set; }

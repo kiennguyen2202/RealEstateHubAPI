@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using RealEstateHubAPI.Model;
 using RealEstateHubAPI.Repositories;
+using System.Security.Claims;
 
 namespace RealEstateHubAPI.Controllers
 {
@@ -16,6 +17,26 @@ namespace RealEstateHubAPI.Controllers
         {
             _userRepository = userRepository;
         }
+
+        [Authorize]
+        [HttpGet("profile")]
+        public async Task<IActionResult> GetProfile()
+        {
+            try
+            {
+                var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+                var user = await _userRepository.GetUserByIdAsync(userId);
+                if (user == null)
+                    return NotFound("User not found");
+
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetUsers()

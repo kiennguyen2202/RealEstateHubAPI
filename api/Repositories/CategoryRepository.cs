@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RealEstateHubAPI.Model;
+using RealEstateHubAPI.Models;
 
 namespace RealEstateHubAPI.Repositories
 {

@@ -8,7 +8,7 @@ namespace RealEstateHubAPI.Controllers
 {
     [ApiController]
     [Route("api/posts")]
-    
+
     public class PostController : ControllerBase
     {
         private readonly ApplicationDbContext _context;

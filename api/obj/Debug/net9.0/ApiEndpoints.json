@@ -130,7 +130,7 @@
     "Parameters": [
       {
         "Name": "category",
-        "Type": "RealEstateHubAPI.Model.Category",
+        "Type": "RealEstateHubAPI.Models.Category",
         "IsRequired": true
       }
     ],
@@ -167,7 +167,7 @@
       },
       {
         "Name": "category",
-        "Type": "RealEstateHubAPI.Model.Category",
+        "Type": "RealEstateHubAPI.Models.Category",
         "IsRequired": true
       }
     ],
@@ -187,6 +187,16 @@
         "IsRequired": true
       }
     ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "RealEstateHubAPI.Controllers.CategoryController",
+    "Method": "GetAll",
+    "RelativePath": "api/categories/all",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
     "ReturnTypes": []
   },
   {
@@ -319,7 +329,7 @@
       },
       {
         "Name": "Price",
-        "Type": "System.String",
+        "Type": "System.Decimal",
         "IsRequired": false
       },
       {
@@ -359,7 +369,7 @@
       },
       {
         "Name": "Images",
-        "Type": "System.Collections.Generic.List\u00601[[Microsoft.AspNetCore.Http.IFormFile, Microsoft.AspNetCore.Http.Features, Version=9.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60]]",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile[]",
         "IsRequired": false
       }
     ],
@@ -584,6 +594,16 @@
         "IsRequired": true
       }
     ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "RealEstateHubAPI.Controllers.UserController",
+    "Method": "GetProfile",
+    "RelativePath": "api/users/profile",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
     "ReturnTypes": []
   }
 ]

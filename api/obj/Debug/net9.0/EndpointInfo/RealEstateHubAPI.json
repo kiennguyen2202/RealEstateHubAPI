@@ -317,6 +317,18 @@
         }
       }
     },
+    "/api/categories/all": {
+      "get": {
+        "tags": [
+          "Category"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/favorites/user/{userId}": {
       "get": {
         "tags": [
@@ -495,6 +507,18 @@
           "content": {
             "multipart/form-data": {
               "schema": {
+                "required": [
+                  "Area_Size",
+                  "AreaId",
+                  "CategoryId",
+                  "Description",
+                  "Images",
+                  "Price",
+                  "PriceUnit",
+                  "Status",
+                  "Street_Name",
+                  "Title"
+                ],
                 "type": "object",
                 "properties": {
                   "Title": {
@@ -504,7 +528,8 @@
                     "type": "string"
                   },
                   "Price": {
-                    "type": "string"
+                    "type": "number",
+                    "format": "double"
                   },
                   "PriceUnit": {
                     "$ref": "#/components/schemas/PriceUnit"
@@ -806,6 +831,18 @@
         }
       }
     },
+    "/api/users/profile": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/users": {
       "get": {
         "tags": [
@@ -957,6 +994,9 @@
         "additionalProperties": false
       },
       "Category": {
+        "required": [
+          "name"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -964,8 +1004,19 @@
             "format": "int32"
           },
           "name": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "description": {
             "type": "string",
             "nullable": true
+          },
+          "icon": {
+            "type": "string",
+            "nullable": true
+          },
+          "isActive": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false
@@ -1047,11 +1098,14 @@
             "nullable": true
           },
           "price": {
-            "type": "string",
-            "nullable": true
+            "type": "number",
+            "format": "double"
           },
           "priceUnit": {
             "$ref": "#/components/schemas/PriceUnit"
+          },
+          "transactionType": {
+            "$ref": "#/components/schemas/TransactionType"
           },
           "status": {
             "type": "string",
@@ -1165,6 +1219,14 @@
           4,
           5,
           6
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "TransactionType": {
+        "enum": [
+          0,
+          1
         ],
         "type": "integer",
         "format": "int32"

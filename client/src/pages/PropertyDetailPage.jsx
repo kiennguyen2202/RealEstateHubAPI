@@ -16,8 +16,9 @@ const PropertyDetailPage = () => {
         setLoading(true);
         const response = await axiosClient.get(`/posts/${id}`);
         setProperty(response.data);
-      } catch (err) {
-        setError(err);
+      } catch (error) {
+        console.error('Error fetching property:', error);
+        setError('Không thể tải thông tin bất động sản');
       } finally {
         setLoading(false);
       }
@@ -31,7 +32,7 @@ const PropertyDetailPage = () => {
   }
 
   if (error) {
-    return <div className="error">Lỗi: {error.message}</div>;
+    return <div className="error">Lỗi: {error}</div>;
   }
 
   if (!property) {

@@ -5,6 +5,8 @@ using RealEstateHubAPI.Model;
 using RealEstateHubAPI.Repositories;
 using RealEstateHubAPI.Services;
 using System.Text;
+using RealEstateHubAPI.Data;
+using RealEstateHubAPI.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,8 +19,8 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IAreaRepository, AreaRepository>();
 builder.Services.AddScoped<IPostRepository, PostRepository>();
+builder.Services.AddScoped<IPostService, PostService>();
 //builder.Services.AddScoped<IReportRepository, ReportRepository>();
-
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 
@@ -100,7 +102,13 @@ builder.Services.AddCors(options =>
         });
 });
 
+
+
 var app = builder.Build();
+
+
+
+
 
 // Middleware pipeline
 if (app.Environment.IsDevelopment())
@@ -111,12 +119,14 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseCors("AllowFrontend");
-app.UseStaticFiles(); 
 
+
+app.UseCors("AllowFrontend");
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseStaticFiles();
 
 app.MapControllers();
 

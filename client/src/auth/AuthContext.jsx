@@ -1,8 +1,8 @@
 // src/auth/AuthContext.jsx
-import React, { createContext, useState, useEffect, useContext } from 'react';
-import axios from '../api/axiosClient';
+import React, { createContext, useState, useContext, useEffect } from 'react';
+import axiosPrivate from '../api/axiosPrivate';
 
-// Tạo context
+// Tạo và export AuthContext
 export const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }) => {
 
   const fetchUserProfile = async () => {
     try {
-      const response = await axios.get('/api/users/profile');
+      const response = await axiosPrivate.get('/api/users/profile');
       setUser(response.data);
     } catch (error) {
       console.error('Error fetching user profile:', error);
@@ -33,7 +33,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await axios.post('/api/auth/login', { email, password });
+      const response = await axiosPrivate.post('/api/auth/login', { email, password });
       const { token, user } = response.data;
       
       localStorage.setItem('token', token);
@@ -41,16 +41,17 @@ export const AuthProvider = ({ children }) => {
       
       return { success: true };
     } catch (error) {
-      return {
-        success: false,
-        error: error.response?.data?.message || 'Đăng nhập thất bại'
+      console.error('Login error:', error);
+      return { 
+        success: false, 
+        message: error.response?.data?.message || 'Đăng nhập thất bại' 
       };
     }
   };
 
   const register = async (userData) => {
     try {
-      const response = await axios.post('/api/auth/register', userData);
+      const response = await axiosPrivate.post('/api/auth/register', userData);
       const { token, user } = response.data;
       
       localStorage.setItem('token', token);
@@ -66,16 +67,20 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
+    console.log('Logging out...');
     localStorage.removeItem('token');
     setUser(null);
   };
 
   const updateProfile = async (userData) => {
     try {
-      const response = await axios.put('/api/users/profile', userData);
+      console.log('Updating profile...');
+      const response = await axiosPrivate.put('/api/users/profile', userData);
+      console.log('Profile update response:', response.data);
       setUser(response.data);
       return { success: true };
     } catch (error) {
+      console.error('Profile update error:', error);
       return {
         success: false,
         error: error.response?.data?.message || 'Cập nhật thông tin thất bại'
@@ -94,9 +99,15 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={value}>
-      {children}
+      {!loading && children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};

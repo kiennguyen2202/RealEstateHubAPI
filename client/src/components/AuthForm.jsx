@@ -11,18 +11,27 @@ const AuthForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('handleSubmit called');
     try {
       const url = isLogin ? "/auth/login" : "/auth/register";
+      console.log(`Attempting ${isLogin ? 'login' : 'registration'} to: ${url}`);
+      console.log('Sending data:', formData);
       const res = await axios.post(url, formData);
+      console.log(`${isLogin ? 'Login' : 'Registration'} response status:`, res.status);
+      console.log(`${isLogin ? 'Login' : 'Registration'} successful. Response data:`, res.data);
+
       if (isLogin) {
+        console.log('Calling login function from AuthContext with token:', res.data.token);
         login(res.data.token);
+        console.log('Navigating to /posts');
         navigate("/posts"); // chuyển hướng sau khi login
       } else {
         alert("Đăng ký thành công, vui lòng đăng nhập.");
         setIsLogin(true);
       }
     } catch (err) {
-      alert("Lỗi: " + err.response?.data || "Không thể kết nối.");
+      console.error(`${isLogin ? 'Login' : 'Registration'} error:`, err.response || err);
+      alert("Lỗi: " + (err.response?.data?.message || err.message || "Không thể kết nối."));
     }
   };
 
@@ -48,7 +57,7 @@ const AuthForm = () => {
           required
           className="w-full p-2 border rounded"
         />
-        <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded">
+        <button className="w-full bg-blue-500 text-white py-2 rounded" onClick={handleSubmit}>
           {isLogin ? "Đăng nhập" : "Đăng ký"}
         </button>
       </form>
