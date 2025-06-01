@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosClient = axios.create({
-  baseURL: "http://localhost:5134/api",
+  baseURL: "http://localhost:5134",
   headers: {
     "Content-Type": "application/json",
   },
@@ -14,9 +14,6 @@ axiosClient.interceptors.request.use(
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
     }
-
-    
-
     return config;
   },
   (error) => {

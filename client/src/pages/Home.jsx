@@ -208,7 +208,7 @@ const Home = () => {
                 </p>
                 <div className="post-actions mt-4 flex justify-between gap-2">
                   <button
-                    onClick={() => navigate(`/posts/${post.id}`)}
+                    onClick={() => navigate(`/chi-tiet/${post.id}`)}
                     className="w-1/3 bg-blue-500 text-white text-center py-2 px-2 rounded hover:bg-blue-600 transition text-sm font-medium"
                   >
                     Xem chi tiết
@@ -216,7 +216,7 @@ const Home = () => {
                   {user && (user.id === post.userId || user.role === "Admin") && (
                     <>
                       <button
-                        onClick={() => navigate(`/posts/${post.id}?edit=true`)}
+                        onClick={() => navigate(`/chi-tiet/${post.id}?edit=true`)}
                         className="w-1/3 bg-yellow-500 text-white text-center py-2 px-2 rounded hover:bg-yellow-600 transition text-sm font-medium"
                       >
                         Sửa

@@ -1,32 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './PropertyCard.css';
-
-// Định nghĩa enum PriceUnit tương tự như ở backend
-const PriceUnit = {
-    Tỷ: 0,
-    Triệu: 1
-};
+import { PriceUnit, formatPrice } from '../../utils/priceUtils';
 
 const PropertyCard = ({ property }) => {
-  // Helper function để format giá
-  const formatPrice = (price, unit) => {
-    if (!price || price === 0) return 'Thỏa thuận';
-  
-    if (unit === PriceUnit.Tỷ) {
-      return `${price} tỷ`;
-    } else if (unit === PriceUnit.Triệu) {
-      return `${price} triệu`;
-    }
-  
-    // Nếu không có đơn vị thì fallback về định dạng theo giá trị VND
-    if (price >= 1_000_000_000) {
-      return `${(price / 1_000_000_000).toFixed(1)} tỷ`;
-    }
-    return `${(price / 1_000_000).toFixed(0)} triệu`;
-  };
-  
-
   // Helper function để lấy URL đầy đủ của ảnh
   const getFullImageUrl = (imageUrl) => {
     if (!imageUrl) return '/upload.jpg'; // Placeholder nếu không có ảnh
@@ -51,6 +28,7 @@ const PropertyCard = ({ property }) => {
           <h3 className="property-title">{property.title}</h3>
           
           <div className="property-price">
+  {/* console.log("PropertyCard - price:", property.price, "unitValue:", property.priceUnit) */}
   {formatPrice(property.price, property.priceUnit)}
 </div>
 

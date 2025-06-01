@@ -36,6 +36,24 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\090c7d61-62a2-4bb8-bf97-b675623fe344_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg'))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\09a405fd-6d1f-4f50-abec-d0254171658f_download.jpg'))">
+      <SourceType>Package</SourceType>
+      <SourceId>RealEstateHubAPI</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/RealEstateHubAPI</BasePath>
+      <RelativePath>uploads/09a405fd-6d1f-4f50-abec-d0254171658f_download.jpg</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <Fingerprint>cd18qbx6ih</Fingerprint>
+      <Integrity>EFE+T7Dd0WS8f/yzOMgiWu9MvRKM5MX7FFyggc3RiQA=</Integrity>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\09a405fd-6d1f-4f50-abec-d0254171658f_download.jpg'))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\0f811b15-6934-4229-911f-7d21d14ec517_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg'))">
       <SourceType>Package</SourceType>
       <SourceId>RealEstateHubAPI</SourceId>
@@ -71,6 +89,24 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\11ab5e51-220e-4681-968e-0e1776f2d699_499571983_722159726827549_1490790694470403240_n.jpg'))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\255a95d9-297d-42bf-8959-b46ad070e935_download.jpg'))">
+      <SourceType>Package</SourceType>
+      <SourceId>RealEstateHubAPI</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/RealEstateHubAPI</BasePath>
+      <RelativePath>uploads/255a95d9-297d-42bf-8959-b46ad070e935_download.jpg</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <Fingerprint>cd18qbx6ih</Fingerprint>
+      <Integrity>EFE+T7Dd0WS8f/yzOMgiWu9MvRKM5MX7FFyggc3RiQA=</Integrity>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\255a95d9-297d-42bf-8959-b46ad070e935_download.jpg'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\32ab0d2d-922b-431d-a9da-4fa366f2d7b3_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg'))">
       <SourceType>Package</SourceType>
@@ -144,6 +180,24 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\6da615ad-bb8e-4436-af2e-821746e2f691_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg'))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\6ebe273c-0c0b-4189-9f3f-d62422415cc4_499571983_722159726827549_1490790694470403240_n.jpg'))">
+      <SourceType>Package</SourceType>
+      <SourceId>RealEstateHubAPI</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/RealEstateHubAPI</BasePath>
+      <RelativePath>uploads/6ebe273c-0c0b-4189-9f3f-d62422415cc4_499571983_722159726827549_1490790694470403240_n.jpg</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <Fingerprint>w3d8gdiz8e</Fingerprint>
+      <Integrity>XDgs9A5Op/ls1HgbtbzB3AME3QeLYeor9LiGIpq61Ws=</Integrity>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\6ebe273c-0c0b-4189-9f3f-d62422415cc4_499571983_722159726827549_1490790694470403240_n.jpg'))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\6ecd46dd-7816-49ed-a4ff-083a9e087962_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg'))">
       <SourceType>Package</SourceType>
       <SourceId>RealEstateHubAPI</SourceId>
@@ -161,6 +215,42 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\6ecd46dd-7816-49ed-a4ff-083a9e087962_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg'))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\6f1f3d1a-515f-4df4-b036-8160a73c20ef_download (1).png'))">
+      <SourceType>Package</SourceType>
+      <SourceId>RealEstateHubAPI</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/RealEstateHubAPI</BasePath>
+      <RelativePath>uploads/6f1f3d1a-515f-4df4-b036-8160a73c20ef_download (1).png</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <Fingerprint>uygdc6nsv8</Fingerprint>
+      <Integrity>Jmv14UjMC6l1OLSK7ACuiS6HAHWRotvuBQvD7eq3aHI=</Integrity>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\6f1f3d1a-515f-4df4-b036-8160a73c20ef_download (1).png'))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\6faf7b48-9560-4262-803e-ae13eadbb48e_download.jpg'))">
+      <SourceType>Package</SourceType>
+      <SourceId>RealEstateHubAPI</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/RealEstateHubAPI</BasePath>
+      <RelativePath>uploads/6faf7b48-9560-4262-803e-ae13eadbb48e_download.jpg</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <Fingerprint>cd18qbx6ih</Fingerprint>
+      <Integrity>EFE+T7Dd0WS8f/yzOMgiWu9MvRKM5MX7FFyggc3RiQA=</Integrity>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\6faf7b48-9560-4262-803e-ae13eadbb48e_download.jpg'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\705d5d60-212d-469e-8aa9-f0b71ee76f28_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg'))">
       <SourceType>Package</SourceType>
@@ -216,6 +306,24 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\98833cc1-d7d5-46b4-a9a4-2440307a2514_download.png'))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\9cd099be-3d72-4696-ac28-154e1bdeccdc_download.png'))">
+      <SourceType>Package</SourceType>
+      <SourceId>RealEstateHubAPI</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/RealEstateHubAPI</BasePath>
+      <RelativePath>uploads/9cd099be-3d72-4696-ac28-154e1bdeccdc_download.png</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <Fingerprint>gcq54fc8lk</Fingerprint>
+      <Integrity>YAtK4hgmyhXuC4lmA/RhHRWMYDcFkPQ7+NU4Ax9m1Ec=</Integrity>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\9cd099be-3d72-4696-ac28-154e1bdeccdc_download.png'))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\a1006e0e-abda-444a-a129-02533f4abe25_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg'))">
       <SourceType>Package</SourceType>
       <SourceId>RealEstateHubAPI</SourceId>
@@ -251,6 +359,24 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\c4932bfa-a19b-4eee-b7f9-102b50f9f6ec_download.png'))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\e3ad66e8-ad06-4837-a83f-6c5b2c6a828d_download.png'))">
+      <SourceType>Package</SourceType>
+      <SourceId>RealEstateHubAPI</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/RealEstateHubAPI</BasePath>
+      <RelativePath>uploads/e3ad66e8-ad06-4837-a83f-6c5b2c6a828d_download.png</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <Fingerprint>gcq54fc8lk</Fingerprint>
+      <Integrity>YAtK4hgmyhXuC4lmA/RhHRWMYDcFkPQ7+NU4Ax9m1Ec=</Integrity>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\e3ad66e8-ad06-4837-a83f-6c5b2c6a828d_download.png'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\e3b681dd-64cb-4a0e-9541-7ef88d423b07_499571983_722159726827549_1490790694470403240_n.jpg'))">
       <SourceType>Package</SourceType>

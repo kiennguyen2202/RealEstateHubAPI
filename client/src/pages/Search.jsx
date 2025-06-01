@@ -216,7 +216,7 @@ function Search() {
                   <div
                     key={post.id}
                     className="border rounded-lg overflow-hidden hover:shadow-lg transition cursor-pointer"
-                    onClick={() => navigate(`/posts/${post.id}`)}
+                    onClick={() => navigate(`/chi-tiet/${post.id}`)}
                   >
                     <img
                       src={

@@ -41,7 +41,7 @@ function ReportPost() {
     try {
       await axiosPrivate.post(`/api/posts/${id}/report`, formData);
       alert("Báo cáo đã được gửi thành công");
-      navigate(`/posts/${id}`);
+      navigate(`/chi-tiet/${id}`);
     } catch (err) {
       console.error(err);
       alert("Không thể gửi báo cáo");

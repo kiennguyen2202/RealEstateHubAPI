@@ -1,9 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import axiosPrivate from "../api/axiosPrivate";
+import axiosClient from "../api/axiosClient";
 import { useAuth } from "../auth/AuthContext";
+import {
+  FaHome, FaRuler, FaMapMarkerAlt, FaUser,
+  FaPhone, FaEnvelope, FaEdit, FaTrash, FaExclamationTriangle
+} from "react-icons/fa";
+import "./PostDetail.css";
+import { PriceUnit, formatPrice } from '../utils/priceUtils';
 
-function PostDetail() {
+const PostDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -11,34 +17,56 @@ function PostDetail() {
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [isEditing, setIsEditing] = useState(location.search.includes('edit=true'));
+  const [selectedImage, setSelectedImage] = useState(0);
+  const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({
-    Title: "",
-    Description: "",
-    Price: "",
-    Status: "",
-    AreaSize: "",
-    StreetName: "",
-    CategoryId: "",
-    AreaId: ""
+    title: "",
+    description: "",
+    price: "",
+    priceUnit: "",
+    area_Size: "",
+    street_Name: "",
+    address: "",
+    categoryId: "",
+    areaId: "",
+    status: ""
   });
   const [categories, setCategories] = useState([]);
   const [areas, setAreas] = useState([]);
 
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [categoriesRes, areasRes] = await Promise.all([
+          axiosClient.get('/api/categories'),
+          axiosClient.get('/api/areas')
+        ]);
+        setCategories(categoriesRes.data);
+        setAreas(areasRes.data);
+      } catch (err) {
+        console.error('Error fetching data:', err);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
     const fetchPost = async () => {
       try {
-        const response = await axiosPrivate.get(`/api/posts/${id}`);
+        const response = await axiosClient.get(`/api/posts/${id}`);
         setPost(response.data);
         setEditForm({
-          Title: response.data.title,
-          Description: response.data.description,
-          Price: response.data.price,
-          Status: response.data.status,
-          AreaSize: response.data.area_Size,
-          StreetName: response.data.street_Name,
-          CategoryId: response.data.categoryId,
-          AreaId: response.data.areaId
+          title: response.data.title,
+          description: response.data.description,
+          price: response.data.price,
+          priceUnit: response.data.priceUnit,
+          area_Size: response.data.area_Size,
+          street_Name: response.data.street_Name,
+          address: response.data.address,
+          categoryId: response.data.categoryId,
+          areaId: response.data.areaId,
+          status: response.data.status
         });
       } catch (err) {
         setError("Không thể tải thông tin bài viết");
@@ -48,205 +76,370 @@ function PostDetail() {
       }
     };
 
-    const fetchData = async () => {
-      try {
-        const [categoriesRes, areasRes] = await Promise.all([
-          axiosPrivate.get("/api/categories"),
-          axiosPrivate.get("/api/areas")
-        ]);
-        setCategories(categoriesRes.data);
-        setAreas(areasRes.data);
-      } catch (err) {
-        console.error("Error fetching data:", err);
-      }
-    };
-
     fetchPost();
-    fetchData();
   }, [id]);
 
-  const handleEdit = async (e) => {
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    setIsEditing(searchParams.get("edit") === "true");
+  }, [location]);
+
+  const handleEditSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axiosPrivate.put(`/api/posts/${id}`, editForm);
-      setPost(response.data);
+      // Log the current form data for debugging
+      console.log('Current editForm:', editForm);
+
+      const postData = {
+        id: parseInt(id),
+        title: editForm.title,
+        description: editForm.description,
+        price: parseFloat(editForm.price),
+        priceUnit: parseInt(editForm.priceUnit),
+        status: editForm.status,
+        street_Name: editForm.street_Name,
+        area_Size: parseFloat(editForm.area_Size),
+        categoryId: parseInt(editForm.categoryId),
+        areaId: parseInt(editForm.areaId),
+        userId: post.userId
+      };
+
+      // Log the formatted data being sent
+      console.log('Sending data to server:', postData);
+
+      const response = await axiosClient.put(`/api/posts/${id}`, postData);
+      console.log('Server response:', response.data);
+
+      // Refresh the post data
+      const updatedPost = await axiosClient.get(`/api/posts/${id}`);
+      setPost(updatedPost.data);
       setIsEditing(false);
-      alert("Cập nhật bài viết thành công!");
+      navigate(`/chi-tiet/${id}`);
     } catch (err) {
-      setError("Không thể cập nhật bài viết");
-      console.error(err);
+      console.error('Error updating post:', err);
+      if (err.response) {
+        console.error('Error response data:', err.response.data);
+        console.error('Error response status:', err.response.status);
+        alert(err.response.data.message || "Không thể cập nhật bài viết");
+      } else {
+        alert("Không thể cập nhật bài viết");
+      }
     }
   };
 
   const handleDelete = async () => {
     if (window.confirm("Bạn có chắc chắn muốn xóa bài viết này?")) {
       try {
-        await axiosPrivate.delete(`/api/posts/${id}`);
-        alert("Xóa bài viết thành công!");
+        await axiosClient.delete(`/api/posts/${id}`);
         navigate("/");
       } catch (err) {
-        setError("Không thể xóa bài viết");
         console.error(err);
+        alert("Không thể xóa bài viết");
       }
     }
   };
 
-  if (loading) return <div className="text-center p-4">Đang tải...</div>;
-  if (error) return <div className="text-center text-red-500 p-4">{error}</div>;
-  if (!post) return <div className="text-center p-4">Không tìm thấy bài viết</div>;
+  if (loading) {
+    return (
+      <div className="loading-spinner">
+        <div className="spinner"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="error-message">
+        <FaExclamationTriangle className="mr-2" />
+        {error}
+      </div>
+    );
+  }
+
+  if (!post) {
+    return (
+      <div className="error-message">
+        <FaExclamationTriangle className="mr-2" />
+        Không tìm thấy bài viết
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8">
-      <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6">
-        {isEditing ? (
-          <form onSubmit={handleEdit} className="space-y-4">
-            <input
-              type="text"
-              value={editForm.Title}
-              onChange={(e) => setEditForm({ ...editForm, Title: e.target.value })}
-              className="w-full p-2 border rounded"
-              placeholder="Tiêu đề"
-              required
-            />
-            <textarea
-              value={editForm.Description}
-              onChange={(e) => setEditForm({ ...editForm, Description: e.target.value })}
-              className="w-full p-2 border rounded"
-              placeholder="Mô tả"
-              required
-            />
-            <input
-              type="number"
-              value={editForm.Price}
-              onChange={(e) => setEditForm({ ...editForm, Price: e.target.value })}
-              className="w-full p-2 border rounded"
-              placeholder="Giá"
-              required
-            />
-            <input
-              type="text"
-              value={editForm.Status}
-              onChange={(e) => setEditForm({ ...editForm, Status: e.target.value })}
-              className="w-full p-2 border rounded"
-              placeholder="Trạng thái"
-              required
-            />
-            <input
-              type="number"
-              value={editForm.AreaSize}
-              onChange={(e) => setEditForm({ ...editForm, AreaSize: e.target.value })}
-              className="w-full p-2 border rounded"
-              placeholder="Diện tích"
-              required
-            />
-            <input
-              type="text"
-              value={editForm.StreetName}
-              onChange={(e) => setEditForm({ ...editForm, StreetName: e.target.value })}
-              className="w-full p-2 border rounded"
-              placeholder="Tên đường"
-              required
-            />
-            <select
-              value={editForm.CategoryId}
-              onChange={(e) => setEditForm({ ...editForm, CategoryId: e.target.value })}
-              className="w-full p-2 border rounded"
-              required
-            >
-              <option value="">Chọn loại bất động sản</option>
-              {categories.map(category => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-            <select
-              value={editForm.AreaId}
-              onChange={(e) => setEditForm({ ...editForm, AreaId: e.target.value })}
-              className="w-full p-2 border rounded"
-              required
-            >
-              <option value="">Chọn khu vực</option>
-              {areas.map(area => (
-                <option key={area.id} value={area.id}>
-                  {area.city} - {area.district} - {area.ward}
-                </option>
-              ))}
-            </select>
-            <div className="flex space-x-4">
-              <button
-                type="submit"
-                className="flex-1 bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-              >
-                Lưu thay đổi
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsEditing(false)}
-                className="flex-1 bg-gray-500 text-white p-2 rounded hover:bg-gray-600"
-              >
-                Hủy
-              </button>
+    <div className="property-detail">
+      {/* Header */}
+      <div className="property-header">
+        <div className="property-content">
+          <h1 className="property-title">{post.title}</h1>
+          <div className="property-meta">
+            <div className="property-meta-item">
+              <FaMapMarkerAlt />
+              <span>{post.street_Name}, {post.area?.city}, {post.area?.ward}, {post.area?.district}</span>
             </div>
-          </form>
-        ) : (
-          <>
-            <div className="mb-6">
-              <h1 className="text-3xl font-bold mb-2">{post.title}</h1>
-              <p className="text-gray-600 mb-4">{post.description}</p>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="font-semibold">Giá: {post.price} VNĐ</p>
-                  <p className="font-semibold">Trạng thái: {post.status}</p>
-                  <p className="font-semibold">Diện tích: {post.area_Size} m²</p>
-                  <p className="font-semibold">Địa chỉ: {post.street_Name}</p>
-                </div>
-                <div>
-                  <p className="font-semibold">Khu vực: {post.area?.city} - {post.area?.district} - {post.area?.ward}</p>
-                  <p className="font-semibold">Loại: {post.category?.name}</p>
-                  <p className="font-semibold">Ngày đăng: {new Date(post.created).toLocaleDateString()}</p>
-                  <p className="font-semibold">Người đăng: {post.user?.name}</p>
-                </div>
-              </div>
+            <div className="property-meta-item">
+              <FaRuler />
+              <span>{post.area_Size} m²</span>
             </div>
+            <div className="property-meta-item">
+              <FaHome />
+              <span>{post.category?.name}</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
-            {post.images && post.images.length > 0 && (
-              <div className="mb-6">
-                <h2 className="text-xl font-bold mb-4">Hình ảnh</h2>
-                <div className="grid grid-cols-3 gap-4">
-                  {post.images.map((image, index) => (
+      {/* Main Content */}
+      <div className="property-content">
+        <div className="property-grid">
+          {/* Left Column - Images */}
+          <div className="property-images">
+            <img
+              src={
+                post.images && post.images.length > 0
+                  ? `http://localhost:5134${post.images[selectedImage].url}`
+                  : "https://via.placeholder.com/800x500?text=No+Image"
+              }
+              alt={post.title}
+              className="main-image"
+            />
+            {post.images && post.images.length > 1 && (
+              <div className="thumbnail-grid">
+                {post.images.map((image, index) => (
+                  <div
+                    key={index}
+                    className={`thumbnail ${selectedImage === index ? "selected" : ""}`}
+                    onClick={() => setSelectedImage(index)}
+                  >
                     <img
-                      key={index}
-                      src={image.url}
-                      alt={`Hình ảnh ${index + 1}`}
-                      className="w-full h-48 object-cover rounded"
+                      src={`http://localhost:5134${image.url}`}
+                      alt={`${post.title} - ${index + 1}`}
                     />
-                  ))}
-                </div>
+                  </div>
+                ))}
               </div>
             )}
+          </div>
+
+          {/* Right Column - Info */}
+          <div className="property-info">
+            <div className="price-tag">
+              {/* console.log("PostDetail - price:", post.price, "unitValue:", post.priceUnit) */}
+              {formatPrice(post.price, post.priceUnit)}
+            </div>
+            <div className={`status-badge ${post.status.toLowerCase()}`}>
+              {post.status === "ForSale" ? "Cần bán" : "Cho thuê"}
+            </div>
+
+            <div className="info-section">
+              <h3>Thông tin chi tiết</h3>
+              <div className="info-grid">
+                <div className="info-item">
+                  <FaHome />
+                  <span>Loại: {post.category?.name}</span>
+                </div>
+                <div className="info-item">
+                  <FaRuler />
+                  <span>Diện tích: {post.area_Size} m²</span>
+                </div>
+                {/* <div className="info-item">
+                  <FaMapMarkerAlt />
+                  <span>Địa chỉ: {post.address}</span>
+                </div> */}
+                <div className="info-item">
+                  <FaUser />
+                  <span>Người đăng: {post.user?.name}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="description">
+              <h3>Mô tả</h3>
+              <p>{post.description}</p>
+            </div>
+
+            <div className="contact-section">
+              <h3>Liên hệ</h3>
+              <div className="info-grid">
+                <div className="info-item">
+                  <FaUser />
+                  <span>{post.user?.name}</span>
+                </div>
+                <div className="info-item">
+                  <FaPhone />
+                  <span>{post.user?.phone}</span>
+                </div>
+                <div className="info-item">
+                  <FaEnvelope />
+                  <span>{post.user?.email}</span>
+                </div>
+              </div>
+            </div>
 
             {user && (user.id === post.userId || user.role === "Admin") && (
-              <div className="flex space-x-4">
+              <div className="action-buttons">
                 <button
+                  className="edit-button"
                   onClick={() => setIsEditing(true)}
-                  className="flex-1 bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
                 >
+                  <FaEdit className="mr-2" />
                   Chỉnh sửa
                 </button>
                 <button
+                  className="delete-button"
                   onClick={handleDelete}
-                  className="flex-1 bg-red-500 text-white p-2 rounded hover:bg-red-600"
                 >
+                  <FaTrash className="mr-2" />
                   Xóa
                 </button>
               </div>
             )}
-          </>
-        )}
+          </div>
+        </div>
       </div>
+
+      {/* Edit Form Modal */}
+      {isEditing && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h2 className="text-2xl font-bold">Chỉnh sửa bài viết</h2>
+              <button 
+                onClick={() => setIsEditing(false)}
+                className="close-button"
+              >
+                ×
+              </button>
+            </div>
+            <form onSubmit={handleEditSubmit} className="modal-form">
+              <div className="form-group">
+                <label className="form-label">Tiêu đề</label>
+                <input
+                  type="text"
+                  value={editForm.title}
+                  onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                  className="form-input"
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Mô tả</label>
+                <textarea
+                  value={editForm.description}
+                  onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                  className="form-input"
+                  rows="4"
+                  required
+                />
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label className="form-label">Giá</label>
+                  <input
+                    type="number"
+                    value={editForm.price}
+                    onChange={(e) => setEditForm({ ...editForm, price: e.target.value })}
+                    className="form-input"
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Đơn vị</label>
+                  <select
+                    value={editForm.priceUnit}
+                    onChange={(e) => setEditForm({ ...editForm, priceUnit: e.target.value })}
+                    className="form-input"
+                    required
+                  >
+                    <option value={PriceUnit.Triệu}>Triệu</option>
+                    <option value={PriceUnit.Tỷ}>Tỷ</option>
+                  </select>
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label className="form-label">Diện tích (m²)</label>
+                  <input
+                    type="number"
+                    value={editForm.area_Size}
+                    onChange={(e) => setEditForm({ ...editForm, area_Size: e.target.value })}
+                    className="form-input"
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Tên đường</label>
+                  <input
+                    type="text"
+                    value={editForm.street_Name}
+                    onChange={(e) => setEditForm({ ...editForm, street_Name: e.target.value })}
+                    className="form-input"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label className="form-label">Loại bất động sản</label>
+                  <select
+                    value={editForm.categoryId}
+                    onChange={(e) => setEditForm({ ...editForm, categoryId: e.target.value })}
+                    className="form-input"
+                    required
+                  >
+                    <option value="">-- Chọn loại --</option>
+                    {categories.map(category => (
+                      <option key={category.id} value={category.id}>{category.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Khu vực</label>
+                  <select
+                    value={editForm.areaId}
+                    onChange={(e) => setEditForm({ ...editForm, areaId: e.target.value })}
+                    className="form-input"
+                    required
+                  >
+                    <option value="">-- Chọn khu vực --</option>
+                    {areas.map(area => (
+                      <option key={area.id} value={area.id}>{`${area.ward}, ${area.district}, ${area.city}`}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="form-group">
+                <label className="form-label">Trạng thái</label>
+                <select
+                  value={editForm.status}
+                  onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
+                  className="form-input"
+                  required
+                >
+                  <option value="ForSale">Cần bán</option>
+                  <option value="ForRent">Cho thuê</option>
+                </select>
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  onClick={() => setIsEditing(false)}
+                  className="cancel-button"
+                >
+                  Hủy
+                </button>
+                <button
+                  type="submit"
+                  className="submit-button"
+                >
+                  Lưu thay đổi
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
-}
+};
 
-export default PostDetail; 
+export default PostDetail;

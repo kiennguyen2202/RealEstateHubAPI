@@ -23,10 +23,8 @@ const HomePage = () => {
     try {
       setLoading(true);
       setError(null);
-      // Sử dụng endpoint /all khi không có filter
-      const endpoint = Object.values(filters).some(value => value) 
-        ? '/posts' 
-        : '/posts/all';
+      // Sử dụng endpoint /posts khi không có filter
+      const endpoint = '/api/posts';
       
       const response = await axiosClient.get(endpoint, {
         params: Object.values(filters).some(value => value) ? filters : {}

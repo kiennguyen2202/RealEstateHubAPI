@@ -209,7 +209,7 @@ function Profile() {
                     </div>
                     <div className="flex gap-2">
                       <button
-                        onClick={() => navigate(`/posts/${post.id}?edit=true`)}
+                        onClick={() => navigate(`/chi-tiet/${post.id}?edit=true`)}
                         className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600"
                       >
                         Sửa
