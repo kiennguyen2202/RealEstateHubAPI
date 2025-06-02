@@ -8,7 +8,7 @@ namespace RealEstateHubAPI.Controllers
 {
     [Route("api/areas")]
     [ApiController]
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
     public class AreaController : ControllerBase
     {
         private readonly IAreaRepository _areaReposiory;
@@ -48,7 +48,7 @@ namespace RealEstateHubAPI.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-       
+
         [HttpPost]
         public async Task<IActionResult> AddArea([FromBody] Area area)
         {
@@ -66,7 +66,7 @@ namespace RealEstateHubAPI.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-        
+
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateArea(int id, [FromBody] Area area)
         {
@@ -83,7 +83,7 @@ namespace RealEstateHubAPI.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-      
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteArea(int id)
         {

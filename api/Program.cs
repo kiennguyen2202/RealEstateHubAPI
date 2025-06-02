@@ -5,7 +5,7 @@ using RealEstateHubAPI.Model;
 using RealEstateHubAPI.Repositories;
 using RealEstateHubAPI.Services;
 using System.Text;
-using RealEstateHubAPI.Data;
+
 using RealEstateHubAPI.Models;
 
 var builder = WebApplication.CreateBuilder(args);

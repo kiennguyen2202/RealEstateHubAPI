@@ -1,6 +1,10 @@
 {
   "Files": [
     {
+      "Id": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\05b8c272-25d9-407a-8917-ee328fb555db_download.png",
+      "PackagePath": "staticwebassets\\uploads\\05b8c272-25d9-407a-8917-ee328fb555db_download.png"
+    },
+    {
       "Id": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\076a3668-20c7-4ac5-81bb-66d828c4d1c5_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
       "PackagePath": "staticwebassets\\uploads\\076a3668-20c7-4ac5-81bb-66d828c4d1c5_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg"
     },
@@ -61,6 +65,10 @@
       "PackagePath": "staticwebassets\\uploads\\705d5d60-212d-469e-8aa9-f0b71ee76f28_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg"
     },
     {
+      "Id": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\79c68b1b-7b93-4d0b-8938-7056cef77980_download.jpg",
+      "PackagePath": "staticwebassets\\uploads\\79c68b1b-7b93-4d0b-8938-7056cef77980_download.jpg"
+    },
+    {
       "Id": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\81533998-f4c5-45b0-9077-94eac99a809f_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
       "PackagePath": "staticwebassets\\uploads\\81533998-f4c5-45b0-9077-94eac99a809f_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg"
     },
@@ -73,8 +81,16 @@
       "PackagePath": "staticwebassets\\uploads\\9cd099be-3d72-4696-ac28-154e1bdeccdc_download.png"
     },
     {
+      "Id": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\9d4cc4da-8636-4457-82b4-695bc881c335_download (1).png",
+      "PackagePath": "staticwebassets\\uploads\\9d4cc4da-8636-4457-82b4-695bc881c335_download (1).png"
+    },
+    {
       "Id": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\a1006e0e-abda-444a-a129-02533f4abe25_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
       "PackagePath": "staticwebassets\\uploads\\a1006e0e-abda-444a-a129-02533f4abe25_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg"
+    },
+    {
+      "Id": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\a9480cf6-6114-4891-9c89-5a3ce0026f62_download (1).png",
+      "PackagePath": "staticwebassets\\uploads\\a9480cf6-6114-4891-9c89-5a3ce0026f62_download (1).png"
     },
     {
       "Id": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\c4932bfa-a19b-4eee-b7f9-102b50f9f6ec_download.png",
@@ -87,6 +103,10 @@
     {
       "Id": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\e3b681dd-64cb-4a0e-9541-7ef88d423b07_499571983_722159726827549_1490790694470403240_n.jpg",
       "PackagePath": "staticwebassets\\uploads\\e3b681dd-64cb-4a0e-9541-7ef88d423b07_499571983_722159726827549_1490790694470403240_n.jpg"
+    },
+    {
+      "Id": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\e9f83a7d-f9a3-42f6-a65b-97cf5d560ed0_download (1).png",
+      "PackagePath": "staticwebassets\\uploads\\e9f83a7d-f9a3-42f6-a65b-97cf5d560ed0_download (1).png"
     },
     {
       "Id": "obj\\Debug\\net9.0\\staticwebassets\\msbuild.RealEstateHubAPI.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",

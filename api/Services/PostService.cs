@@ -87,10 +87,10 @@ namespace RealEstateHubAPI.Services
             }
 
             // Filter theo Area
-            if (!string.IsNullOrEmpty(area))
-            {
-                query = query.Where(p => p.Area.City == area);
-            }
+            //if (!string.IsNullOrEmpty(area))
+            //{
+            //    query = query.Where(p => p.Area.City == area);
+            //}
 
             // Filter theo PriceRange
             if (!string.IsNullOrEmpty(priceRange))

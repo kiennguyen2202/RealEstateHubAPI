@@ -10,7 +10,12 @@ namespace RealEstateHubAPI.Model
         options) : base(options)
         { }
         public DbSet<Area> Areas { get; set; }
-         public DbSet<User> Users { get; set; }
+        public DbSet<City> Cities { get; set; }
+        public DbSet<District> Districts { get; set; }
+        public DbSet<Ward> Wards { get; set; }
+
+
+        public DbSet<User> Users { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Post> Posts { get; set; }
         public DbSet<PostImage> PostImages { get; set; }
@@ -37,6 +42,7 @@ namespace RealEstateHubAPI.Model
                 .WithMany()
                 .HasForeignKey(p => p.CategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
+
 
 
             modelBuilder.Entity<Post>()
@@ -70,6 +76,9 @@ namespace RealEstateHubAPI.Model
                 .WithMany()
                 .HasForeignKey(m => m.ReceiverId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            
+           
 
         }
     }

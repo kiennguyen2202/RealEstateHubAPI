@@ -28,7 +28,9 @@ namespace RealEstateHubAPI.Controllers
             {
                 var posts = await _context.Posts
                     .Include(p => p.Category)
+                   
                     .Include(p => p.Area)
+                    
                     .Include(p => p.User)
                     .Include(p => p.Images)
                     .ToListAsync();
@@ -37,7 +39,8 @@ namespace RealEstateHubAPI.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Internal server error.");
+                // Log lỗi chi tiết hơn trong môi trường phát triển
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
 
@@ -49,7 +52,9 @@ namespace RealEstateHubAPI.Controllers
             {
                 var post = await _context.Posts
                     .Include(p => p.Category)
+                    // Giữ Include Area và các thành phần của nó cho GetById
                     .Include(p => p.Area)
+                    
                     .Include(p => p.User)
                     .Include(p => p.Images)
                     .FirstOrDefaultAsync(p => p.Id == id);
@@ -61,7 +66,8 @@ namespace RealEstateHubAPI.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Internal server error.");
+                // Log lỗi chi tiết hơn trong môi trường phát triển
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
 
@@ -76,6 +82,7 @@ namespace RealEstateHubAPI.Controllers
                     Title = dto.Title,
                     Description = dto.Description,
                     Price = dto.Price,
+                    TransactionType=dto.TransactionType,
                     PriceUnit = dto.PriceUnit,
                     Status = dto.Status,
                     Street_Name = dto.Street_Name,
@@ -130,6 +137,7 @@ namespace RealEstateHubAPI.Controllers
             post.Description = updatePost.Description;
             post.Price = updatePost.Price;
             post.PriceUnit = updatePost.PriceUnit;
+            post.TransactionType = updatePost.TransactionType;
             post.Status = updatePost.Status;
             post.Street_Name = updatePost.Street_Name;
             post.Area_Size = updatePost.Area_Size;
@@ -156,6 +164,67 @@ namespace RealEstateHubAPI.Controllers
 
             await _context.SaveChangesAsync();
             return NoContent();
+        }
+        [HttpGet("search")] 
+        public async Task<ActionResult<IEnumerable<Post>>> SearchPosts(
+            
+            [FromQuery] int? categoryId,
+            [FromQuery] string status,
+            [FromQuery] decimal? minPrice,
+            [FromQuery] decimal? maxPrice,
+            [FromQuery] decimal? minArea,
+            [FromQuery] decimal? maxArea,
+            [FromQuery] int? cityId,
+            [FromQuery] int? districtId,
+            [FromQuery] int? wardId,
+            [FromQuery] string q)
+        {
+            try
+            {
+                var query = _context.Posts
+                    .Include(p => p.Category)
+                    .Include(p => p.Area)
+                    
+                    .Include(p => p.User)
+                    .AsQueryable();
+
+                // Apply filters
+                if (categoryId.HasValue)
+                    query = query.Where(p => p.CategoryId == categoryId);
+
+                if (!string.IsNullOrEmpty(status))
+                    query = query.Where(p => p.Status == status);
+
+                if (minPrice.HasValue)
+                    query = query.Where(p => p.Price >= minPrice);
+
+                if (maxPrice.HasValue)
+                    query = query.Where(p => p.Price <= maxPrice);
+
+                if (minArea.HasValue)
+                    query = query.Where(p => p.Area_Size >= (float)minArea);
+
+                if (maxArea.HasValue)
+                    query = query.Where(p => p.Area_Size <= (float)maxArea);
+
+               
+
+                if (!string.IsNullOrEmpty(q))
+                {
+                    query = query.Where(p =>
+                        p.Title.Contains(q) ||
+                        p.Description.Contains(q) ||
+                        p.Street_Name.Contains(q) 
+                    );
+                }
+
+                var posts = await query.ToListAsync();
+                return Ok(posts);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
     }
 }

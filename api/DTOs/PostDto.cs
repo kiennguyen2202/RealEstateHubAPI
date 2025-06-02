@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using RealEstateHubAPI.Model;
 using System.ComponentModel.DataAnnotations;
+using RealEstateHubAPI.Migrations;
+using RealEstateHubAPI.Models;
 
 namespace RealEstateHubAPI.DTOs
 {
@@ -16,6 +18,8 @@ namespace RealEstateHubAPI.DTOs
         
         [Required]
         public PriceUnit PriceUnit { get; set; }
+        [Required]
+        public TransactionType TransactionType  { get; set; }
         [Required]
         public string Status { get; set; }
         [Required]

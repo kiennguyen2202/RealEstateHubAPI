@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("RealEstateHubAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5362b1b118909176ce503d2341555914a1653509")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8748bd2ab4db298a00e99db201cd65fbc5830a75")]
 [assembly: System.Reflection.AssemblyProductAttribute("RealEstateHubAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("RealEstateHubAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

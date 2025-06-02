@@ -5,7 +5,7 @@
 namespace RealEstateHubAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class TransactionType : Migration
+    public partial class zTransactionType : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

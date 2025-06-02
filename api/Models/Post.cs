@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
 using RealEstateHubAPI.Models;
 
 namespace RealEstateHubAPI.Model
@@ -11,9 +13,11 @@ namespace RealEstateHubAPI.Model
         public int Id { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
+        
         public decimal Price { get; set; }
         
         public PriceUnit PriceUnit { get; set; }
+       
         public TransactionType TransactionType { get; set; }
         public string Status { get; set; }
         public DateTime Created { get; set; } = DateTime.Now;

@@ -1,5 +1,17 @@
 ﻿<Project>
   <ItemGroup>
+    <StaticWebAssetEndpoint Include="_content/RealEstateHubAPI/uploads/05b8c272-25d9-407a-8917-ee328fb555db_download.gcq54fc8lk.png">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\05b8c272-25d9-407a-8917-ee328fb555db_download.png'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"gcq54fc8lk"},{"Name":"integrity","Value":"sha256-YAtK4hgmyhXuC4lmA/RhHRWMYDcFkPQ7\u002BNU4Ax9m1Ec="},{"Name":"label","Value":"_content/RealEstateHubAPI/uploads/05b8c272-25d9-407a-8917-ee328fb555db_download.png"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"1900"},{"Name":"Content-Type","Value":"image/png"},{"Name":"ETag","Value":"\u0022YAtK4hgmyhXuC4lmA/RhHRWMYDcFkPQ7\u002BNU4Ax9m1Ec=\u0022"},{"Name":"Last-Modified","Value":"Sun, 01 Jun 2025 12:49:36 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/RealEstateHubAPI/uploads/05b8c272-25d9-407a-8917-ee328fb555db_download.png">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\05b8c272-25d9-407a-8917-ee328fb555db_download.png'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-YAtK4hgmyhXuC4lmA/RhHRWMYDcFkPQ7\u002BNU4Ax9m1Ec="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=3600, must-revalidate"},{"Name":"Content-Length","Value":"1900"},{"Name":"Content-Type","Value":"image/png"},{"Name":"ETag","Value":"\u0022YAtK4hgmyhXuC4lmA/RhHRWMYDcFkPQ7\u002BNU4Ax9m1Ec=\u0022"},{"Name":"Last-Modified","Value":"Sun, 01 Jun 2025 12:49:36 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
     <StaticWebAssetEndpoint Include="_content/RealEstateHubAPI/uploads/076a3668-20c7-4ac5-81bb-66d828c4d1c5_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.6sxw6pw28q.jpg">
       <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\076a3668-20c7-4ac5-81bb-66d828c4d1c5_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg'))</AssetFile>
       <Selectors><![CDATA[[]]]></Selectors>
@@ -180,6 +192,18 @@
       <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-\u002BkLWr8JR4nfgXyEvHG47GVqvHLGrIx9zpjzA1ai6zd4="}]]]></EndpointProperties>
       <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=3600, must-revalidate"},{"Name":"Content-Length","Value":"114778"},{"Name":"Content-Type","Value":"image/jpeg"},{"Name":"ETag","Value":"\u0022\u002BkLWr8JR4nfgXyEvHG47GVqvHLGrIx9zpjzA1ai6zd4=\u0022"},{"Name":"Last-Modified","Value":"Mon, 19 May 2025 14:55:18 GMT"}]]]></ResponseHeaders>
     </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/RealEstateHubAPI/uploads/79c68b1b-7b93-4d0b-8938-7056cef77980_download.cd18qbx6ih.jpg">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\79c68b1b-7b93-4d0b-8938-7056cef77980_download.jpg'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"cd18qbx6ih"},{"Name":"integrity","Value":"sha256-EFE\u002BT7Dd0WS8f/yzOMgiWu9MvRKM5MX7FFyggc3RiQA="},{"Name":"label","Value":"_content/RealEstateHubAPI/uploads/79c68b1b-7b93-4d0b-8938-7056cef77980_download.jpg"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"3964"},{"Name":"Content-Type","Value":"image/jpeg"},{"Name":"ETag","Value":"\u0022EFE\u002BT7Dd0WS8f/yzOMgiWu9MvRKM5MX7FFyggc3RiQA=\u0022"},{"Name":"Last-Modified","Value":"Sun, 01 Jun 2025 13:25:11 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/RealEstateHubAPI/uploads/79c68b1b-7b93-4d0b-8938-7056cef77980_download.jpg">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\79c68b1b-7b93-4d0b-8938-7056cef77980_download.jpg'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-EFE\u002BT7Dd0WS8f/yzOMgiWu9MvRKM5MX7FFyggc3RiQA="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=3600, must-revalidate"},{"Name":"Content-Length","Value":"3964"},{"Name":"Content-Type","Value":"image/jpeg"},{"Name":"ETag","Value":"\u0022EFE\u002BT7Dd0WS8f/yzOMgiWu9MvRKM5MX7FFyggc3RiQA=\u0022"},{"Name":"Last-Modified","Value":"Sun, 01 Jun 2025 13:25:11 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
     <StaticWebAssetEndpoint Include="_content/RealEstateHubAPI/uploads/81533998-f4c5-45b0-9077-94eac99a809f_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.6sxw6pw28q.jpg">
       <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\81533998-f4c5-45b0-9077-94eac99a809f_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg'))</AssetFile>
       <Selectors><![CDATA[[]]]></Selectors>
@@ -216,6 +240,18 @@
       <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-YAtK4hgmyhXuC4lmA/RhHRWMYDcFkPQ7\u002BNU4Ax9m1Ec="}]]]></EndpointProperties>
       <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=3600, must-revalidate"},{"Name":"Content-Length","Value":"1900"},{"Name":"Content-Type","Value":"image/png"},{"Name":"ETag","Value":"\u0022YAtK4hgmyhXuC4lmA/RhHRWMYDcFkPQ7\u002BNU4Ax9m1Ec=\u0022"},{"Name":"Last-Modified","Value":"Sat, 31 May 2025 08:06:07 GMT"}]]]></ResponseHeaders>
     </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/RealEstateHubAPI/uploads/9d4cc4da-8636-4457-82b4-695bc881c335_download (1).png">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\9d4cc4da-8636-4457-82b4-695bc881c335_download (1).png'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-Jmv14UjMC6l1OLSK7ACuiS6HAHWRotvuBQvD7eq3aHI="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=3600, must-revalidate"},{"Name":"Content-Length","Value":"2061"},{"Name":"Content-Type","Value":"image/png"},{"Name":"ETag","Value":"\u0022Jmv14UjMC6l1OLSK7ACuiS6HAHWRotvuBQvD7eq3aHI=\u0022"},{"Name":"Last-Modified","Value":"Sun, 01 Jun 2025 12:38:27 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/RealEstateHubAPI/uploads/9d4cc4da-8636-4457-82b4-695bc881c335_download (1).uygdc6nsv8.png">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\9d4cc4da-8636-4457-82b4-695bc881c335_download (1).png'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"uygdc6nsv8"},{"Name":"integrity","Value":"sha256-Jmv14UjMC6l1OLSK7ACuiS6HAHWRotvuBQvD7eq3aHI="},{"Name":"label","Value":"_content/RealEstateHubAPI/uploads/9d4cc4da-8636-4457-82b4-695bc881c335_download (1).png"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"2061"},{"Name":"Content-Type","Value":"image/png"},{"Name":"ETag","Value":"\u0022Jmv14UjMC6l1OLSK7ACuiS6HAHWRotvuBQvD7eq3aHI=\u0022"},{"Name":"Last-Modified","Value":"Sun, 01 Jun 2025 12:38:27 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
     <StaticWebAssetEndpoint Include="_content/RealEstateHubAPI/uploads/a1006e0e-abda-444a-a129-02533f4abe25_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.6sxw6pw28q.jpg">
       <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\a1006e0e-abda-444a-a129-02533f4abe25_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg'))</AssetFile>
       <Selectors><![CDATA[[]]]></Selectors>
@@ -227,6 +263,18 @@
       <Selectors><![CDATA[[]]]></Selectors>
       <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-\u002BkLWr8JR4nfgXyEvHG47GVqvHLGrIx9zpjzA1ai6zd4="}]]]></EndpointProperties>
       <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=3600, must-revalidate"},{"Name":"Content-Length","Value":"114778"},{"Name":"Content-Type","Value":"image/jpeg"},{"Name":"ETag","Value":"\u0022\u002BkLWr8JR4nfgXyEvHG47GVqvHLGrIx9zpjzA1ai6zd4=\u0022"},{"Name":"Last-Modified","Value":"Sun, 18 May 2025 04:47:00 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/RealEstateHubAPI/uploads/a9480cf6-6114-4891-9c89-5a3ce0026f62_download (1).png">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\a9480cf6-6114-4891-9c89-5a3ce0026f62_download (1).png'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-Jmv14UjMC6l1OLSK7ACuiS6HAHWRotvuBQvD7eq3aHI="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=3600, must-revalidate"},{"Name":"Content-Length","Value":"2061"},{"Name":"Content-Type","Value":"image/png"},{"Name":"ETag","Value":"\u0022Jmv14UjMC6l1OLSK7ACuiS6HAHWRotvuBQvD7eq3aHI=\u0022"},{"Name":"Last-Modified","Value":"Sun, 01 Jun 2025 12:34:22 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/RealEstateHubAPI/uploads/a9480cf6-6114-4891-9c89-5a3ce0026f62_download (1).uygdc6nsv8.png">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\a9480cf6-6114-4891-9c89-5a3ce0026f62_download (1).png'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"uygdc6nsv8"},{"Name":"integrity","Value":"sha256-Jmv14UjMC6l1OLSK7ACuiS6HAHWRotvuBQvD7eq3aHI="},{"Name":"label","Value":"_content/RealEstateHubAPI/uploads/a9480cf6-6114-4891-9c89-5a3ce0026f62_download (1).png"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"2061"},{"Name":"Content-Type","Value":"image/png"},{"Name":"ETag","Value":"\u0022Jmv14UjMC6l1OLSK7ACuiS6HAHWRotvuBQvD7eq3aHI=\u0022"},{"Name":"Last-Modified","Value":"Sun, 01 Jun 2025 12:34:22 GMT"}]]]></ResponseHeaders>
     </StaticWebAssetEndpoint>
     <StaticWebAssetEndpoint Include="_content/RealEstateHubAPI/uploads/c4932bfa-a19b-4eee-b7f9-102b50f9f6ec_download.gcq54fc8lk.png">
       <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\c4932bfa-a19b-4eee-b7f9-102b50f9f6ec_download.png'))</AssetFile>
@@ -263,6 +311,18 @@
       <Selectors><![CDATA[[]]]></Selectors>
       <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"w3d8gdiz8e"},{"Name":"integrity","Value":"sha256-XDgs9A5Op/ls1HgbtbzB3AME3QeLYeor9LiGIpq61Ws="},{"Name":"label","Value":"_content/RealEstateHubAPI/uploads/e3b681dd-64cb-4a0e-9541-7ef88d423b07_499571983_722159726827549_1490790694470403240_n.jpg"}]]]></EndpointProperties>
       <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"702683"},{"Name":"Content-Type","Value":"image/jpeg"},{"Name":"ETag","Value":"\u0022XDgs9A5Op/ls1HgbtbzB3AME3QeLYeor9LiGIpq61Ws=\u0022"},{"Name":"Last-Modified","Value":"Mon, 26 May 2025 14:17:58 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/RealEstateHubAPI/uploads/e9f83a7d-f9a3-42f6-a65b-97cf5d560ed0_download (1).png">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\e9f83a7d-f9a3-42f6-a65b-97cf5d560ed0_download (1).png'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-Jmv14UjMC6l1OLSK7ACuiS6HAHWRotvuBQvD7eq3aHI="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=3600, must-revalidate"},{"Name":"Content-Length","Value":"2061"},{"Name":"Content-Type","Value":"image/png"},{"Name":"ETag","Value":"\u0022Jmv14UjMC6l1OLSK7ACuiS6HAHWRotvuBQvD7eq3aHI=\u0022"},{"Name":"Last-Modified","Value":"Sun, 01 Jun 2025 12:56:26 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/RealEstateHubAPI/uploads/e9f83a7d-f9a3-42f6-a65b-97cf5d560ed0_download (1).uygdc6nsv8.png">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\e9f83a7d-f9a3-42f6-a65b-97cf5d560ed0_download (1).png'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"uygdc6nsv8"},{"Name":"integrity","Value":"sha256-Jmv14UjMC6l1OLSK7ACuiS6HAHWRotvuBQvD7eq3aHI="},{"Name":"label","Value":"_content/RealEstateHubAPI/uploads/e9f83a7d-f9a3-42f6-a65b-97cf5d560ed0_download (1).png"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"2061"},{"Name":"Content-Type","Value":"image/png"},{"Name":"ETag","Value":"\u0022Jmv14UjMC6l1OLSK7ACuiS6HAHWRotvuBQvD7eq3aHI=\u0022"},{"Name":"Last-Modified","Value":"Sun, 01 Jun 2025 12:56:26 GMT"}]]]></ResponseHeaders>
     </StaticWebAssetEndpoint>
   </ItemGroup>
 </Project>

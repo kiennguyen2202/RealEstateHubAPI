@@ -12,8 +12,8 @@ using RealEstateHubAPI.Model;
 namespace RealEstateHubAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250529141724_TransactionType")]
-    partial class TransactionType
+    [Migration("20250602054100_Update_Areas")]
+    partial class Update_Areas
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,21 +33,71 @@ namespace RealEstateHubAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("City")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("CityId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("District")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("DistrictId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Ward")
+                    b.Property<int>("WardId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CityId");
+
+                    b.HasIndex("DistrictId");
+
+                    b.HasIndex("WardId");
+
+                    b.ToTable("Areas");
+                });
+
+            modelBuilder.Entity("RealEstateHubAPI.Model.City", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("DistrictId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Areas");
+                    b.HasIndex("DistrictId");
+
+                    b.ToTable("Cities");
+                });
+
+            modelBuilder.Entity("RealEstateHubAPI.Model.District", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CityId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("WardId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WardId");
+
+                    b.ToTable("Districts");
                 });
 
             modelBuilder.Entity("RealEstateHubAPI.Model.Message", b =>
@@ -205,6 +255,26 @@ namespace RealEstateHubAPI.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("RealEstateHubAPI.Model.Ward", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DistrictId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Wards");
+                });
+
             modelBuilder.Entity("RealEstateHubAPI.Models.Category", b =>
                 {
                     b.Property<int>("Id")
@@ -292,6 +362,47 @@ namespace RealEstateHubAPI.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Reports");
+                });
+
+            modelBuilder.Entity("RealEstateHubAPI.Model.Area", b =>
+                {
+                    b.HasOne("RealEstateHubAPI.Model.City", "City")
+                        .WithMany()
+                        .HasForeignKey("CityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RealEstateHubAPI.Model.District", "District")
+                        .WithMany()
+                        .HasForeignKey("DistrictId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RealEstateHubAPI.Model.Ward", "Ward")
+                        .WithMany()
+                        .HasForeignKey("WardId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("City");
+
+                    b.Navigation("District");
+
+                    b.Navigation("Ward");
+                });
+
+            modelBuilder.Entity("RealEstateHubAPI.Model.City", b =>
+                {
+                    b.HasOne("RealEstateHubAPI.Model.District", null)
+                        .WithMany("Cities")
+                        .HasForeignKey("DistrictId");
+                });
+
+            modelBuilder.Entity("RealEstateHubAPI.Model.District", b =>
+                {
+                    b.HasOne("RealEstateHubAPI.Model.Ward", null)
+                        .WithMany("Districts")
+                        .HasForeignKey("WardId");
                 });
 
             modelBuilder.Entity("RealEstateHubAPI.Model.Message", b =>
@@ -397,9 +508,19 @@ namespace RealEstateHubAPI.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("RealEstateHubAPI.Model.District", b =>
+                {
+                    b.Navigation("Cities");
+                });
+
             modelBuilder.Entity("RealEstateHubAPI.Model.Post", b =>
                 {
                     b.Navigation("Images");
+                });
+
+            modelBuilder.Entity("RealEstateHubAPI.Model.Ward", b =>
+                {
+                    b.Navigation("Districts");
                 });
 #pragma warning restore 612, 618
         }
