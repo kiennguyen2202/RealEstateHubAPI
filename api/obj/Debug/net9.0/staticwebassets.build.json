@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "FMD59xbAr9tiLLnvxhTvh5UsMyS+Jr95NWGhdLS3ric=",
+  "Hash": "1vx/j7RRxGCHPzX0EK5J0WW6ldsxrO0ABVzl2kUF1sY=",
   "Source": "RealEstateHubAPI",
   "BasePath": "_content/RealEstateHubAPI",
   "Mode": "Default",
@@ -10,17 +10,17 @@
     {
       "Name": "RealEstateHubAPI\\wwwroot",
       "Source": "RealEstateHubAPI",
-      "ContentRoot": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\",
       "BasePath": "_content/RealEstateHubAPI",
       "Pattern": "**"
     }
   ],
   "Assets": [
     {
-      "Identity": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\076a3668-20c7-4ac5-81bb-66d828c4d1c5_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
+      "Identity": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\076a3668-20c7-4ac5-81bb-66d828c4d1c5_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
       "SourceId": "RealEstateHubAPI",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\",
       "BasePath": "_content/RealEstateHubAPI",
       "RelativePath": "uploads/076a3668-20c7-4ac5-81bb-66d828c4d1c5_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379#[.{fingerprint}]?.jpg",
       "AssetKind": "All",
@@ -38,10 +38,10 @@
       "OriginalItemSpec": "wwwroot\\uploads\\076a3668-20c7-4ac5-81bb-66d828c4d1c5_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg"
     },
     {
-      "Identity": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\090c7d61-62a2-4bb8-bf97-b675623fe344_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
+      "Identity": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\090c7d61-62a2-4bb8-bf97-b675623fe344_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
       "SourceId": "RealEstateHubAPI",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\",
       "BasePath": "_content/RealEstateHubAPI",
       "RelativePath": "uploads/090c7d61-62a2-4bb8-bf97-b675623fe344_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379#[.{fingerprint}]?.jpg",
       "AssetKind": "All",
@@ -59,10 +59,10 @@
       "OriginalItemSpec": "wwwroot\\uploads\\090c7d61-62a2-4bb8-bf97-b675623fe344_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg"
     },
     {
-      "Identity": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\0f811b15-6934-4229-911f-7d21d14ec517_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
+      "Identity": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\0f811b15-6934-4229-911f-7d21d14ec517_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
       "SourceId": "RealEstateHubAPI",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\",
       "BasePath": "_content/RealEstateHubAPI",
       "RelativePath": "uploads/0f811b15-6934-4229-911f-7d21d14ec517_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379#[.{fingerprint}]?.jpg",
       "AssetKind": "All",
@@ -80,10 +80,10 @@
       "OriginalItemSpec": "wwwroot\\uploads\\0f811b15-6934-4229-911f-7d21d14ec517_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg"
     },
     {
-      "Identity": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\11ab5e51-220e-4681-968e-0e1776f2d699_499571983_722159726827549_1490790694470403240_n.jpg",
+      "Identity": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\11ab5e51-220e-4681-968e-0e1776f2d699_499571983_722159726827549_1490790694470403240_n.jpg",
       "SourceId": "RealEstateHubAPI",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\",
       "BasePath": "_content/RealEstateHubAPI",
       "RelativePath": "uploads/11ab5e51-220e-4681-968e-0e1776f2d699_499571983_722159726827549_1490790694470403240_n#[.{fingerprint}]?.jpg",
       "AssetKind": "All",
@@ -101,10 +101,10 @@
       "OriginalItemSpec": "wwwroot\\uploads\\11ab5e51-220e-4681-968e-0e1776f2d699_499571983_722159726827549_1490790694470403240_n.jpg"
     },
     {
-      "Identity": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\32ab0d2d-922b-431d-a9da-4fa366f2d7b3_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
+      "Identity": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\32ab0d2d-922b-431d-a9da-4fa366f2d7b3_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
       "SourceId": "RealEstateHubAPI",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\",
       "BasePath": "_content/RealEstateHubAPI",
       "RelativePath": "uploads/32ab0d2d-922b-431d-a9da-4fa366f2d7b3_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379#[.{fingerprint}]?.jpg",
       "AssetKind": "All",
@@ -122,10 +122,10 @@
       "OriginalItemSpec": "wwwroot\\uploads\\32ab0d2d-922b-431d-a9da-4fa366f2d7b3_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg"
     },
     {
-      "Identity": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\3d24a86c-d082-484d-a1dc-6e182d75d447_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
+      "Identity": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\3d24a86c-d082-484d-a1dc-6e182d75d447_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
       "SourceId": "RealEstateHubAPI",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\",
       "BasePath": "_content/RealEstateHubAPI",
       "RelativePath": "uploads/3d24a86c-d082-484d-a1dc-6e182d75d447_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379#[.{fingerprint}]?.jpg",
       "AssetKind": "All",
@@ -143,10 +143,10 @@
       "OriginalItemSpec": "wwwroot\\uploads\\3d24a86c-d082-484d-a1dc-6e182d75d447_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg"
     },
     {
-      "Identity": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\4afa9e43-e908-417f-a844-13527dcf9659_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
+      "Identity": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\4afa9e43-e908-417f-a844-13527dcf9659_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
       "SourceId": "RealEstateHubAPI",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\",
       "BasePath": "_content/RealEstateHubAPI",
       "RelativePath": "uploads/4afa9e43-e908-417f-a844-13527dcf9659_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379#[.{fingerprint}]?.jpg",
       "AssetKind": "All",
@@ -164,10 +164,10 @@
       "OriginalItemSpec": "wwwroot\\uploads\\4afa9e43-e908-417f-a844-13527dcf9659_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg"
     },
     {
-      "Identity": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\6da615ad-bb8e-4436-af2e-821746e2f691_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
+      "Identity": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\6da615ad-bb8e-4436-af2e-821746e2f691_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
       "SourceId": "RealEstateHubAPI",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\",
       "BasePath": "_content/RealEstateHubAPI",
       "RelativePath": "uploads/6da615ad-bb8e-4436-af2e-821746e2f691_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379#[.{fingerprint}]?.jpg",
       "AssetKind": "All",
@@ -185,10 +185,10 @@
       "OriginalItemSpec": "wwwroot\\uploads\\6da615ad-bb8e-4436-af2e-821746e2f691_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg"
     },
     {
-      "Identity": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\6ecd46dd-7816-49ed-a4ff-083a9e087962_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
+      "Identity": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\6ecd46dd-7816-49ed-a4ff-083a9e087962_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
       "SourceId": "RealEstateHubAPI",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\",
       "BasePath": "_content/RealEstateHubAPI",
       "RelativePath": "uploads/6ecd46dd-7816-49ed-a4ff-083a9e087962_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379#[.{fingerprint}]?.jpg",
       "AssetKind": "All",
@@ -206,10 +206,10 @@
       "OriginalItemSpec": "wwwroot\\uploads\\6ecd46dd-7816-49ed-a4ff-083a9e087962_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg"
     },
     {
-      "Identity": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\705d5d60-212d-469e-8aa9-f0b71ee76f28_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
+      "Identity": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\705d5d60-212d-469e-8aa9-f0b71ee76f28_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
       "SourceId": "RealEstateHubAPI",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\",
       "BasePath": "_content/RealEstateHubAPI",
       "RelativePath": "uploads/705d5d60-212d-469e-8aa9-f0b71ee76f28_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379#[.{fingerprint}]?.jpg",
       "AssetKind": "All",
@@ -227,10 +227,10 @@
       "OriginalItemSpec": "wwwroot\\uploads\\705d5d60-212d-469e-8aa9-f0b71ee76f28_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg"
     },
     {
-      "Identity": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\81533998-f4c5-45b0-9077-94eac99a809f_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
+      "Identity": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\81533998-f4c5-45b0-9077-94eac99a809f_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
       "SourceId": "RealEstateHubAPI",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\",
       "BasePath": "_content/RealEstateHubAPI",
       "RelativePath": "uploads/81533998-f4c5-45b0-9077-94eac99a809f_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379#[.{fingerprint}]?.jpg",
       "AssetKind": "All",
@@ -248,10 +248,10 @@
       "OriginalItemSpec": "wwwroot\\uploads\\81533998-f4c5-45b0-9077-94eac99a809f_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg"
     },
     {
-      "Identity": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\a1006e0e-abda-444a-a129-02533f4abe25_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
+      "Identity": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\a1006e0e-abda-444a-a129-02533f4abe25_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
       "SourceId": "RealEstateHubAPI",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\",
       "BasePath": "_content/RealEstateHubAPI",
       "RelativePath": "uploads/a1006e0e-abda-444a-a129-02533f4abe25_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379#[.{fingerprint}]?.jpg",
       "AssetKind": "All",
@@ -269,10 +269,10 @@
       "OriginalItemSpec": "wwwroot\\uploads\\a1006e0e-abda-444a-a129-02533f4abe25_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg"
     },
     {
-      "Identity": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\e3b681dd-64cb-4a0e-9541-7ef88d423b07_499571983_722159726827549_1490790694470403240_n.jpg",
+      "Identity": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\e3b681dd-64cb-4a0e-9541-7ef88d423b07_499571983_722159726827549_1490790694470403240_n.jpg",
       "SourceId": "RealEstateHubAPI",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\",
       "BasePath": "_content/RealEstateHubAPI",
       "RelativePath": "uploads/e3b681dd-64cb-4a0e-9541-7ef88d423b07_499571983_722159726827549_1490790694470403240_n#[.{fingerprint}]?.jpg",
       "AssetKind": "All",
@@ -288,12 +288,33 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\uploads\\e3b681dd-64cb-4a0e-9541-7ef88d423b07_499571983_722159726827549_1490790694470403240_n.jpg"
+    },
+    {
+      "Identity": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\e89a6952-6c21-4166-aa9d-f756311f7c8c_bài1.jpg",
+      "SourceId": "RealEstateHubAPI",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\",
+      "BasePath": "_content/RealEstateHubAPI",
+      "RelativePath": "uploads/e89a6952-6c21-4166-aa9d-f756311f7c8c_bài1#[.{fingerprint}]?.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "zdl377dptx",
+      "Integrity": "+X221HXFA/HFY1JUg2+hgz2CEBu/+sj/vioiL8wp7Gk=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\e89a6952-6c21-4166-aa9d-f756311f7c8c_bài1.jpg"
     }
   ],
   "Endpoints": [
     {
       "Route": "uploads/076a3668-20c7-4ac5-81bb-66d828c4d1c5_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.6sxw6pw28q.jpg",
-      "AssetFile": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\076a3668-20c7-4ac5-81bb-66d828c4d1c5_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
+      "AssetFile": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\076a3668-20c7-4ac5-81bb-66d828c4d1c5_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -314,7 +335,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 18 May 2025 04:47:00 GMT"
+          "Value": "Fri, 30 May 2025 05:51:30 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -338,7 +359,7 @@
     },
     {
       "Route": "uploads/076a3668-20c7-4ac5-81bb-66d828c4d1c5_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
-      "AssetFile": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\076a3668-20c7-4ac5-81bb-66d828c4d1c5_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
+      "AssetFile": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\076a3668-20c7-4ac5-81bb-66d828c4d1c5_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -359,7 +380,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 18 May 2025 04:47:00 GMT"
+          "Value": "Fri, 30 May 2025 05:51:30 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -375,7 +396,7 @@
     },
     {
       "Route": "uploads/090c7d61-62a2-4bb8-bf97-b675623fe344_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.6sxw6pw28q.jpg",
-      "AssetFile": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\090c7d61-62a2-4bb8-bf97-b675623fe344_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
+      "AssetFile": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\090c7d61-62a2-4bb8-bf97-b675623fe344_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -396,7 +417,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 18 May 2025 04:47:00 GMT"
+          "Value": "Fri, 30 May 2025 05:51:30 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -420,7 +441,7 @@
     },
     {
       "Route": "uploads/090c7d61-62a2-4bb8-bf97-b675623fe344_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
-      "AssetFile": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\090c7d61-62a2-4bb8-bf97-b675623fe344_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
+      "AssetFile": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\090c7d61-62a2-4bb8-bf97-b675623fe344_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -441,7 +462,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 18 May 2025 04:47:00 GMT"
+          "Value": "Fri, 30 May 2025 05:51:30 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -457,7 +478,7 @@
     },
     {
       "Route": "uploads/0f811b15-6934-4229-911f-7d21d14ec517_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.6sxw6pw28q.jpg",
-      "AssetFile": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\0f811b15-6934-4229-911f-7d21d14ec517_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
+      "AssetFile": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\0f811b15-6934-4229-911f-7d21d14ec517_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -478,7 +499,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 26 May 2025 14:41:39 GMT"
+          "Value": "Fri, 30 May 2025 05:51:30 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -502,7 +523,7 @@
     },
     {
       "Route": "uploads/0f811b15-6934-4229-911f-7d21d14ec517_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
-      "AssetFile": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\0f811b15-6934-4229-911f-7d21d14ec517_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
+      "AssetFile": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\0f811b15-6934-4229-911f-7d21d14ec517_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -523,7 +544,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 26 May 2025 14:41:39 GMT"
+          "Value": "Fri, 30 May 2025 05:51:30 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -539,7 +560,7 @@
     },
     {
       "Route": "uploads/11ab5e51-220e-4681-968e-0e1776f2d699_499571983_722159726827549_1490790694470403240_n.jpg",
-      "AssetFile": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\11ab5e51-220e-4681-968e-0e1776f2d699_499571983_722159726827549_1490790694470403240_n.jpg",
+      "AssetFile": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\11ab5e51-220e-4681-968e-0e1776f2d699_499571983_722159726827549_1490790694470403240_n.jpg",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -560,7 +581,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 26 May 2025 08:11:32 GMT"
+          "Value": "Fri, 30 May 2025 05:51:30 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -576,7 +597,7 @@
     },
     {
       "Route": "uploads/11ab5e51-220e-4681-968e-0e1776f2d699_499571983_722159726827549_1490790694470403240_n.w3d8gdiz8e.jpg",
-      "AssetFile": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\11ab5e51-220e-4681-968e-0e1776f2d699_499571983_722159726827549_1490790694470403240_n.jpg",
+      "AssetFile": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\11ab5e51-220e-4681-968e-0e1776f2d699_499571983_722159726827549_1490790694470403240_n.jpg",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -597,7 +618,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 26 May 2025 08:11:32 GMT"
+          "Value": "Fri, 30 May 2025 05:51:30 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -621,7 +642,7 @@
     },
     {
       "Route": "uploads/32ab0d2d-922b-431d-a9da-4fa366f2d7b3_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.6sxw6pw28q.jpg",
-      "AssetFile": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\32ab0d2d-922b-431d-a9da-4fa366f2d7b3_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
+      "AssetFile": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\32ab0d2d-922b-431d-a9da-4fa366f2d7b3_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -642,7 +663,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 18 May 2025 04:47:29 GMT"
+          "Value": "Fri, 30 May 2025 05:51:30 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -666,7 +687,7 @@
     },
     {
       "Route": "uploads/32ab0d2d-922b-431d-a9da-4fa366f2d7b3_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
-      "AssetFile": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\32ab0d2d-922b-431d-a9da-4fa366f2d7b3_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
+      "AssetFile": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\32ab0d2d-922b-431d-a9da-4fa366f2d7b3_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -687,7 +708,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 18 May 2025 04:47:29 GMT"
+          "Value": "Fri, 30 May 2025 05:51:30 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -703,7 +724,7 @@
     },
     {
       "Route": "uploads/3d24a86c-d082-484d-a1dc-6e182d75d447_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.6sxw6pw28q.jpg",
-      "AssetFile": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\3d24a86c-d082-484d-a1dc-6e182d75d447_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
+      "AssetFile": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\3d24a86c-d082-484d-a1dc-6e182d75d447_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -724,7 +745,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 18 May 2025 04:47:29 GMT"
+          "Value": "Fri, 30 May 2025 05:51:30 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -748,7 +769,7 @@
     },
     {
       "Route": "uploads/3d24a86c-d082-484d-a1dc-6e182d75d447_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
-      "AssetFile": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\3d24a86c-d082-484d-a1dc-6e182d75d447_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
+      "AssetFile": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\3d24a86c-d082-484d-a1dc-6e182d75d447_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -769,7 +790,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 18 May 2025 04:47:29 GMT"
+          "Value": "Fri, 30 May 2025 05:51:30 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -785,7 +806,7 @@
     },
     {
       "Route": "uploads/4afa9e43-e908-417f-a844-13527dcf9659_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.6sxw6pw28q.jpg",
-      "AssetFile": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\4afa9e43-e908-417f-a844-13527dcf9659_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
+      "AssetFile": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\4afa9e43-e908-417f-a844-13527dcf9659_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -806,7 +827,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 26 May 2025 14:39:36 GMT"
+          "Value": "Fri, 30 May 2025 05:51:30 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -830,7 +851,7 @@
     },
     {
       "Route": "uploads/4afa9e43-e908-417f-a844-13527dcf9659_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
-      "AssetFile": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\4afa9e43-e908-417f-a844-13527dcf9659_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
+      "AssetFile": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\4afa9e43-e908-417f-a844-13527dcf9659_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -851,7 +872,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 26 May 2025 14:39:36 GMT"
+          "Value": "Fri, 30 May 2025 05:51:30 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -867,7 +888,7 @@
     },
     {
       "Route": "uploads/6da615ad-bb8e-4436-af2e-821746e2f691_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.6sxw6pw28q.jpg",
-      "AssetFile": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\6da615ad-bb8e-4436-af2e-821746e2f691_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
+      "AssetFile": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\6da615ad-bb8e-4436-af2e-821746e2f691_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -888,7 +909,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 18 May 2025 04:47:29 GMT"
+          "Value": "Fri, 30 May 2025 05:51:30 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -912,7 +933,7 @@
     },
     {
       "Route": "uploads/6da615ad-bb8e-4436-af2e-821746e2f691_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
-      "AssetFile": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\6da615ad-bb8e-4436-af2e-821746e2f691_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
+      "AssetFile": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\6da615ad-bb8e-4436-af2e-821746e2f691_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -933,7 +954,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 18 May 2025 04:47:29 GMT"
+          "Value": "Fri, 30 May 2025 05:51:30 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -949,7 +970,7 @@
     },
     {
       "Route": "uploads/6ecd46dd-7816-49ed-a4ff-083a9e087962_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.6sxw6pw28q.jpg",
-      "AssetFile": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\6ecd46dd-7816-49ed-a4ff-083a9e087962_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
+      "AssetFile": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\6ecd46dd-7816-49ed-a4ff-083a9e087962_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -970,7 +991,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 18 May 2025 04:47:00 GMT"
+          "Value": "Fri, 30 May 2025 05:51:30 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -994,7 +1015,7 @@
     },
     {
       "Route": "uploads/6ecd46dd-7816-49ed-a4ff-083a9e087962_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
-      "AssetFile": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\6ecd46dd-7816-49ed-a4ff-083a9e087962_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
+      "AssetFile": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\6ecd46dd-7816-49ed-a4ff-083a9e087962_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1015,7 +1036,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 18 May 2025 04:47:00 GMT"
+          "Value": "Fri, 30 May 2025 05:51:30 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1031,7 +1052,7 @@
     },
     {
       "Route": "uploads/705d5d60-212d-469e-8aa9-f0b71ee76f28_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.6sxw6pw28q.jpg",
-      "AssetFile": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\705d5d60-212d-469e-8aa9-f0b71ee76f28_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
+      "AssetFile": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\705d5d60-212d-469e-8aa9-f0b71ee76f28_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1052,7 +1073,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 19 May 2025 14:55:18 GMT"
+          "Value": "Fri, 30 May 2025 05:51:30 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1076,7 +1097,7 @@
     },
     {
       "Route": "uploads/705d5d60-212d-469e-8aa9-f0b71ee76f28_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
-      "AssetFile": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\705d5d60-212d-469e-8aa9-f0b71ee76f28_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
+      "AssetFile": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\705d5d60-212d-469e-8aa9-f0b71ee76f28_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1097,7 +1118,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 19 May 2025 14:55:18 GMT"
+          "Value": "Fri, 30 May 2025 05:51:30 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1113,7 +1134,7 @@
     },
     {
       "Route": "uploads/81533998-f4c5-45b0-9077-94eac99a809f_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.6sxw6pw28q.jpg",
-      "AssetFile": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\81533998-f4c5-45b0-9077-94eac99a809f_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
+      "AssetFile": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\81533998-f4c5-45b0-9077-94eac99a809f_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1134,7 +1155,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 18 May 2025 04:47:29 GMT"
+          "Value": "Fri, 30 May 2025 05:51:30 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1158,7 +1179,7 @@
     },
     {
       "Route": "uploads/81533998-f4c5-45b0-9077-94eac99a809f_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
-      "AssetFile": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\81533998-f4c5-45b0-9077-94eac99a809f_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
+      "AssetFile": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\81533998-f4c5-45b0-9077-94eac99a809f_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1179,7 +1200,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 18 May 2025 04:47:29 GMT"
+          "Value": "Fri, 30 May 2025 05:51:30 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1195,7 +1216,7 @@
     },
     {
       "Route": "uploads/a1006e0e-abda-444a-a129-02533f4abe25_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.6sxw6pw28q.jpg",
-      "AssetFile": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\a1006e0e-abda-444a-a129-02533f4abe25_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
+      "AssetFile": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\a1006e0e-abda-444a-a129-02533f4abe25_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1216,7 +1237,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 18 May 2025 04:47:00 GMT"
+          "Value": "Fri, 30 May 2025 05:51:30 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1240,7 +1261,7 @@
     },
     {
       "Route": "uploads/a1006e0e-abda-444a-a129-02533f4abe25_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
-      "AssetFile": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\a1006e0e-abda-444a-a129-02533f4abe25_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
+      "AssetFile": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\a1006e0e-abda-444a-a129-02533f4abe25_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1261,7 +1282,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 18 May 2025 04:47:00 GMT"
+          "Value": "Fri, 30 May 2025 05:51:30 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1277,7 +1298,7 @@
     },
     {
       "Route": "uploads/e3b681dd-64cb-4a0e-9541-7ef88d423b07_499571983_722159726827549_1490790694470403240_n.jpg",
-      "AssetFile": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\e3b681dd-64cb-4a0e-9541-7ef88d423b07_499571983_722159726827549_1490790694470403240_n.jpg",
+      "AssetFile": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\e3b681dd-64cb-4a0e-9541-7ef88d423b07_499571983_722159726827549_1490790694470403240_n.jpg",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1298,7 +1319,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 26 May 2025 14:17:58 GMT"
+          "Value": "Fri, 30 May 2025 05:51:30 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1314,7 +1335,7 @@
     },
     {
       "Route": "uploads/e3b681dd-64cb-4a0e-9541-7ef88d423b07_499571983_722159726827549_1490790694470403240_n.w3d8gdiz8e.jpg",
-      "AssetFile": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\wwwroot\\uploads\\e3b681dd-64cb-4a0e-9541-7ef88d423b07_499571983_722159726827549_1490790694470403240_n.jpg",
+      "AssetFile": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\e3b681dd-64cb-4a0e-9541-7ef88d423b07_499571983_722159726827549_1490790694470403240_n.jpg",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1335,7 +1356,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 26 May 2025 14:17:58 GMT"
+          "Value": "Fri, 30 May 2025 05:51:30 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1354,6 +1375,88 @@
         {
           "Name": "integrity",
           "Value": "sha256-XDgs9A5Op/ls1HgbtbzB3AME3QeLYeor9LiGIpq61Ws="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/e89a6952-6c21-4166-aa9d-f756311f7c8c_bài1.jpg",
+      "AssetFile": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\e89a6952-6c21-4166-aa9d-f756311f7c8c_bài1.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "445153"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"+X221HXFA/HFY1JUg2+hgz2CEBu/+sj/vioiL8wp7Gk=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 30 May 2025 08:10:07 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-+X221HXFA/HFY1JUg2+hgz2CEBu/+sj/vioiL8wp7Gk="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/e89a6952-6c21-4166-aa9d-f756311f7c8c_bài1.zdl377dptx.jpg",
+      "AssetFile": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\e89a6952-6c21-4166-aa9d-f756311f7c8c_bài1.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "445153"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"+X221HXFA/HFY1JUg2+hgz2CEBu/+sj/vioiL8wp7Gk=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 30 May 2025 08:10:07 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "zdl377dptx"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/e89a6952-6c21-4166-aa9d-f756311f7c8c_bài1.jpg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-+X221HXFA/HFY1JUg2+hgz2CEBu/+sj/vioiL8wp7Gk="
         }
       ]
     }

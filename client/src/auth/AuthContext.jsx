@@ -1,6 +1,7 @@
 // src/auth/AuthContext.jsx
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import axios from '../api/axiosClient';
+//import axiosPrivate from '../api/axiosPrivate'; 
 
 // Tạo context
 export const AuthContext = createContext(null);

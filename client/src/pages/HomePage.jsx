@@ -6,6 +6,7 @@ import './HomePage.css';
 const HomePage = () => {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [filters, setFilters] = useState({
     category: '',
     area: '',
@@ -20,10 +21,22 @@ const HomePage = () => {
   const fetchProperties = async () => {
     try {
       setLoading(true);
-      const response = await axiosClient.get(`/posts?${new URLSearchParams(filters)}`);
-      setProperties(response.data);
+      setError(null);
+      // Sử dụng endpoint /posts khi không có filter
+      const endpoint = '/api/posts';
+      
+      const response = await axiosClient.get(endpoint, {
+        params: Object.values(filters).some(value => value) ? filters : {}
+      });
+      
+      if (response.data) {
+        setProperties(response.data);
+      } else {
+        setError('Không có dữ liệu');
+      }
     } catch (error) {
       console.error('Error fetching properties:', error);
+      setError('Không thể tải danh sách bất động sản');
     } finally {
       setLoading(false);
     }

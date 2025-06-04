@@ -2,6 +2,17 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axiosPrivate from "../api/axiosPrivate";
 import { useAuth } from "../auth/AuthContext";
+import './ReportPost.css';
+
+const reasonToType = {
+  Spam: 0, // LuaDao
+  Duplicate: 1, // TrungLap
+  Sold: 2, // DaBan (giả định thêm nếu cần)
+  "Can't Contact": 3, // KhongLienLacDuoc (giả định)
+  Fake: 4, // ThongTinSaiBatDongSan
+  Inappropriate: 5, // ThongTinSaiNguoiDang
+  Other: 6 // Other
+};
 
 function ReportPost() {
   const { id } = useParams();
@@ -23,7 +34,7 @@ function ReportPost() {
 
     const fetchPost = async () => {
       try {
-        const response = await axiosPrivate.get(`/api/posts/${id}`);
+        const response = await axiosPrivate.get(`/posts/${id}`);
         setPost(response.data);
       } catch (err) {
         setError("Không thể tải thông tin bài viết");
@@ -38,8 +49,21 @@ function ReportPost() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!formData.reason) {
+      alert("Vui lòng chọn lý do báo cáo");
+      return;
+    }
+
+    const requestBody = {
+      userId: user?.id,
+      postId: post?.id,
+      type: reasonToType[formData.reason] ?? 6,
+      other: formData.description,
+      phone: user?.phone || ""
+    };
+
     try {
-      await axiosPrivate.post(`/api/posts/${id}/report`, formData);
+      await axiosPrivate.post(`/reports`, requestBody); 
       alert("Báo cáo đã được gửi thành công");
       navigate(`/posts/${id}`);
     } catch (err) {
@@ -76,7 +100,9 @@ function ReportPost() {
               </label>
               <select
                 value={formData.reason}
-                onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, reason: e.target.value })
+                }
                 className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 required
               >
@@ -95,11 +121,13 @@ function ReportPost() {
               </label>
               <textarea
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
                 className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 rows="4"
                 placeholder="Vui lòng cung cấp thêm thông tin chi tiết về lý do báo cáo..."
-                required
+                
               />
             </div>
 
@@ -125,4 +153,4 @@ function ReportPost() {
   );
 }
 
-export default ReportPost; 
+export default ReportPost;

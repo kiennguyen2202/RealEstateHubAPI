@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom'; //Sữa
 import axiosClient from '../api/axiosClient';
+import { useAuth } from "../auth/AuthContext";
+import axiosPrivate from "../api/axiosPrivate";
 import './PropertyDetailPage.css';
 
 const PropertyDetailPage = () => {
@@ -9,12 +11,14 @@ const PropertyDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeImage, setActiveImage] = useState(0);
+  {/* Thêm */}
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     const fetchProperty = async () => {
       try {
         setLoading(true);
-        const response = await axiosClient.get(`/posts/${id}`);
+        const response = await axiosClient.get(`/api/posts/${id}`);
         setProperty(response.data);
       } catch (err) {
         setError(err);
@@ -70,6 +74,10 @@ const PropertyDetailPage = () => {
             ) : (
               <img src="/upload.jpg" alt="Placeholder" className="main-detail-image" />
             )}
+            <button className='report-button' onClick ={() => navigate(`/posts/${property.id}/report`)}>
+              <i className="fas fa-flag"></i> Báo cáo
+            </button>
+            
           </div>
           <div className="thumbnail-list">
             {property.images.map((image, index) => (

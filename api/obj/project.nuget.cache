@@ -1,14 +1,8 @@
 {
   "version": 2,
-<<<<<<< HEAD:obj/project.nuget.cache
-  "dgSpecHash": "RA6KvUi/19g=",
+  "dgSpecHash": "HBHIrwl5iLE=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Admin\\RealEstateHubAPI\\RealEstateHubAPI.csproj",
-=======
-  "dgSpecHash": "3Hn9/0PxOiY=",
-  "success": true,
-  "projectFilePath": "C:\\Users\\ADMIN\\RealEstateHubAPI\\api\\RealEstateHubAPI.csproj",
->>>>>>> f0e74249e6343aa16a7ba6b01cedfb82d8a91391:api/obj/project.nuget.cache
+  "projectFilePath": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\RealEstateHubAPI.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Admin\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",

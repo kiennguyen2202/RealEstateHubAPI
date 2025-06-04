@@ -14,13 +14,12 @@ namespace RealEstateHubAPI.Model
         public DbSet<Category> Categories { get; set; }
         public DbSet<Post> Posts { get; set; }
         public DbSet<PostImage> PostImages { get; set; }
-<<<<<<< HEAD:Models/ApplicationDbContext.cs
-=======
+
 
         public DbSet<Report> Reports { get; set; }
         public DbSet<Message> Messages { get; set; }
 
->>>>>>> f0e74249e6343aa16a7ba6b01cedfb82d8a91391:api/Models/ApplicationDbContext.cs
+
         public DbSet<Favorite> Favorites { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

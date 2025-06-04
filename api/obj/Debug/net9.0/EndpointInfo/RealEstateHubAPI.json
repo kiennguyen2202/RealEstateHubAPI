@@ -317,11 +317,7 @@
         }
       }
     },
-<<<<<<< HEAD:obj/Debug/net9.0/EndpointInfo/RealEstateHubAPI.json
-    "/api/Favorite/user/{userId}": {
-=======
     "/api/favorites/user/{userId}": {
->>>>>>> f0e74249e6343aa16a7ba6b01cedfb82d8a91391:api/obj/Debug/net9.0/EndpointInfo/RealEstateHubAPI.json
       "get": {
         "tags": [
           "Favorite"
@@ -344,17 +340,11 @@
         }
       }
     },
-<<<<<<< HEAD:obj/Debug/net9.0/EndpointInfo/RealEstateHubAPI.json
-    "/api/Favorite": {
-=======
     "/api/favorites/{userId}/{postId}": {
->>>>>>> f0e74249e6343aa16a7ba6b01cedfb82d8a91391:api/obj/Debug/net9.0/EndpointInfo/RealEstateHubAPI.json
       "post": {
         "tags": [
           "Favorite"
         ],
-<<<<<<< HEAD:obj/Debug/net9.0/EndpointInfo/RealEstateHubAPI.json
-=======
         "parameters": [
           {
             "name": "userId",
@@ -419,34 +409,21 @@
         "tags": [
           "Message"
         ],
->>>>>>> f0e74249e6343aa16a7ba6b01cedfb82d8a91391:api/obj/Debug/net9.0/EndpointInfo/RealEstateHubAPI.json
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-<<<<<<< HEAD:obj/Debug/net9.0/EndpointInfo/RealEstateHubAPI.json
-                "$ref": "#/components/schemas/Favorite"
-=======
                 "$ref": "#/components/schemas/CreateMessageDto"
->>>>>>> f0e74249e6343aa16a7ba6b01cedfb82d8a91391:api/obj/Debug/net9.0/EndpointInfo/RealEstateHubAPI.json
               }
             },
             "text/json": {
               "schema": {
-<<<<<<< HEAD:obj/Debug/net9.0/EndpointInfo/RealEstateHubAPI.json
-                "$ref": "#/components/schemas/Favorite"
-=======
                 "$ref": "#/components/schemas/CreateMessageDto"
->>>>>>> f0e74249e6343aa16a7ba6b01cedfb82d8a91391:api/obj/Debug/net9.0/EndpointInfo/RealEstateHubAPI.json
               }
             },
             "application/*+json": {
               "schema": {
-<<<<<<< HEAD:obj/Debug/net9.0/EndpointInfo/RealEstateHubAPI.json
-                "$ref": "#/components/schemas/Favorite"
-=======
                 "$ref": "#/components/schemas/CreateMessageDto"
->>>>>>> f0e74249e6343aa16a7ba6b01cedfb82d8a91391:api/obj/Debug/net9.0/EndpointInfo/RealEstateHubAPI.json
               }
             }
           }
@@ -458,69 +435,6 @@
         }
       }
     },
-<<<<<<< HEAD:obj/Debug/net9.0/EndpointInfo/RealEstateHubAPI.json
-    "/api/Favorite/{id}": {
-      "delete": {
-        "tags": [
-          "Favorite"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/Favorite/user/{userId}/post/{postId}": {
-      "delete": {
-        "tags": [
-          "Favorite"
-        ],
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "postId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      },
-      "get": {
-        "tags": [
-          "Favorite"
-        ],
-        "parameters": [
-          {
-            "name": "userId",
-=======
     "/api/messages/{user1Id}/{user2Id}/{postId}": {
       "get": {
         "tags": [
@@ -538,7 +452,6 @@
           },
           {
             "name": "user2Id",
->>>>>>> f0e74249e6343aa16a7ba6b01cedfb82d8a91391:api/obj/Debug/net9.0/EndpointInfo/RealEstateHubAPI.json
             "in": "path",
             "required": true,
             "schema": {
@@ -563,11 +476,7 @@
         }
       }
     },
-<<<<<<< HEAD:obj/Debug/net9.0/EndpointInfo/RealEstateHubAPI.json
-    "/api/Post": {
-=======
     "/api/posts": {
->>>>>>> f0e74249e6343aa16a7ba6b01cedfb82d8a91391:api/obj/Debug/net9.0/EndpointInfo/RealEstateHubAPI.json
       "get": {
         "tags": [
           "Post"
@@ -1061,15 +970,6 @@
         },
         "additionalProperties": false
       },
-<<<<<<< HEAD:obj/Debug/net9.0/EndpointInfo/RealEstateHubAPI.json
-      "Favorite": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-=======
       "CreateMessageDto": {
         "type": "object",
         "properties": {
@@ -1095,7 +995,6 @@
       "CreateReportDto": {
         "type": "object",
         "properties": {
->>>>>>> f0e74249e6343aa16a7ba6b01cedfb82d8a91391:api/obj/Debug/net9.0/EndpointInfo/RealEstateHubAPI.json
           "userId": {
             "type": "integer",
             "format": "int32"
@@ -1104,17 +1003,6 @@
             "type": "integer",
             "format": "int32"
           },
-<<<<<<< HEAD:obj/Debug/net9.0/EndpointInfo/RealEstateHubAPI.json
-          "createdFavorite": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "user": {
-            "$ref": "#/components/schemas/User"
-          },
-          "post": {
-            "$ref": "#/components/schemas/Post"
-=======
           "type": {
             "$ref": "#/components/schemas/ReportType"
           },
@@ -1125,7 +1013,6 @@
           "phone": {
             "type": "string",
             "nullable": true
->>>>>>> f0e74249e6343aa16a7ba6b01cedfb82d8a91391:api/obj/Debug/net9.0/EndpointInfo/RealEstateHubAPI.json
           }
         },
         "additionalProperties": false

@@ -8,7 +8,7 @@ namespace RealEstateHubAPI.Controllers
 {
     [Route("api/areas")]
     [ApiController]
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
     public class AreaController : ControllerBase
     {
         private readonly IAreaRepository _areaReposiory;
