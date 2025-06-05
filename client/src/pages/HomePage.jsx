@@ -1,50 +1,133 @@
 import React, { useState, useEffect } from 'react';
 import PropertyCard from '../components/property/PropertyCard';
+import MessagingFeature from '../components/Message/MessagingFeature';
 import axiosClient from '../api/axiosClient';
 import './HomePage.css';
+import { useNavigate } from 'react-router-dom';
+
+const TransactionType = {
+  Sale: 0, 
+  Rent: 1  
+};
 
 const HomePage = () => {
   const [properties, setProperties] = useState([]);
+  const [filteredProperties, setFilteredProperties] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filters, setFilters] = useState({
-    category: '',        // Loại hình BĐS (từ backend)
-    transaction: '',     // Phương thức giao dịch (mua/bán hoặc cho thuê)
-    area: '',           // Khu vực
-    priceRange: '',     // Khoảng giá
-    sortBy: 'newest'    // Sắp xếp
+    transaction: '',     
+    category: '',        
+    area: '',         
+    priceRange: '',     
+    sortBy: 'newest'   
   });
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetchProperties();
-  }, [filters]);
+    fetchData();
+  }, []);
 
-  const fetchProperties = async () => {
+  useEffect(() => {
+    filterProperties();
+  }, [filters, properties]);
+
+  const fetchData = async () => {
     try {
       setLoading(true);
       setError(null);
-      // Sử dụng endpoint /posts khi không có filter
-      const endpoint = '/api/posts';
       
-      const response = await axiosClient.get(endpoint, {
-        params: Object.values(filters).some(value => value) ? filters : {}
-      });
+      // Fetch cả properties và categories
+      const [propertiesRes, categoriesRes] = await Promise.all([
+        axiosClient.get('/api/posts'),
+        axiosClient.get('/api/categories')
+      ]);
       
-      if (response.data) {
-        setProperties(response.data);
-      } else {
-        setError('Không có dữ liệu');
+      if (propertiesRes.data) {
+        setProperties(propertiesRes.data);
+        setFilteredProperties(propertiesRes.data);
+      }
+      
+      if (categoriesRes.data) {
+        setCategories(categoriesRes.data);
       }
     } catch (error) {
-      console.error('Error fetching properties:', error);
-      setError('Không thể tải danh sách bất động sản');
+      console.error('Error fetching data:', error);
+      setError('Không thể tải dữ liệu');
     } finally {
       setLoading(false);
     }
   };
 
+  const filterProperties = () => {
+    let filtered = [...properties];
+
+    // Lọc theo phương thức giao dịch
+    if (filters.transaction) {
+      filtered = filtered.filter(property => {
+        if (filters.transaction === 'sale') {
+          return property.transactionType === TransactionType.Sale;
+        } else if (filters.transaction === 'rent') {
+          return property.transactionType === TransactionType.Rent;
+        }
+        return true;
+      });
+    }
+
+    // Lọc theo loại hình BĐS
+    if (filters.category) {
+      filtered = filtered.filter(property => 
+        property.categoryId === parseInt(filters.category)
+      );
+    }
+
+    // Lọc theo khu vực
+    if (filters.area) {
+      filtered = filtered.filter(property => 
+        property.area?.city.toLowerCase().includes(filters.area.toLowerCase())
+      );
+    }
+
+    // Lọc theo khoảng giá
+    if (filters.priceRange) {
+      filtered = filtered.filter(property => {
+        const price = property.price;
+        const [min, max] = filters.priceRange.split('-').map(Number);
+        
+        if (max) {
+          return price >= min && price <= max;
+        } else {
+          return price >= min;
+        }
+      });
+    }
+
+    // Sắp xếp
+    switch (filters.sortBy) {
+      case 'price-asc':
+        filtered.sort((a, b) => a.price - b.price);
+        break;
+      case 'price-desc':
+        filtered.sort((a, b) => b.price - a.price);
+        break;
+      case 'area-asc':
+        filtered.sort((a, b) => a.area_Size - b.area_Size);
+        break;
+      case 'area-desc':
+        filtered.sort((a, b) => b.area_Size - a.area_Size);
+        break;
+      case 'newest':
+      default:
+        filtered.sort((a, b) => new Date(b.created) - new Date(a.created));
+        break;
+    }
+
+    setFilteredProperties(filtered);
+  };
+
   return (
-    <div className="home-page">
+    <div className="container mx-auto px-4 py-8">
       <div className="search-section">
         <div className="search-container">
           <h1>Tìm kiếm bất động sản</h1>
@@ -65,10 +148,11 @@ const HomePage = () => {
               onChange={(e) => setFilters({...filters, category: e.target.value})}
             >
               <option value="">Loại hình BĐS</option>
-              <option value="apartment">Căn hộ chung cư</option>
-              <option value="house">Nhà riêng</option>
-              <option value="land">Đất nền</option>
-              <option value="commercial">Văn phòng, mặt bằng</option>
+              {categories.map(category => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
             </select>
 
             {/* Khu vực */}
@@ -118,11 +202,11 @@ const HomePage = () => {
             <div className="loading">Đang tải...</div>
           ) : error ? (
             <div className="error">{error}</div>
-          ) : properties.length === 0 ? (
-            <div className="no-data">Không có bất động sản nào</div>
+          ) : filteredProperties.length === 0 ? (
+            <div className="no-data">Không có bất động sản nào phù hợp với bộ lọc</div>
           ) : (
             <div className="properties-grid">
-              {properties.map(property => (
+              {filteredProperties.map(property => (
                 <PropertyCard key={property.id} property={property} />
               ))}
             </div>
@@ -133,4 +217,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage; 
+export default HomePage;

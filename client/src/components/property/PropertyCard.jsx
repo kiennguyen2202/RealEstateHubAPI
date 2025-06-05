@@ -21,7 +21,7 @@ const PropertyCard = ({ property }) => {
             src={getFullImageUrl(property.images && property.images.length > 0 ? property.images[0].url : null)}
             alt={property.title} 
           />
-          {property.status === 'active' && <span className="verified-badge">Đang hiển thị</span>}
+          
         </div>
         
         <div className="property-info">
@@ -41,7 +41,9 @@ const PropertyCard = ({ property }) => {
           
           <div className="property-meta">
             <span className="post-date">{new Date(property.created).toLocaleDateString('vi-VN')}</span>
-            <span className="transaction-type">{property.transactionType === 'Sale' ? 'Mua bán' : 'Cho thuê'}</span>
+            <span className={`transaction-type ${property.transactionType === 0 ? 'sale' : 'rent'}`}>
+              {property.transactionType === 0 ? "Mua bán" : "Cho thuê"}
+            </span>
           </div>
         </div>
       </Link>

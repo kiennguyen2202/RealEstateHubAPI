@@ -1,13 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { useParams, useNavigate, useLocation, Link } from "react-router-dom";
 import axiosClient from "../api/axiosClient";
 import { useAuth } from "../auth/AuthContext";
 import {
   FaHome, FaRuler, FaMapMarkerAlt, FaUser,
-  FaPhone, FaEnvelope, FaEdit, FaTrash, FaExclamationTriangle
+  FaPhone, FaEnvelope, FaEdit, FaTrash, FaExclamationTriangle,
+  FaCommentDots
 } from "react-icons/fa";
 import "./PostDetail.css";
 import { PriceUnit, formatPrice } from '../utils/priceUtils';
+
+const TransactionType = {
+  Sale: 0, 
+  Rent: 1   
+};
 
 const PostDetail = () => {
   const { id } = useParams();
@@ -29,6 +35,7 @@ const PostDetail = () => {
     address: "",
     categoryId: "",
     areaId: "",
+    transactionType: "",
     status: ""
   });
   const [categories, setCategories] = useState([]);
@@ -55,6 +62,7 @@ const PostDetail = () => {
     const fetchPost = async () => {
       try {
         const response = await axiosClient.get(`/api/posts/${id}`);
+        console.log('Fetched post data:', response.data);
         setPost(response.data);
         setEditForm({
           title: response.data.title,
@@ -66,11 +74,12 @@ const PostDetail = () => {
           address: response.data.address,
           categoryId: response.data.categoryId,
           areaId: response.data.areaId,
+          transactionType: response.data.transactionType,
           status: response.data.status
         });
       } catch (err) {
         setError("Không thể tải thông tin bài viết");
-        console.error(err);
+        console.error('Error fetching post:', err);
       } finally {
         setLoading(false);
       }
@@ -87,8 +96,7 @@ const PostDetail = () => {
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Log the current form data for debugging
-      console.log('Current editForm:', editForm);
+      console.log('Form data before submit:', editForm);
 
       const postData = {
         id: parseInt(id),
@@ -96,21 +104,25 @@ const PostDetail = () => {
         description: editForm.description,
         price: parseFloat(editForm.price),
         priceUnit: parseInt(editForm.priceUnit),
-        status: editForm.status,
         street_Name: editForm.street_Name,
         area_Size: parseFloat(editForm.area_Size),
         categoryId: parseInt(editForm.categoryId),
         areaId: parseInt(editForm.areaId),
-        userId: post.userId
+        transactionType: parseInt(editForm.transactionType),
+        userId: post.userId,
+        status: 'active'
       };
 
-      // Log the formatted data being sent
-      console.log('Sending data to server:', postData);
+      console.log('Data being sent to server:', postData);
 
-      const response = await axiosClient.put(`/api/posts/${id}`, postData);
+      const response = await axiosClient.put(`/api/posts/${id}`, postData, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
       console.log('Server response:', response.data);
 
-      // Refresh the post data
       const updatedPost = await axiosClient.get(`/api/posts/${id}`);
       setPost(updatedPost.data);
       setIsEditing(false);
@@ -118,8 +130,7 @@ const PostDetail = () => {
     } catch (err) {
       console.error('Error updating post:', err);
       if (err.response) {
-        console.error('Error response data:', err.response.data);
-        console.error('Error response status:', err.response.status);
+        console.error('Error details:', err.response.data);
         alert(err.response.data.message || "Không thể cập nhật bài viết");
       } else {
         alert("Không thể cập nhật bài viết");
@@ -223,11 +234,10 @@ const PostDetail = () => {
           {/* Right Column - Info */}
           <div className="property-info">
             <div className="price-tag">
-              {/* console.log("PostDetail - price:", post.price, "unitValue:", post.priceUnit) */}
               {formatPrice(post.price, post.priceUnit)}
             </div>
-            <div className={`status-badge ${post.status.toLowerCase()}`}>
-              {post.status === "ForSale" ? "Cần bán" : "Cho thuê"}
+            <div className={`status-badge ${post.transactionType === 0 ? 'sale' : 'rent'}`}>
+              {post.transactionType === 0 ? "Mua bán" : "Cho thuê"}
             </div>
 
             <div className="info-section">
@@ -257,23 +267,37 @@ const PostDetail = () => {
               <p>{post.description}</p>
             </div>
 
+            {/* Contact Information */}
             <div className="contact-section">
-              <h3>Liên hệ</h3>
-              <div className="info-grid">
-                <div className="info-item">
-                  <FaUser />
+              <h2 className="section-title">Thông tin liên hệ</h2>
+              <div className="contact-info">
+                <div className="contact-item">
+                  <FaUser className="contact-icon" />
                   <span>{post.user?.name}</span>
                 </div>
-                <div className="info-item">
-                  <FaPhone />
+                <div className="contact-item">
+                  <FaPhone className="contact-icon" />
                   <span>{post.user?.phone}</span>
                 </div>
-                <div className="info-item">
-                  <FaEnvelope />
+                <div className="contact-item">
+                  <FaEnvelope className="contact-icon" />
                   <span>{post.user?.email}</span>
                 </div>
               </div>
             </div>
+
+            {/* Add Chat Button */}
+            {user && user.id !== post.userId && (
+              <div className="chat-button-container mt-4">
+                <Link 
+                  to={`/messages?postId=${post.id}&userId=${post.user.id}&postTitle=${encodeURIComponent(post.title)}&postUsername=${encodeURIComponent(post.user.name)}`}
+                  className="chat-button"
+                >
+                  <FaCommentDots className="mr-2" />
+                  Nhắn tin
+                </Link>
+              </div>
+            )}
 
             {user && (user.id === post.userId || user.role === "Admin") && (
               <div className="action-buttons">
@@ -302,13 +326,8 @@ const PostDetail = () => {
         <div className="modal-overlay">
           <div className="modal-content">
             <div className="modal-header">
-              <h2 className="text-2xl font-bold">Chỉnh sửa bài viết</h2>
-              <button 
-                onClick={() => setIsEditing(false)}
-                className="close-button"
-              >
-                ×
-              </button>
+              <h2>Chỉnh sửa bài viết</h2>
+              <button onClick={() => setIsEditing(false)} className="close-button">×</button>
             </div>
             <form onSubmit={handleEditSubmit} className="modal-form">
               <div className="form-group">
@@ -408,29 +427,22 @@ const PostDetail = () => {
                 </div>
               </div>
               <div className="form-group">
-                <label className="form-label">Trạng thái</label>
+                <label className="form-label">Loại giao dịch</label>
                 <select
-                  value={editForm.status}
-                  onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
+                  value={editForm.transactionType}
+                  onChange={(e) => setEditForm({ ...editForm, transactionType: parseInt(e.target.value) })}
                   className="form-input"
                   required
                 >
-                  <option value="ForSale">Cần bán</option>
-                  <option value="ForRent">Cho thuê</option>
+                  <option value={TransactionType.Sale}>Mua bán</option>
+                  <option value={TransactionType.Rent}>Cho thuê</option>
                 </select>
               </div>
               <div className="modal-footer">
-                <button
-                  type="button"
-                  onClick={() => setIsEditing(false)}
-                  className="cancel-button"
-                >
+                <button type="button" onClick={() => setIsEditing(false)} className="cancel-button">
                   Hủy
                 </button>
-                <button
-                  type="submit"
-                  className="submit-button"
-                >
+                <button type="submit" className="submit-button">
                   Lưu thay đổi
                 </button>
               </div>

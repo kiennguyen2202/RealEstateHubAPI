@@ -19,7 +19,7 @@
     "Parameters": [
       {
         "Name": "area",
-        "Type": "RealEstateHubAPI.Model.Area",
+        "Type": "RealEstateHubAPI.DTOs.CreateAreaDto",
         "IsRequired": true
       }
     ],
@@ -293,6 +293,64 @@
       },
       {
         "Name": "postId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "RealEstateHubAPI.Controllers.MessageController",
+    "Method": "DeleteConversation",
+    "RelativePath": "api/messages/conversation",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "user1Id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "user2Id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "postId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "RealEstateHubAPI.Controllers.MessageController",
+    "Method": "GetPostMessages",
+    "RelativePath": "api/messages/post/{postId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "postId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "RealEstateHubAPI.Controllers.MessageController",
+    "Method": "GetUserMessages",
+    "RelativePath": "api/messages/user/{userId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
         "Type": "System.Int32",
         "IsRequired": true
       }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using RealEstateHubAPI.DTOs;
 using RealEstateHubAPI.Model;
 using RealEstateHubAPI.Repositories;
 
@@ -12,9 +13,11 @@ namespace RealEstateHubAPI.Controllers
     public class AreaController : ControllerBase
     {
         private readonly IAreaRepository _areaReposiory;
-        public AreaController(IAreaRepository areaRepository)
+        private readonly ApplicationDbContext _context;
+        public AreaController(IAreaRepository areaRepository, ApplicationDbContext context)
         {
             _areaReposiory = areaRepository;
+            _context = context;
         }
         [AllowAnonymous]
         [HttpGet]
@@ -50,14 +53,21 @@ namespace RealEstateHubAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddArea([FromBody] Area area)
+        public async Task<IActionResult> AddArea([FromBody] CreateAreaDto area)
         {
             try
             {
-                await _areaReposiory.AddAreaAsync(area);
+                await _areaReposiory.AddAreaAsync(new Area() 
+                {
+                    CityId = area.CityId,
+                    DistrictId = area.DistrictId,
+                    WardId = area.WardId
+                });
                 return CreatedAtAction(nameof(GetAreaById), new
                 {
-                    id = area.Id
+                    id = area.CityId,
+                    
+
                 }, area);
             }
             catch (Exception ex)

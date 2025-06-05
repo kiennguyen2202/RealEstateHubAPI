@@ -9,6 +9,8 @@
         public string ReceiverName { get; set; }
         public int PostId { get; set; }
         public string PostTitle { get; set; }
+        public int PostUserId { get; set; }
+        public string PostUserName { get; set; }
         public string Content { get; set; }
         public DateTime SentTime { get; set; }
     }

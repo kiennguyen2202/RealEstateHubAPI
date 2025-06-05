@@ -24,14 +24,14 @@ const Header = () => {
       <div className="header-container">
         <div className="logo">
           <Link to="/">
-            <img src="/logo.png" alt="Real Estate Hub" />
+            <img src="/real.png" alt="Real Estate Hub" />
           </Link>
         </div>
         
         <nav className="main-nav">
           <ul>
-            <li><Link to="/mua-ban">Mua bán</Link></li>
-            <li><Link to="/cho-thue">Cho thuê</Link></li>
+            <li><Link to="/Sale">Mua bán</Link></li>
+            <li><Link to="/Rent">Cho thuê</Link></li>
             <li><Link to="/du-an">Dự án</Link></li>
             <li><Link to="/tin-tuc">Tin tức</Link></li>
           </ul>

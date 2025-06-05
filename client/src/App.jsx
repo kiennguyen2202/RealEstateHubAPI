@@ -1,4 +1,3 @@
-// src/App.jsx
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -12,12 +11,12 @@ import CreatePostPage from "./pages/CreatePostPage";
 import PostDetail from "./pages/PostDetail";
 import Profile from "./pages/Profile";
 import AdminDashboard from "./pages/AdminDashboard";
-import Search from "./pages/Search";
 
 import ReportPost from "./pages/ReportPost";
 import { AuthProvider } from "./auth/AuthContext";
 import PrivateRoute from "./auth/PrivateRoute";
 import AdminRoute from "./auth/AdminRoute";
+import MessagingFeature from './components/Message/MessagingFeature';
 import "./App.css";
 
 const App = () => {
@@ -36,12 +35,13 @@ const App = () => {
               <Route path="/home" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-              <Route path="/search" element={<Search />} />
+              
+              
               
               {/* Protected Routes */}
               <Route element={<PrivateRoute />}>
                 <Route path="/dang-tin" element={<CreatePostPage />} />
-                
+                <Route path="/messages" element={<MessagingFeature />} />
                 <Route path="/chi-tiet/:id/report" element={<ReportPost />} />
                 <Route path="/profile" element={<Profile />} />
                 

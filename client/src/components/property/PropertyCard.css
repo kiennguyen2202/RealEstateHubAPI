@@ -50,7 +50,9 @@
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+  line-clamp: 2;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .property-price {
@@ -86,4 +88,23 @@
   font-size: 12px;
   border-top: 1px solid #eee;
   padding-top: 10px;
+}
+
+.transaction-type {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-left: 10px;
+}
+
+.transaction-type.sale {
+  background-color: #c6f6d5;
+  color: #2f855a;
+}
+
+.transaction-type.rent {
+  background-color: #bee3f8;
+  color: #2c5282;
 } 
