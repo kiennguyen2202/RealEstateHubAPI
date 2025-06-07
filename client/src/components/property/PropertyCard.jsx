@@ -2,6 +2,10 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './PropertyCard.css';
 import { PriceUnit, formatPrice } from '../../utils/priceUtils';
+import FavoriteButton from '../Favorite/FavoriteButton';
+
+// Định nghĩa enum PriceUnit tương tự như ở backend
+
 
 const PropertyCard = ({ property }) => {
   // Helper function để lấy URL đầy đủ của ảnh
@@ -21,17 +25,17 @@ const PropertyCard = ({ property }) => {
             src={getFullImageUrl(property.images && property.images.length > 0 ? property.images[0].url : null)}
             alt={property.title} 
           />
-          
+          <div className="favorite-button-container">
+            <FavoriteButton postId={property.id} />
+          </div>
         </div>
         
         <div className="property-info">
           <h3 className="property-title">{property.title}</h3>
           
           <div className="property-price">
-  {/* console.log("PropertyCard - price:", property.price, "unitValue:", property.priceUnit) */}
-  {formatPrice(property.price, property.priceUnit)}
-</div>
-
+            {formatPrice(property.price, property.priceUnit)}
+          </div>
           
           <div className="property-details">
             <span>{property.area_Size}m²</span>

@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RealEstateHubAPI.Model;
 using RealEstateHubAPI.Models;
+using RealEstateHubAPI.Repositories;
+using System.Security.Claims;
 
 namespace RealEstateHubAPI.Controllers
 {
@@ -10,70 +13,133 @@ namespace RealEstateHubAPI.Controllers
     public class FavoriteController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<FavoriteController> _logger;
 
-        public FavoriteController(ApplicationDbContext context)
+        public FavoriteController(ApplicationDbContext context, ILogger<FavoriteController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
-
+        // Lấy danh sách bài post yêu thích của user
+        [Authorize]
         [HttpGet("user/{userId}")]
         public async Task<IActionResult> GetFavoritesByUser(int userId)
         {
-            var favorites = await _context.Favorites
-                .Where(f => f.UserId == userId)
-                .Include(f => f.Post)    // Lấy thông tin bài đăng
-                .Include(f => f.User)    // Lấy thông tin người dùng
-                .ToListAsync();
+            try
+            {
+                var favorites = await _context.Favorites
+                    .Include(f => f.Post)
+                        .ThenInclude(p => p.Images)
+                    .Include(f => f.Post)
+                        .ThenInclude(p => p.Category)
+                    .Include(f => f.Post)
+                        .ThenInclude(p => p.Area)
+                    .Where(f => f.UserId == userId)
+                    .OrderByDescending(f => f.CreatedFavorite)
+                    .ToListAsync();
 
-            return Ok(favorites);
+                return Ok(favorites);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting user favorites");
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
-
-
+        // Thêm bài post vào danh sách yêu thích
+        [Authorize]
         [HttpPost("{userId}/{postId}")]
         public async Task<IActionResult> AddFavorite(int userId, int postId)
         {
-            // Kiểm tra đã tồn tại chưa
-            var exists = await _context.Favorites
-                .AnyAsync(f => f.UserId == userId && f.PostId == postId);
-
-            if (exists)
-                return BadRequest("Bài viết đã có trong danh sách yêu thích.");
-
-            // Tạo mới đối tượng Favorite
-            var favorite = new Favorite
+            try
             {
-                UserId = userId,
-                PostId = postId,
-                CreatedFavorite = DateTime.Now
-            };
+                // Kiểm tra xem bài post có tồn tại không
+                var post = await _context.Posts.FindAsync(postId);
+                if (post == null)
+                {
+                    return NotFound("Bài đăng không tồn tại");
+                }
 
-            _context.Favorites.Add(favorite);
-            await _context.SaveChangesAsync();
+                // Kiểm tra xem đã yêu thích chưa
+                var existingFavorite = await _context.Favorites
+                    .FirstOrDefaultAsync(f => f.UserId == userId && f.PostId == postId);
 
-            return CreatedAtAction(nameof(GetFavoritesByUser), new { userId = userId }, favorite);
+                if (existingFavorite != null)
+                {
+                    return BadRequest("Bài đăng đã được thêm vào danh sách yêu thích");
+                }
+
+                var favorite = new Favorite
+                {
+                    UserId = userId,
+                    PostId = postId,
+                    CreatedFavorite = DateTime.Now
+                };
+
+                _context.Favorites.Add(favorite);
+                await _context.SaveChangesAsync();
+
+                return Ok(favorite);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error adding favorite");
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
-
-
-
-
+        // Xóa bài post khỏi danh sách yêu thích
+        [Authorize]
         [HttpDelete("user/{userId}/post/{postId}")]
         public async Task<IActionResult> RemoveFavoriteByUserAndPost(int userId, int postId)
         {
-            var favorite = await _context.Favorites
-                .FirstOrDefaultAsync(f => f.UserId == userId && f.PostId == postId);
+            try
+            {
+                var favorite = await _context.Favorites
+                    .FirstOrDefaultAsync(f => f.UserId == userId && f.PostId == postId);
 
-            if (favorite == null)
-                return NotFound();
+                if (favorite == null)
+                {
+                    return NotFound("Không tìm thấy bài đăng trong danh sách yêu thích");
+                }
 
-            _context.Favorites.Remove(favorite);
-            await _context.SaveChangesAsync();
+                _context.Favorites.Remove(favorite);
+                await _context.SaveChangesAsync();
 
-            return NoContent(); // Xóa thành công
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error removing favorite");
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
-        
+        // Kiểm tra xem bài post có trong danh sách yêu thích không
+        [AllowAnonymous]
+        [HttpGet("check/{postId}")]
+        public async Task<IActionResult> CheckFavorite(int postId)
+        {
+            try
+            {
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (userId == null)
+                {
+                    return Ok(new { isFavorite = false });
+                }
+
+                var isFavorite = await _context.Favorites
+                    .AnyAsync(f => f.UserId == int.Parse(userId) && f.PostId == postId);
+
+                return Ok(new { isFavorite });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error checking favorite status");
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
     }
 }

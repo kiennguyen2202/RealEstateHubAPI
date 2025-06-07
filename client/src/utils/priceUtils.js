@@ -1,22 +1,21 @@
-// Định nghĩa enum PriceUnit 
+ // Price unit enum
 export const PriceUnit = {
     Tỷ: 0,
     Triệu: 1
 };
 
-// Helper function để format giá
+// Format price with appropriate unit
 export const formatPrice = (price, unit) => {
-  if (!price || price === 0) return 'Thỏa thuận';
-
-  if (unit === PriceUnit.Tỷ) {
-    return `${price} Tỷ`;
-  } else if (unit === PriceUnit.Triệu) {
-    return `${price} Triệu`;
-  }
-
-  // Nếu không có đơn vị thì fallback về định dạng theo giá trị VND
-  if (price >= 1_000_000_000) {
-    return `${(price / 1_000_000_000).toFixed(1)} Tỷ`;
-  }
-  return `${(price / 1_000_000).toFixed(0)} Triệu`;
-}; 
+    if (!price) return 'Thỏa thuận';
+    
+    const formattedPrice = new Intl.NumberFormat('vi-VN').format(price);
+    
+    switch (unit) {
+        case PriceUnit.Tỷ:
+            return `${formattedPrice} tỷ`;
+        case PriceUnit.Triệu:
+            return `${formattedPrice} triệu`;
+        default:
+            return `${formattedPrice}`;
+    }
+};

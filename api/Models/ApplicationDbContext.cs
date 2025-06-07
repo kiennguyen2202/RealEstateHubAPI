@@ -20,8 +20,10 @@ namespace RealEstateHubAPI.Model
         public DbSet<Post> Posts { get; set; }
         public DbSet<PostImage> PostImages { get; set; }
 
+
         public DbSet<Report> Reports { get; set; }
         public DbSet<Message> Messages { get; set; }
+
 
         public DbSet<Favorite> Favorites { get; set; }
 

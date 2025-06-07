@@ -1,4 +1,6 @@
 ﻿# Visual Studio temp files
 .vs/
+obj/
+bin/
 api/obj/
 api/bin/
