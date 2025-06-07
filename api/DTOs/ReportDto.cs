@@ -26,7 +26,7 @@ namespace RealEstateHubAPI.DTOs
     {
         public int Id { get; set; }
         public string Title { get; set; }
-        public string Price { get; set; }
+        public decimal Price { get; set; }
         public CategoryDto? Category { get; set; }
         public AreaDto? Area { get; set; }
         public List<string>? Images { get; set; }

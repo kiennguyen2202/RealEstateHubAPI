@@ -1,4 +1,6 @@
-﻿namespace RealEstateHubAPI.Model
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace RealEstateHubAPI.Model
 {
     public class User
     {
@@ -6,9 +8,11 @@
         public string Name { get; set; }
         public string Phone { get; set; }
         public string Email { get; set; }
-        public string Password { get; set; }
+        [Required(AllowEmptyStrings = true)]
+        public string Password { get; set; } = "";
+        public string AvatarUrl { get; set; }
         public DateTime Create { get; set; } = DateTime.Now;
 
         public string Role { get; set; } = "Admin";
-    }
+    } 
 }

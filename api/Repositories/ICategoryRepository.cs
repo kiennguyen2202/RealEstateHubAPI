@@ -1,4 +1,5 @@
 ﻿using RealEstateHubAPI.Model;
+using RealEstateHubAPI.Models;
 
 namespace RealEstateHubAPI.Repositories
 {

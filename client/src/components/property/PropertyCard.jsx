@@ -8,30 +8,13 @@ import FavoriteButton from '../Favorite/FavoriteButton';
 
 
 const PropertyCard = ({ property }) => {
-  // Helper function để hiển thị đơn vị giá từ enum
-  const displayPriceUnit = (unitValue) => {
-    switch (unitValue) {
-      case PriceUnit.Tỷ:
-        return 'tỷ';
-      case PriceUnit.Triệu:
-        return 'triệu';
-      default:
-        return '';
-    }
-  };
-
   // Helper function để lấy URL đầy đủ của ảnh
   const getFullImageUrl = (imageUrl) => {
     if (!imageUrl) return '/upload.jpg'; // Placeholder nếu không có ảnh
-    // Giả sử backend serve static files tại http://localhost:5134
-    // Bạn có thể cần điều chỉnh URL này nếu backend chạy ở địa chỉ/port khác
-    const backendBaseUrl = 'http://localhost:5134';
-    // Kiểm tra nếu URL đã là đầy đủ (ví dụ từ nguồn ngoài)
     if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
       return imageUrl;
     }
-    // Kết hợp base URL của backend với đường dẫn tương đối từ API
-    return `${backendBaseUrl}${imageUrl}`;
+    return `http://localhost:5134${imageUrl}`;
   };
 
   return (

@@ -1,3 +1,5 @@
+@import 'react-toastify/dist/ReactToastify.css';
+
 .app {
   min-height: 100vh;
   display: flex;
@@ -7,6 +9,7 @@
 .main-content {
   flex: 1;
   background: #f5f5f5;
+  padding-top: 60px;
 }
 
 /* Reset CSS */
