@@ -1040,18 +1040,6 @@
         }
       }
     },
-    "/api/users/profile": {
-      "get": {
-        "tags": [
-          "User"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
     "/api/users": {
       "get": {
         "tags": [
@@ -1115,7 +1103,7 @@
           }
         }
       },
-      "put": {
+      "delete": {
         "tags": [
           "User"
         ],
@@ -1129,6 +1117,28 @@
               "format": "int32"
             }
           }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/users/profile": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "User"
         ],
         "requestBody": {
           "content": {
@@ -1154,22 +1164,40 @@
             "description": "OK"
           }
         }
-      },
-      "delete": {
+      }
+    },
+    "/api/users/avatar": {
+      "post": {
         "tags": [
           "User"
         ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "Avatar": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "UserId": {
+                    "type": "integer",
+                    "format": "int32"
+                  }
+                }
+              },
+              "encoding": {
+                "Avatar": {
+                  "style": "form"
+                },
+                "UserId": {
+                  "style": "form"
+                }
+              }
             }
           }
-        ],
+        },
         "responses": {
           "200": {
             "description": "OK"
@@ -1537,6 +1565,9 @@
         "additionalProperties": false
       },
       "User": {
+        "required": [
+          "password"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -1556,6 +1587,9 @@
             "nullable": true
           },
           "password": {
+            "type": "string"
+          },
+          "avatarUrl": {
             "type": "string",
             "nullable": true
           },
