@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "1vx/j7RRxGCHPzX0EK5J0WW6ldsxrO0ABVzl2kUF1sY=",
+  "Hash": "lMKfhv9FG/e0/0096dsqoYVLLmjBKeqQ8N44RHuVUJ8=",
   "Source": "RealEstateHubAPI",
   "BasePath": "_content/RealEstateHubAPI",
   "Mode": "Default",
@@ -162,6 +162,27 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\uploads\\4afa9e43-e908-417f-a844-13527dcf9659_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg"
+    },
+    {
+      "Identity": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\67ff9104-5d03-4043-84f5-3e942d37ff19_z6184841448884_3e4b196d5d2f9659abf2a8c54454924a.jpg",
+      "SourceId": "RealEstateHubAPI",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\",
+      "BasePath": "_content/RealEstateHubAPI",
+      "RelativePath": "uploads/67ff9104-5d03-4043-84f5-3e942d37ff19_z6184841448884_3e4b196d5d2f9659abf2a8c54454924a#[.{fingerprint}]?.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "bg3dn4hokz",
+      "Integrity": "RZY40V+XBwvWCrjayPh0OqitDtP8fAUtQvm1Qok9HTw=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\67ff9104-5d03-4043-84f5-3e942d37ff19_z6184841448884_3e4b196d5d2f9659abf2a8c54454924a.jpg"
     },
     {
       "Identity": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\6da615ad-bb8e-4436-af2e-821746e2f691_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg",
@@ -883,6 +904,88 @@
         {
           "Name": "integrity",
           "Value": "sha256-+kLWr8JR4nfgXyEvHG47GVqvHLGrIx9zpjzA1ai6zd4="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/67ff9104-5d03-4043-84f5-3e942d37ff19_z6184841448884_3e4b196d5d2f9659abf2a8c54454924a.bg3dn4hokz.jpg",
+      "AssetFile": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\67ff9104-5d03-4043-84f5-3e942d37ff19_z6184841448884_3e4b196d5d2f9659abf2a8c54454924a.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "236824"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"RZY40V+XBwvWCrjayPh0OqitDtP8fAUtQvm1Qok9HTw=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 06 Jun 2025 06:57:31 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "bg3dn4hokz"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/67ff9104-5d03-4043-84f5-3e942d37ff19_z6184841448884_3e4b196d5d2f9659abf2a8c54454924a.jpg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-RZY40V+XBwvWCrjayPh0OqitDtP8fAUtQvm1Qok9HTw="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/67ff9104-5d03-4043-84f5-3e942d37ff19_z6184841448884_3e4b196d5d2f9659abf2a8c54454924a.jpg",
+      "AssetFile": "C:\\Users\\Admin\\RealEstateHubAPI\\api\\wwwroot\\uploads\\67ff9104-5d03-4043-84f5-3e942d37ff19_z6184841448884_3e4b196d5d2f9659abf2a8c54454924a.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "236824"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"RZY40V+XBwvWCrjayPh0OqitDtP8fAUtQvm1Qok9HTw=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 06 Jun 2025 06:57:31 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-RZY40V+XBwvWCrjayPh0OqitDtP8fAUtQvm1Qok9HTw="
         }
       ]
     },

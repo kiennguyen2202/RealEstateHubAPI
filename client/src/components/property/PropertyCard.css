@@ -1,9 +1,9 @@
 .property-card {
-  background: #fff;
+  background: white;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  transition: transform 0.3s;
+  transition: transform 0.2s;
 }
 
 .property-card:hover {
@@ -17,6 +17,7 @@
 
 .property-image {
   position: relative;
+  width: 100%;
   height: 200px;
   overflow: hidden;
 }
@@ -27,25 +28,20 @@
   object-fit: cover;
 }
 
-.verified-badge {
+.favorite-button-container {
   position: absolute;
   top: 10px;
   right: 10px;
-  background: #4CAF50;
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
+  z-index: 1;
 }
 
 .property-info {
-  padding: 15px;
+  padding: 1rem;
 }
 
 .property-title {
-  margin: 0 0 10px;
-  font-size: 16px;
-  font-weight: 600;
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
   color: #333;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -54,18 +50,18 @@
 }
 
 .property-price {
-  color: #f60;
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 10px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #e63946;
+  margin-bottom: 0.5rem;
 }
 
 .property-details {
   display: flex;
-  gap: 15px;
-  margin-bottom: 10px;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
   color: #666;
-  font-size: 14px;
+  font-size: 0.9rem;
 }
 
 .property-location {
@@ -82,8 +78,34 @@
 .property-meta {
   display: flex;
   justify-content: space-between;
-  color: #999;
+  align-items: center;
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.transaction-type {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+
+.transaction-type.sale {
+  background-color: #e63946;
+  color: white;
+}
+
+.transaction-type.rent {
+  background-color: #457b9d;
+  color: white;
+}
+
+.verified-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #4CAF50;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
   font-size: 12px;
-  border-top: 1px solid #eee;
-  padding-top: 10px;
 } 

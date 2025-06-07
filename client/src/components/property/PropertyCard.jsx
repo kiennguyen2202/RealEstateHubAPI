@@ -1,12 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './PropertyCard.css';
+import { PriceUnit, formatPrice } from '../../utils/priceUtils';
+import FavoriteButton from '../Favorite/FavoriteButton';
 
 // Định nghĩa enum PriceUnit tương tự như ở backend
-const PriceUnit = {
-    Tỷ: 0,
-    Triệu: 1
-};
+
 
 const PropertyCard = ({ property }) => {
   // Helper function để hiển thị đơn vị giá từ enum
@@ -40,17 +39,19 @@ const PropertyCard = ({ property }) => {
       <Link to={`/chi-tiet/${property.id}`} className="property-link">
         <div className="property-image">
           <img 
-            src={getFullImageUrl(property.images && property.images.length > 0 ? property.images[0].url : property.imageURL)}
+            src={getFullImageUrl(property.images && property.images.length > 0 ? property.images[0].url : null)}
             alt={property.title} 
           />
-          {property.status === 'verified' && <span className="verified-badge">Đã xác thực</span>}
+          <div className="favorite-button-container">
+            <FavoriteButton postId={property.id} />
+          </div>
         </div>
         
         <div className="property-info">
           <h3 className="property-title">{property.title}</h3>
           
           <div className="property-price">
-            {property.price} {displayPriceUnit(property.priceUnit)}
+            {formatPrice(property.price, property.priceUnit)}
           </div>
           
           <div className="property-details">
@@ -59,11 +60,11 @@ const PropertyCard = ({ property }) => {
             <span>{property.area ? `${property.area.city}` : 'Chưa có khu vực'}</span>
           </div>
           
-          
-          
           <div className="property-meta">
             <span className="post-date">{new Date(property.created).toLocaleDateString('vi-VN')}</span>
-            <span className="status">{property.status}</span>
+            <span className={`transaction-type ${property.transactionType === 0 ? 'sale' : 'rent'}`}>
+              {property.transactionType === 0 ? "Mua bán" : "Cho thuê"}
+            </span>
           </div>
         </div>
       </Link>

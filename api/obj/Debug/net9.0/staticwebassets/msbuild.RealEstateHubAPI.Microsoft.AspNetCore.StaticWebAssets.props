@@ -126,6 +126,24 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\4afa9e43-e908-417f-a844-13527dcf9659_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg'))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\67ff9104-5d03-4043-84f5-3e942d37ff19_z6184841448884_3e4b196d5d2f9659abf2a8c54454924a.jpg'))">
+      <SourceType>Package</SourceType>
+      <SourceId>RealEstateHubAPI</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/RealEstateHubAPI</BasePath>
+      <RelativePath>uploads/67ff9104-5d03-4043-84f5-3e942d37ff19_z6184841448884_3e4b196d5d2f9659abf2a8c54454924a.jpg</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <Fingerprint>bg3dn4hokz</Fingerprint>
+      <Integrity>RZY40V+XBwvWCrjayPh0OqitDtP8fAUtQvm1Qok9HTw=</Integrity>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\67ff9104-5d03-4043-84f5-3e942d37ff19_z6184841448884_3e4b196d5d2f9659abf2a8c54454924a.jpg'))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\6da615ad-bb8e-4436-af2e-821746e2f691_a0cabc64f3bc83b0217659a60f7c1d65-2931580734191938379.jpg'))">
       <SourceType>Package</SourceType>
       <SourceId>RealEstateHubAPI</SourceId>
