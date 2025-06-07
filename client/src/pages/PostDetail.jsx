@@ -9,6 +9,7 @@ import {
 } from "react-icons/fa";
 import "./PostDetail.css";
 import { PriceUnit, formatPrice } from '../utils/priceUtils';
+import ReportPost from "./ReportPost";
 
 const TransactionType = {
   Sale: 0, 
@@ -229,6 +230,9 @@ const PostDetail = () => {
                 ))}
               </div>
             )}
+            <button className='report-button' onClick ={() => navigate(`/chi-tiet/${post.id}/report`)}>
+              <i className="fas fa-flag"></i> Báo cáo
+            </button>
           </div>
 
           {/* Right Column - Info */}

@@ -12,7 +12,7 @@ import CreatePostPage from "./pages/CreatePostPage";
 import PostDetail from "./pages/PostDetail";
 import Profile from "./pages/Profile";
 import AdminDashboard from "./pages/AdminDashboard";
-import Search from "./pages/Search";
+
 
 import ReportPost from "./pages/ReportPost";
 import Favorites from "./pages/Favorites";
@@ -32,11 +32,13 @@ const App = () => {
               {/* Trang chủ mới */}
               <Route path="/" element={<HomePage />} />
               
+              
               <Route path="/chi-tiet/:id" element={<PostDetail />} />
               {/* Các routes cũ */}
               <Route path="/home" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              
               
               
               
