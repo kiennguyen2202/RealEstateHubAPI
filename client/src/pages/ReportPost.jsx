@@ -34,7 +34,7 @@ function ReportPost() {
 
     const fetchPost = async () => {
       try {
-        const response = await axiosPrivate.get(`/posts/${id}`);
+        const response = await axiosPrivate.get(`/api/posts/${id}`);
         setPost(response.data);
       } catch (err) {
         setError("Không thể tải thông tin bài viết");
@@ -63,7 +63,7 @@ function ReportPost() {
     };
 
     try {
-      await axiosPrivate.post(`/reports`, requestBody); 
+      await axiosPrivate.post(`/api/reports`, requestBody); 
       alert("Báo cáo đã được gửi thành công");
       navigate(`/chi-tiet/${id}`);
     } catch (err) {
