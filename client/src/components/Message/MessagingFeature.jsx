@@ -8,10 +8,19 @@ import { vi } from 'date-fns/locale';
 import './MessagingFeature.css';
 
 // Component avatar mặc định, lấy chữ cái đầu tên
-const DefaultAvatar = ({ name }) => {
+const DefaultAvatar = ({ name, avatarUrl }) => {
+  if (avatarUrl) {
+    return (
+      <img
+        src={avatarUrl.startsWith('http') ? avatarUrl : `http://localhost:5134${avatarUrl}`}
+        alt={name}
+        className="default-avatar"
+      />
+    );
+  }
   const initial = name ? name.charAt(0).toUpperCase() : '?';
   return (
-    <div className="w-8 h-8 rounded-full bg-gray-400 flex items-center justify-center text-white font-bold text-sm">
+    <div className="default-avatar flex items-center justify-center text-white font-bold bg-gray-400">
       {initial}
     </div>
   );
@@ -85,6 +94,8 @@ const MessagingFeature = () => {
         messagesData.forEach((message) => {
           // Key phân biệt conversation theo postId và user còn lại
           const otherUserId = message.senderId === currentUserId ? message.receiverId : message.senderId;
+          const otherUserAvatarUrl = message.senderId === currentUserId ? message.receiverAvatarUrl : message.senderAvatarUrl;
+
           const key = `${message.postId}-${otherUserId}`;
           let postUsername = message.PostUserName || 'Không rõ';
           if (message.post?.user?.name) {
@@ -98,6 +109,7 @@ const MessagingFeature = () => {
               postTitle: message.PostTitle || message.postTitle || message.post?.Title || 'Không rõ tiêu đề post',
               otherUserId,
               otherUserName: message.senderId === currentUserId ? message.receiverName : message.senderName,
+              otherUserAvatarUrl,
               lastMessage: message,
               // *** Lấy post username từ message object (nếu API trả về) ***
               postUsername: message.PostUserName || message.postUserName || 'Không rõ',
@@ -428,7 +440,11 @@ const MessagingFeature = () => {
                 >
                   {/* Avatar and Content area for list items */}
                    {/* Sử dụng DefaultAvatar tạm thời, có thể thay bằng ảnh thật nếu có */}
-                  <div className="item-image"><DefaultAvatar name={conv.otherUserName || conv.postTitle} /></div>
+                  <div className="item-image">
+                    <DefaultAvatar
+                      name={conv.otherUserName}
+                      avatarUrl={conv.otherUserAvatarUrl}/>
+                  </div>
                   <div className="item-content">
                      {/* *** Hiển thị Post Title *** */}
                     <div className="font-medium truncate">{conv.postTitle || 'Không rõ tiêu đề post'}</div>
@@ -512,7 +528,8 @@ const MessagingFeature = () => {
       {!isSent && (
         <>
           <div className="avatar">
-            <DefaultAvatar name={message.senderName} />
+            <DefaultAvatar name={message.senderName}
+             avatarUrl={message.senderAvatarUrl || message.sender?.avatarUrl} />
           </div>
           <div className="message-content">
             <div className="message-bubble">{message.content}</div>
@@ -540,7 +557,10 @@ const MessagingFeature = () => {
 </span>
           </div>
           <div className="avatar">
-            <DefaultAvatar name={user?.name || ''} />
+            <DefaultAvatar
+              name={user?.name || ''}
+              avatarUrl={user?.avatarUrl}
+            />
           </div>
         </>
       )}

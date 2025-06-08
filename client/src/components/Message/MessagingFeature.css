@@ -70,13 +70,22 @@
 
 /* Image/Avatar in list item - Matches img in .user-item */
 .conversation-item .item-image {
-     width: 40px;
-     height: 40px;
-     border-radius: 0.25rem; /* Small border-radius */
-     object-fit: cover;
-     flex-shrink: 0;
+     width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
 }
-
+.item-image img,
+.item-image .default-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #eee;
+}
 /* Content area in list item - Matches .user-item-content */
 .conversation-item .item-content {
     flex-grow: 1;
