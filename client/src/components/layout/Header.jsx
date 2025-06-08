@@ -1,10 +1,12 @@
 import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../auth/AuthContext';
+
 import './Header.css';
 
 const Header = () => {
   const { user, logout } = useContext(AuthContext);
+  
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -23,10 +25,11 @@ const Header = () => {
     <header className="header">
       <div className="header-container">
         <div className="logo">
-          <Link to="/">
-            <img src="/real.png" alt="Real Estate Hub" />
-          </Link>
-        </div>
+  <Link to="/" className="logo-link">
+    <img src="/realestate.png.webp" alt="Real Estate Hub" className="logo-img" />
+    <span className="logo-text">RealEstateHub</span>
+  </Link>
+</div>
         
         <nav className="main-nav">
           <ul>
@@ -49,7 +52,7 @@ const Header = () => {
           {user ? (
             <div className="user-menu">
               <button className="user-menu-button">
-                <img src={user.avatar || '/default-avatar.png'} alt="Avatar" className="user-avatar" />
+                <img src={`http://localhost:5134/${user?.avatarUrl || 'default-avatar.png'}`} alt="Avatar" className="user-avatar" />
                 <span>{user.name}</span>
               </button>
               <div className="user-dropdown">

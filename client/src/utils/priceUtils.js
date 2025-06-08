@@ -12,10 +12,15 @@ export const formatPrice = (price, unit) => {
     
     switch (unit) {
         case PriceUnit.Tỷ:
-            return `${formattedPrice} tỷ`;
+            return `${formattedPrice} Tỷ`;
         case PriceUnit.Triệu:
-            return `${formattedPrice} triệu`;
+            return `${formattedPrice} Triệu`;
         default:
             return `${formattedPrice}`;
     }
+};
+export const toTrieu = (price, unit) => {
+  // unit: 0 = tỷ, 1 = triệu
+  if (unit === 0) return price * 1000;
+  return price;
 };

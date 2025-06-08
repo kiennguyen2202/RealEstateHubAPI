@@ -12,7 +12,7 @@ import CreatePostPage from "./pages/CreatePostPage";
 import PostDetail from "./pages/PostDetail";
 import Profile from "./pages/Profile";
 import AdminDashboard from "./pages/AdminDashboard";
-
+import MessagingFeature from './components/Message/MessagingFeature';
 
 import ReportPost from "./pages/ReportPost";
 import Favorites from "./pages/Favorites";
@@ -45,7 +45,7 @@ const App = () => {
               {/* Protected Routes */}
               <Route element={<PrivateRoute />}>
                 <Route path="/dang-tin" element={<CreatePostPage />} />
-                
+                <Route path="/messages" element={<MessagingFeature />} />
                 <Route path="/chi-tiet/:id/report" element={<ReportPost />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/favorites" element={<Favorites />} />
