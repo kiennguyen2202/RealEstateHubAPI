@@ -13,7 +13,7 @@ import PostDetail from "./pages/PostDetail";
 import Profile from "./pages/Profile";
 import AdminDashboard from "./pages/AdminDashboard";
 import MessagingFeature from './components/Message/MessagingFeature';
-
+import PostHistory from './pages/PostHistory';
 import ReportPost from "./pages/ReportPost";
 import Favorites from "./pages/Favorites";
 import { AuthProvider } from "./auth/AuthContext";
@@ -48,6 +48,7 @@ const App = () => {
                 <Route path="/messages" element={<MessagingFeature />} />
                 <Route path="/chi-tiet/:id/report" element={<ReportPost />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/post-history" element={<PostHistory />} />
                 <Route path="/favorites" element={<Favorites />} />
               </Route>
 

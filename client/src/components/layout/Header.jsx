@@ -58,7 +58,7 @@ const Header = () => {
               <div className="user-dropdown">
                 <Link to="/profile">Tài khoản của tôi</Link>
                 <Link to="/messages">Tin nhắn</Link>
-                <Link to="/my-posts">Tin đã đăng</Link>
+                <Link to="/post-history">Tin đã đăng</Link>
                 {user.role === 'admin' && <Link to="/admin">Quản trị</Link>}
                 <button onClick={handleLogout}>Đăng xuất</button>
               </div>
