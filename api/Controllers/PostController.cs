@@ -8,7 +8,7 @@ namespace RealEstateHubAPI.Controllers
 {
     [ApiController]
     [Route("api/posts")]
-
+    
     public class PostController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -20,29 +20,21 @@ namespace RealEstateHubAPI.Controllers
             _env = env;
         }
         [AllowAnonymous]
-        // GET: api/posts
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
-        {
-            try
-            {
-                var posts = await _context.Posts
-                    .Include(p => p.Category)
+[HttpGet]
+public async Task<IActionResult> GetPosts([FromQuery] bool? isApproved)
+{
+    var posts = _context.Posts
+        .Include(p => p.User)
+        .Include(p => p.Category)
+        .Include(p => p.Area)
+        .Include(p => p.Images)
+        .AsQueryable();
 
-                    .Include(p => p.Area)
+    if (isApproved.HasValue)
+        posts = posts.Where(p => p.IsApproved == isApproved.Value);
 
-                    .Include(p => p.User)
-                    .Include(p => p.Images)
-                    .ToListAsync();
-
-                return Ok(posts);
-            }
-            catch (Exception ex)
-            {
-                // Log lỗi chi tiết hơn trong môi trường phát triển
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
-        }
+    return Ok(await posts.ToListAsync());
+}
 
         // GET: api/posts/{id}
         [HttpGet("{id}")]
@@ -91,6 +83,7 @@ namespace RealEstateHubAPI.Controllers
                     CategoryId = dto.CategoryId,
                     AreaId = dto.AreaId,
                     UserId = dto.UserId,
+                    IsApproved = false,
                     Images = new List<PostImage>()
                 };
 
@@ -226,16 +219,19 @@ namespace RealEstateHubAPI.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+        [HttpGet("user/{userId}")]
+         public async Task<IActionResult> GetPostsByUser(int userId)
+         {
+              var posts = await _context.Posts          
+              .Include(p => p.Images)
+              .Where(p => p.UserId == userId)
+              .OrderByDescending(p => p.Created)
+              .ToListAsync();
+               return Ok(posts);
+         }
         
-            [HttpGet("user/{userId}")]
-            public async Task<IActionResult> GetPostsByUser(int userId)
-            {
-                var posts = await _context.Posts
-                    .Include(p => p.Images)
-                    .Where(p => p.UserId == userId)
-                    .OrderByDescending(p => p.Created)
-                    .ToListAsync();
-                return Ok(posts);
-            }
+
+
+
     }
 }

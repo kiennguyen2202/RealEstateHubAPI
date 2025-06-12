@@ -214,6 +214,9 @@ const PostDetail = () => {
               alt={post.title}
               className="main-image"
             />
+            <button className='report-button' onClick ={() => navigate(`/chi-tiet/${post.id}/report`)}>
+              <i className="fas fa-flag"></i> Báo cáo
+            </button>
             {post.images && post.images.length > 1 && (
               <div className="thumbnail-grid">
                 {post.images.map((image, index) => (
@@ -230,9 +233,7 @@ const PostDetail = () => {
                 ))}
               </div>
             )}
-            <button className='report-button' onClick ={() => navigate(`/chi-tiet/${post.id}/report`)}>
-              <i className="fas fa-flag"></i> Báo cáo
-            </button>
+            
           </div>
 
           {/* Right Column - Info */}
@@ -303,7 +304,7 @@ const PostDetail = () => {
               </div>
             )}
 
-            {user && (user.id === post.userId || user.role === "Admin") && (
+            {user && (user.id === post.userId ) && (
               <div className="action-buttons">
                 <button
                   className="edit-button"

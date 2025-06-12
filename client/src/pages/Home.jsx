@@ -30,9 +30,9 @@ const Home = () => {
     const fetchData = async () => {
       try {
         const [postsRes, categoriesRes, areasRes] = await Promise.all([
-          axiosClient.get("/posts"),
-          axiosClient.get("/categories"),
-          axiosClient.get("/areas")
+          axiosClient.get("/api/posts"),
+          axiosClient.get("/api/categories"),
+          axiosClient.get("/api/areas")
         ]);
         setPosts(postsRes.data);
         setCategories(categoriesRes.data);

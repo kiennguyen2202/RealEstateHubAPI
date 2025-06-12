@@ -41,7 +41,7 @@ const HomePage = () => {
       
       // Fetch cả properties và categories
       const [propertiesRes, categoriesRes] = await Promise.all([
-        axiosClient.get('/api/posts'),
+        axiosClient.get('/api/posts?isApproved=true'),
         axiosClient.get('/api/categories')
       ]);
       

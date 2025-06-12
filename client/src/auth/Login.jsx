@@ -9,7 +9,7 @@ const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   
-  const { login } = useContext(AuthContext);
+  const { login, showNotification } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -22,10 +22,15 @@ const Login = () => {
       if (result.success) {
         navigate('/');
       } else {
-        setError(result.error || 'Đăng nhập thất bại');
+        console.log('Login error:', result.error);
+        setError(result.error);
+        showNotification(result.error, 'error');
       }
     } catch (error) {
-      setError('Có lỗi xảy ra, vui lòng thử lại');
+      console.error('Login error:', error);
+      const errorMessage = error.response?.data || 'Có lỗi xảy ra, vui lòng thử lại';
+      setError(errorMessage);
+      showNotification(errorMessage, 'error');
     } finally {
       setLoading(false);
     }
@@ -36,14 +41,18 @@ const Login = () => {
       <div className="auth-card">
         <h2>Đăng nhập</h2>
         
-        {error && <div className="error-message">{error}</div>}
+        {error && (
+          <div className="error-message">
+            {error}
+          </div>
+        )}
         
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label className="form-label">Email</label>
+            <label htmlFor="email">Email</label>
             <input
               type="email"
-              className="form-control"
+              id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -51,10 +60,10 @@ const Login = () => {
           </div>
 
           <div className="form-group">
-            <label className="form-label">Mật khẩu</label>
+            <label htmlFor="password">Mật khẩu</label>
             <input
               type="password"
-              className="form-control"
+              id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required

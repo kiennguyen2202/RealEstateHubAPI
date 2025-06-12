@@ -19,6 +19,10 @@ import Favorites from "./pages/Favorites";
 import { AuthProvider } from "./auth/AuthContext";
 import PrivateRoute from "./auth/PrivateRoute";
 import AdminRoute from "./auth/AdminRoute";
+import UsersPage from './pages/UsersPage';
+import PostsPage from './pages/PostsPage';
+import ReportsPage from './pages/ReportsPage';
+import CategoriesPage from './pages/CategoriesPage';
 import "./App.css";
 
 const App = () => {
@@ -55,20 +59,25 @@ const App = () => {
               {/* Admin Routes */}
               <Route element={<AdminRoute />}>
                 <Route path="/admin" element={<AdminDashboard />} />
+                <Route path="/admin/users" element={<UsersPage />} />
+                <Route path="/admin/posts" element={<PostsPage />} />
+                <Route path="/admin/reports" element={<ReportsPage />} />
+                <Route path="/admin/categories" element={<CategoriesPage />} />
               </Route>
             </Routes>
           </main>
           <ToastContainer
             position="top-right"
-            autoClose={3000}
+            autoClose={5000}
             hideProgressBar={false}
             newestOnTop
-            closeOnClick
+            closeOnClick={false}
             rtl={false}
             pauseOnFocusLoss
             draggable
             pauseOnHover
             theme="light"
+            style={{ fontSize: '14px' }}
           />
         </div>
       </Router>

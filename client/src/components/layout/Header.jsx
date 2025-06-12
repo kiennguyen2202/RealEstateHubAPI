@@ -26,7 +26,7 @@ const Header = () => {
       <div className="header-container">
         <div className="logo">
   <Link to="/" className="logo-link">
-    <img src="/realestate.png.webp" alt="Real Estate Hub" className="logo-img" />
+    <img src="/real-estate-logo-house-logo-home-logo-sign-symbol-free-vector.jpg" alt="Real Estate Hub" className="logo-img" />
     <span className="logo-text">RealEstateHub</span>
   </Link>
 </div>
@@ -59,7 +59,7 @@ const Header = () => {
                 <Link to="/profile">Tài khoản của tôi</Link>
                 <Link to="/messages">Tin nhắn</Link>
                 <Link to="/post-history">Tin đã đăng</Link>
-                {user.role === 'admin' && <Link to="/admin">Quản trị</Link>}
+                {user.role?.toLowerCase() === 'admin' && <Link to="/admin">Quản trị</Link>}
                 <button onClick={handleLogout}>Đăng xuất</button>
               </div>
             </div>

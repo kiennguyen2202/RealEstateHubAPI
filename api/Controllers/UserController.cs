@@ -10,7 +10,7 @@ namespace RealEstateHubAPI.Controllers
 {
     [Route("api/users")]
     [ApiController]
-    //[Authorize(Roles = "Admin")]
+    
     public class UserController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
@@ -54,50 +54,46 @@ namespace RealEstateHubAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> AddUser([FromBody] User user)
         {
-            await _userRepository.AddUserAsync(user);
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(GetUserById), new { id = user.Id }, user);
         }
 
         
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(int id)
-        {
-            await _userRepository.DeleteUserAsync(id);
-            return NoContent();
-        }
+        
         
         [HttpGet("profile")]
-public async Task<IActionResult> GetProfile()
-{
-    var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-    if (string.IsNullOrEmpty(userIdClaim)) return Unauthorized();
-    var userId = int.Parse(userIdClaim);
-    var user = await _context.Users.FindAsync(userId);
-    if (user == null) return NotFound();
-    return Ok(user);
-}
+        public async Task<IActionResult> GetProfile()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim)) return Unauthorized();
+            var userId = int.Parse(userIdClaim);
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null) return NotFound();
+            return Ok(user);
+        }
 
 
         [HttpPut("profile")]
-public async Task<IActionResult> UpdateProfile([FromBody] User updateUser)
-{
-    var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-    if (string.IsNullOrEmpty(userIdClaim)) return Unauthorized();
-    var userId = int.Parse(userIdClaim);
+        public async Task<IActionResult> UpdateProfile([FromBody] User updateUser)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim)) return Unauthorized();
+            var userId = int.Parse(userIdClaim);
 
-    var user = await _context.Users.FindAsync(userId);
-    if (user == null) return NotFound();
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null) return NotFound();
 
-    // Cập nhật các trường được phép
-    user.Name = updateUser.Name;
-    user.Email = updateUser.Email;
-    user.Phone = updateUser.Phone;
-    user.AvatarUrl = updateUser.AvatarUrl;
+            // Cập nhật các trường được phép
+            user.Name = updateUser.Name;
+            user.Email = updateUser.Email;
+            user.Phone = updateUser.Phone;
+            user.AvatarUrl = updateUser.AvatarUrl;
 
-    await _context.SaveChangesAsync();
-    return Ok(user);
-}
+            await _context.SaveChangesAsync();
+            return Ok(user);
+        }
 
 
         [HttpPost("avatar")]
@@ -136,6 +132,7 @@ public async Task<IActionResult> UpdateProfile([FromBody] User updateUser)
 
             return Ok(new { avatarUrl = user.AvatarUrl });
         }
+            
 
 
     }

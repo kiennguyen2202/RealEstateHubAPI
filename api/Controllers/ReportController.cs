@@ -74,6 +74,7 @@ namespace RealEstateHubAPI.Controllers
 
         // POST: api/reports
         [HttpPost]
+
         public async Task<IActionResult> Create([FromBody] CreateReportDto dto)
         {
             var user = await _context.Users.FindAsync(dto.UserId);
@@ -90,7 +91,7 @@ namespace RealEstateHubAPI.Controllers
                 UserId = dto.UserId,
                 PostId = dto.PostId,
                 Type = dto.Type,
-                Other = dto.Type == ReportType.Other ? dto.Other : null,
+                Other = dto.Other,
                 Phone = dto.Phone,
                 CreatedReport = DateTime.UtcNow
             };
@@ -101,51 +102,9 @@ namespace RealEstateHubAPI.Controllers
             var result = await GetReportDtoById(report.Id);
             return Ok(result);
         }
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdateReportDto dto)
-        {
-            var report = await _context.Reports.FindAsync(id);
-            if (report == null)
-                return NotFound();
+        
 
-            if (dto.Type == ReportType.Other && string.IsNullOrWhiteSpace(dto.Other))
-                return BadRequest("Bạn phải nhập thông tin chi tiết cho loại báo cáo 'Other'.");
-
-            // Kiểm tra tồn tại User và Post nếu muốn cho phép thay đổi
-            var userExists = await _context.Users.AnyAsync(u => u.Id == dto.UserId);
-            var postExists = await _context.Posts.AnyAsync(p => p.Id == dto.PostId);
-            if (!userExists || !postExists)
-                return BadRequest("User hoặc Post không tồn tại.");
-
-            report.UserId = dto.UserId;
-            report.PostId = dto.PostId;
-            report.Type = dto.Type;
-            report.Other = dto.Type == ReportType.Other ? dto.Other : null;
-            report.Phone = dto.Phone;
-            // Không cập nhật CreatedReport để giữ thời điểm tạo ban đầu
-
-            await _context.SaveChangesAsync();
-
-            var result = await GetReportDtoById(report.Id);
-            return Ok(result);
-        }
-        // DELETE: api/reports/{id}
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var report = await _context.Reports.FindAsync(id);
-            if (report == null)
-                return NotFound("Không tìm thấy báo cáo để xoá.");
-
-            _context.Reports.Remove(report);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        /// <summary>
-        /// Trả về thông tin chi tiết báo cáo theo ID
-        /// </summary>
+        
         private async Task<ReportDto?> GetReportDtoById(int id)
         {
             var report = await _context.Reports

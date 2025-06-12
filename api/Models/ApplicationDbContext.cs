@@ -63,6 +63,10 @@ namespace RealEstateHubAPI.Model
                 .Property(p => p.Id)
                 .ValueGeneratedOnAdd();
 
+            modelBuilder.Entity<User>()
+                .Property(u => u.Role)
+                .HasConversion<string>();
+
             modelBuilder.Entity<Report>()
                 .Property(r => r.Type)
                 .HasConversion<int>();
