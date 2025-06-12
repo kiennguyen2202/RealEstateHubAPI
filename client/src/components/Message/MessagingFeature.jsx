@@ -191,9 +191,9 @@ const MessagingFeature = () => {
 
     const fetchMessages = async () => {
       try {
-        setLoadingMessages(true); // Start loading messages
-        // Assuming getPostMessages returns messages for selectedConversation.postId
-        const data = await messageService.getPostMessages(selectedConversation.postId);
+        setLoadingMessages(true);
+        // Thay đổi từ getPostMessages sang getConversation
+        const data = await messageService.getConversation(currentUserId, selectedConversation.otherUserId, selectedConversation.postId);
 
         // Sort messages by sentTime in ascending order (oldest first)
         const sortedMessages = data.sort((a, b) => new Date(a.sentTime) - new Date(b.sentTime));

@@ -24,8 +24,8 @@ const PostHistory = () => {
   }, [user]);
 
   return (
-    <div className="max-w-6xl mx-auto mt-8">
-      <h2 className="text-2xl font-bold mb-4">Bài đăng của tôi</h2>
+    <div className="max-w-6xl mx-auto mt-28">
+      <h2 className="text-2xl font-bold mb-4">Danh sách bài đăng của tôi</h2>
       {loading ? (
         <div>Đang tải...</div>
       ) : posts.length === 0 ? (
