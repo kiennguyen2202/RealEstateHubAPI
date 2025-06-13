@@ -31,6 +31,7 @@ const CreatePostPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
+  const [imagePreviews, setImagePreviews] = useState([]);
 
   useEffect(() => {
     if (!user) {
@@ -64,9 +65,43 @@ const CreatePostPage = () => {
   };
 
   const handleFileChange = (e) => {
+    const newFiles = Array.from(e.target.files);
+    let updatedFiles = [];
+    if (formData.Images) {
+      updatedFiles = Array.from(formData.Images).concat(newFiles);
+    } else {
+      updatedFiles = newFiles;
+    }
+
+    // Tạo preview cho từng ảnh
+    const previews = updatedFiles.map(file => URL.createObjectURL(file));
+    setImagePreviews(previews);
+
+    // Dùng DataTransfer để tạo FileList mới
+    const dataTransfer = new DataTransfer();
+    updatedFiles.forEach(file => dataTransfer.items.add(file));
     setFormData(prev => ({
       ...prev,
-      Images: e.target.files
+      Images: dataTransfer.files
+    }));
+  };
+
+  const handleRemoveImage = (removeIdx) => {
+    // Xóa preview
+    const newPreviews = imagePreviews.filter((_, idx) => idx !== removeIdx);
+
+    // Xóa file tương ứng
+    const filesArr = Array.from(formData.Images || []);
+    filesArr.splice(removeIdx, 1);
+
+    // Tạo lại FileList mới
+    const dataTransfer = new DataTransfer();
+    filesArr.forEach(file => dataTransfer.items.add(file));
+
+    setImagePreviews(newPreviews);
+    setFormData(prev => ({
+      ...prev,
+      Images: dataTransfer.files
     }));
   };
 
@@ -334,7 +369,7 @@ const CreatePostPage = () => {
               name="AreaId" 
               value={formData.AreaId} 
               onChange={handleInputChange} 
-              required
+              
               className="form-select"
             >
               <option value="">-- Chọn khu vực --</option>
@@ -347,16 +382,36 @@ const CreatePostPage = () => {
 
         <div className="form-group">
           <label htmlFor="Images">Hình ảnh:</label>
-          <input 
-            type="file" 
-            id="Images" 
-            name="Images" 
-            onChange={handleFileChange} 
-            multiple 
-            accept="image/*"
-            required
-            className="file-input"
-          />
+          <div className="custom-image-upload">
+            <label htmlFor="Images" className="image-upload-label">
+              <span className="plus-icon">+</span>
+              <span>Thêm ảnh</span>
+              <input
+                type="file"
+                id="Images"
+                name="Images"
+                onChange={handleFileChange}
+                multiple
+                accept="image/*"
+                style={{ display: "none" }}
+              />
+            </label>
+            <div className="image-preview-list">
+              {imagePreviews.map((src, idx) => (
+                <div className="image-preview-wrapper" key={idx}>
+                  <img src={src} alt={`preview-${idx}`} className="image-preview" />
+                  <button
+                    type="button"
+                    className="remove-image-btn"
+                    onClick={() => handleRemoveImage(idx)}
+                    title="Xóa ảnh"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
         <button 
