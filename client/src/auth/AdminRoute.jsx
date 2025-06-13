@@ -5,7 +5,7 @@ import { useAuth } from "./AuthContext";
 function AdminRoute() {
   const { user } = useAuth();
 
-  return user && user.role === "Admin" ? <Outlet /> : <Navigate to="/" replace />;
+  return user && user.role?.toLowerCase() === "admin" ? <Outlet /> : <Navigate to="/" replace />;
 }
 
 export default AdminRoute; 

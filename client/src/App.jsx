@@ -12,13 +12,17 @@ import CreatePostPage from "./pages/CreatePostPage";
 import PostDetail from "./pages/PostDetail";
 import Profile from "./pages/Profile";
 import AdminDashboard from "./pages/AdminDashboard";
-
-
+import MessagingFeature from './components/Message/MessagingFeature';
+import PostHistory from './pages/PostHistory';
 import ReportPost from "./pages/ReportPost";
 import Favorites from "./pages/Favorites";
 import { AuthProvider } from "./auth/AuthContext";
 import PrivateRoute from "./auth/PrivateRoute";
 import AdminRoute from "./auth/AdminRoute";
+import UsersPage from './pages/UsersPage';
+import PostsPage from './pages/PostsPage';
+import ReportsPage from './pages/ReportsPage';
+import CategoriesPage from './pages/CategoriesPage';
 import "./App.css";
 
 const App = () => {
@@ -45,29 +49,35 @@ const App = () => {
               {/* Protected Routes */}
               <Route element={<PrivateRoute />}>
                 <Route path="/dang-tin" element={<CreatePostPage />} />
-                
+                <Route path="/messages" element={<MessagingFeature />} />
                 <Route path="/chi-tiet/:id/report" element={<ReportPost />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/post-history" element={<PostHistory />} />
                 <Route path="/favorites" element={<Favorites />} />
               </Route>
 
               {/* Admin Routes */}
               <Route element={<AdminRoute />}>
                 <Route path="/admin" element={<AdminDashboard />} />
+                <Route path="/admin/users" element={<UsersPage />} />
+                <Route path="/admin/posts" element={<PostsPage />} />
+                <Route path="/admin/reports" element={<ReportsPage />} />
+                <Route path="/admin/categories" element={<CategoriesPage />} />
               </Route>
             </Routes>
           </main>
           <ToastContainer
             position="top-right"
-            autoClose={3000}
+            autoClose={5000}
             hideProgressBar={false}
             newestOnTop
-            closeOnClick
+            closeOnClick={false}
             rtl={false}
             pauseOnFocusLoss
             draggable
             pauseOnHover
             theme="light"
+            style={{ fontSize: '14px' }}
           />
         </div>
       </Router>

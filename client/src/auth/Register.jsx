@@ -8,8 +8,8 @@ const Register = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    fullName: '',
-    phoneNumber: ''
+    name: '',
+    phone: ''
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -40,8 +40,9 @@ const Register = () => {
       const result = await register({
         email: formData.email,
         password: formData.password,
-        fullName: formData.fullName,
-        phoneNumber: formData.phoneNumber
+        confirmPassword: formData.confirmPassword,
+        name: formData.name,
+        phone: formData.phone
       });
 
       if (result.success) {
@@ -68,9 +69,9 @@ const Register = () => {
             <label className="form-label">Họ và tên</label>
             <input
               type="text"
-              name="fullName"
+              name="name"
               className="form-control"
-              value={formData.fullName}
+              value={formData.name}
               onChange={handleChange}
               required
             />
@@ -92,9 +93,9 @@ const Register = () => {
             <label className="form-label">Số điện thoại</label>
             <input
               type="tel"
-              name="phoneNumber"
+              name="phone"
               className="form-control"
-              value={formData.phoneNumber}
+              value={formData.phone}
               onChange={handleChange}
               required
             />

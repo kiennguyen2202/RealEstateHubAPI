@@ -5,8 +5,10 @@
         public int Id { get; set; }
         public int SenderId { get; set; }
         public string SenderName { get; set; }
+        public string SenderAvatarUrl { get; set; } 
         public int ReceiverId { get; set; }
         public string ReceiverName { get; set; }
+        public string ReceiverAvatarUrl { get; set; }
         public int PostId { get; set; }
         public string PostTitle { get; set; }
         public int PostUserId { get; set; }

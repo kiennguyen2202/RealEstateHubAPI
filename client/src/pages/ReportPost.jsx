@@ -4,16 +4,6 @@ import axiosPrivate from "../api/axiosPrivate";
 import { useAuth } from "../auth/AuthContext";
 import './ReportPost.css';
 
-const reasonToType = {
-  Spam: 0, // LuaDao
-  Duplicate: 1, // TrungLap
-  Sold: 2, // DaBan (giả định thêm nếu cần)
-  "Can't Contact": 3, // KhongLienLacDuoc (giả định)
-  Fake: 4, // ThongTinSaiBatDongSan
-  Inappropriate: 5, // ThongTinSaiNguoiDang
-  Other: 6 // Other
-};
-
 function ReportPost() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -54,10 +44,20 @@ function ReportPost() {
       return;
     }
 
+    const typeMap = {
+      'LuaDao': 0,
+      'TrungLap': 1,
+      'DaBan': 2,
+      'KhongLienLacDuoc': 3,
+      'ThongTinSaiBatDongSan': 4,
+      'ThongTinSaiNguoiDang': 5,
+      'Other': 6
+    };
+
     const requestBody = {
       userId: user?.id,
       postId: post?.id,
-      type: reasonToType[formData.reason] ?? 6,
+      type: typeMap[formData.reason],
       other: formData.description,
       phone: user?.phone || ""
     };
@@ -107,10 +107,12 @@ function ReportPost() {
                 required
               >
                 <option value="">Chọn lý do</option>
-                <option value="Spam">Spam</option>
-                <option value="Inappropriate">Nội dung không phù hợp</option>
-                <option value="Fake">Thông tin giả mạo</option>
-                <option value="Duplicate">Bài viết trùng lặp</option>
+                <option value="LuaDao">Lừa đảo</option>
+                <option value="TrungLap">Bài viết trùng lặp</option>
+                <option value="DaBan">Đã bán</option>
+                <option value="KhongLienLacDuoc">Không liên lạc được</option>
+                <option value="ThongTinSaiBatDongSan">Thông tin sai bất động sản</option>
+                <option value="ThongTinSaiNguoiDang">Thông tin sai người đăng</option>
                 <option value="Other">Lý do khác</option>
               </select>
             </div>
@@ -127,7 +129,6 @@ function ReportPost() {
                 className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 rows="4"
                 placeholder="Vui lòng cung cấp thêm thông tin chi tiết về lý do báo cáo..."
-                
               />
             </div>
 

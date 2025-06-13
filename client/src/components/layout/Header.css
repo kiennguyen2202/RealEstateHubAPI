@@ -101,8 +101,8 @@
 }
 
 .user-avatar {
-  width: 32px;
-  height: 32px;
+  width: 32px;       /* hoặc 32px tuỳ bạn */
+  height: 40px;
   border-radius: 50%;
   object-fit: cover;
 }
@@ -158,3 +158,37 @@
     font-size: 14px;
   }
 } 
+.logo-link {
+  display: flex;
+  align-items: center;
+  gap: 16px; /* Khoảng cách giữa logo và text */
+  text-decoration: none;
+}
+
+.logo-img {
+  height: 2.5rem;    /* Chiều cao logo bằng hoặc lớn hơn chữ */
+  width: 2.5rem;     /* Vuông để giữ tỷ lệ */
+  min-width: 2.5rem; /* Đảm bảo không bị nhỏ hơn */
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(246, 96, 0, 0.10);
+  transition: transform 0.2s, box-shadow 0.2s;
+  background: #fff;
+  padding: 6px;
+  object-fit: contain; /* Giữ tỷ lệ ảnh */
+}
+
+.logo-link:hover .logo-img {
+  transform: scale(1.1) rotate(-6deg);
+  box-shadow: 0 4px 16px rgba(246, 96, 0, 0.18);
+}
+
+.logo-text {
+  font-size: 2.1rem;
+  font-weight: bold;
+  color: #f60;
+  letter-spacing: 1.5px;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.07);
+  line-height: 1;
+}
+

@@ -2,6 +2,8 @@
 using RealEstateHubAPI.Services;
 using RealEstateHubAPI.Model;
 using Microsoft.AspNetCore.Authorization;
+using RealEstateHubAPI.Repositories;
+using RealEstateHubAPI.DTOs;
 
 namespace RealEstateHubAPI.Controllers
 {
@@ -11,33 +13,79 @@ namespace RealEstateHubAPI.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
+        private readonly IUserRepository _userRepository;
 
-        public AuthController(IAuthService authService)
+
+        public AuthController(IAuthService authService, IUserRepository userRepository)
         {
             _authService = authService;
+            _userRepository = userRepository;
         }
         [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
-            var user = await _authService.Authenticate(model.Email, model.Password);
+            var users = await _userRepository.GetUsersAsync();
+            var user = users.FirstOrDefault(u => u.Email == model.Email && u.Password == model.Password);
+            
             if (user == null)
                 return Unauthorized("Invalid credentials");
+                
+            if (user.IsLocked)
+                return BadRequest("Tài khoản của bạn đã bị khóa");
 
             var token = _authService.GenerateJwtToken(user);
-            return Ok(new {user, token });
+
+            var userDto = new UserDto
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Email = user.Email,
+                AvatarUrl = user.AvatarUrl,
+                Role = user.Role.ToString(), // Convert enum to string
+                IsLocked = user.IsLocked
+            };
+
+            return Ok(new { user = userDto, token });
         }
         [AllowAnonymous]
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
-            
-            var user = await _authService.Register(model);
-            if (user == null)
-                return BadRequest("User already exists");
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
 
-            var token = _authService.GenerateJwtToken(user);
-            return Ok(new { token });
+                if (model.Password != model.ConfirmPassword)
+                {
+                    return BadRequest("Mật khẩu xác nhận không khớp");
+                }
+
+                var user = await _authService.Register(model);
+                if (user == null)
+                    return BadRequest("Email đã tồn tại");
+
+                var token = _authService.GenerateJwtToken(user);
+                
+                var userDto = new UserDto
+                {
+                    Id = user.Id,
+                    Name = user.Name,
+                    Email = user.Email,
+                    AvatarUrl = user.AvatarUrl,
+                    Role = user.Role.ToString(), // Convert enum to string
+                    IsLocked = user.IsLocked
+                };
+
+                return Ok(new { user = userDto, token });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
 

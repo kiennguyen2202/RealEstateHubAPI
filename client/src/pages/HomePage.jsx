@@ -4,6 +4,7 @@ import MessagingFeature from '../components/Message/MessagingFeature';
 import axiosClient from '../api/axiosClient';
 import './HomePage.css';
 import { useNavigate } from 'react-router-dom';
+import { toTrieu } from '../utils/priceUtils';
 
 const TransactionType = {
   Sale: 0, 
@@ -37,21 +38,24 @@ const HomePage = () => {
     try {
       setLoading(true);
       setError(null);
-      // Sử dụng endpoint /posts khi không có filter
-      const endpoint = '/api/posts';
       
-      const response = await axiosClient.get(endpoint, {
-        params: Object.values(filters).some(value => value) ? filters : {}
-      });
+      // Fetch cả properties và categories
+      const [propertiesRes, categoriesRes] = await Promise.all([
+        axiosClient.get('/api/posts?isApproved=true'),
+        axiosClient.get('/api/categories')
+      ]);
       
-      if (response.data) {
-        setProperties(response.data);
-      } else {
-        setError('Không có dữ liệu');
+      if (propertiesRes.data) {
+        setProperties(propertiesRes.data);
+        setFilteredProperties(propertiesRes.data);
+      }
+      
+      if (categoriesRes.data) {
+        setCategories(categoriesRes.data);
       }
     } catch (error) {
-      console.error('Error fetching properties:', error);
-      setError('Không thể tải danh sách bất động sản');
+      console.error('Error fetching data:', error);
+      setError('Không thể tải dữ liệu');
     } finally {
       setLoading(false);
     }
@@ -88,26 +92,31 @@ const HomePage = () => {
 
     // Lọc theo khoảng giá
     if (filters.priceRange) {
-      filtered = filtered.filter(property => {
-        const price = property.price;
-        const [min, max] = filters.priceRange.split('-').map(Number);
-        
-        if (max) {
-          return price >= min && price <= max;
-        } else {
-          return price >= min;
-        }
-      });
-    }
+  let min = 0, max = Infinity;
+  if (filters.priceRange.includes('-')) {
+    [min, max] = filters.priceRange.split('-').map(Number);
+  } else if (filters.priceRange.endsWith('+')) {
+    min = Number(filters.priceRange.replace('+', ''));
+    max = Infinity;
+  }
+  filtered = filtered.filter(property => {
+    const priceTrieu = toTrieu(property.price, property.priceUnit);
+    return priceTrieu >= min && priceTrieu <= max;
+  });
+}
 
     // Sắp xếp
     switch (filters.sortBy) {
       case 'price-asc':
-        filtered.sort((a, b) => a.price - b.price);
-        break;
-      case 'price-desc':
-        filtered.sort((a, b) => b.price - a.price);
-        break;
+    filtered.sort((a, b) =>
+      toTrieu(a.price, a.priceUnit) - toTrieu(b.price, b.priceUnit)
+    );
+    break;
+  case 'price-desc':
+    filtered.sort((a, b) =>
+      toTrieu(b.price, b.priceUnit) - toTrieu(a.price, a.priceUnit)
+    );
+    break;
       case 'area-asc':
         filtered.sort((a, b) => a.area_Size - b.area_Size);
         break;

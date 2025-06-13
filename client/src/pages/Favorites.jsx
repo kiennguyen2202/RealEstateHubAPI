@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../auth/AuthContext';
-import axiosClient from '../api/axiosClient';
+import axiosPrivate from '../api/axiosPrivate';
 import PropertyCard from '../components/property/PropertyCard';
-import './Favorites.css';
 
 const Favorites = () => {
     const [favorites, setFavorites] = useState([]);
@@ -17,7 +16,7 @@ const Favorites = () => {
 
     const fetchFavorites = async () => {
         try {
-            const response = await axiosClient.get('/api/favorites');
+            const response = await axiosPrivate.get(`/api/favorites/user/${user.id}`);
             setFavorites(response.data);
         } catch (error) {
             console.error('Error fetching favorites:', error);
@@ -28,7 +27,7 @@ const Favorites = () => {
 
     if (!user) {
         return (
-            <div className="favorites-container">
+            <div className="max-w-6xl mx-auto mt-32">
                 <h2>Vui lòng đăng nhập để xem danh sách yêu thích</h2>
             </div>
         );
@@ -36,23 +35,24 @@ const Favorites = () => {
 
     if (loading) {
         return (
-            <div className="favorites-container">
-                <h2>Đang tải...</h2>
+            <div className="max-w-6xl mx-auto mt-32">
+                <div>Đang tải...</div>
             </div>
         );
     }
 
     return (
-        <div className="favorites-container">
-            <h2>Danh sách yêu thích</h2>
+        <div className="max-w-6xl mx-auto pt-32">
+            <h2 className="text-2xl font-bold mb-4" >Danh sách yêu thích</h2>
             {favorites.length === 0 ? (
-                <p>Bạn chưa có bài đăng nào trong danh sách yêu thích</p>
+                <div>Bạn chưa có bài đăng nào trong danh sách yêu thích.</div>
             ) : (
-                <div className="favorites-grid">
+                <div className="properties-grid">
                     {favorites.map((favorite) => (
                         <PropertyCard
                             key={favorite.id}
                             property={favorite.post}
+                            showFavorite={true}
                         />
                     ))}
                 </div>

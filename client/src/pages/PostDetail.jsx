@@ -205,36 +205,15 @@ const PostDetail = () => {
         <div className="property-grid">
           {/* Left Column - Images */}
           <div className="property-images">
-            <div className="image-slider">
-              <button
-                className="slider-btn prev"
-                onClick={() => setSelectedImage((prev) => (prev === 0 ? post.images.length - 1 : prev - 1))}
-                disabled={post.images.length <= 1}
-              >
-                &#8592;
-              </button>
-              <img
-                src={
-                  post.images && post.images.length > 0
-                    ? `http://localhost:5134${post.images[selectedImage].url}`
-                    : "https://via.placeholder.com/800x500?text=No+Image"
-                }
-                alt={post.title}
-                className="main-image"
-              />
-              <button
-                className="slider-btn next"
-                onClick={() => setSelectedImage((prev) => (prev === post.images.length - 1 ? 0 : prev + 1))}
-                disabled={post.images.length <= 1}
-              >
-                &#8594;
-              </button>
-              {post.images && post.images.length > 0 && (
-                <div className="image-counter">
-                  {selectedImage + 1} / {post.images.length}
-                </div>
-              )}
-            </div>
+            <img
+              src={
+                post.images && post.images.length > 0
+                  ? `http://localhost:5134${post.images[selectedImage].url}`
+                  : "https://via.placeholder.com/800x500?text=No+Image"
+              }
+              alt={post.title}
+              className="main-image"
+            />
             {post.images && post.images.length > 1 && (
               <div className="thumbnail-grid">
                 {post.images.map((image, index) => (
@@ -251,7 +230,7 @@ const PostDetail = () => {
                 ))}
               </div>
             )}
-            <button className='report-button' onClick={() => navigate(`/chi-tiet/${post.id}/report`)}>
+            <button className='report-button' onClick ={() => navigate(`/chi-tiet/${post.id}/report`)}>
               <i className="fas fa-flag"></i> Báo cáo
             </button>
           </div>
@@ -324,7 +303,7 @@ const PostDetail = () => {
               </div>
             )}
 
-            {user && (user.id === post.userId || user.role === "Admin") && (
+            {user && (user.id === post.userId ) && (
               <div className="action-buttons">
                 <button
                   className="edit-button"

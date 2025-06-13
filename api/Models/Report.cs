@@ -11,6 +11,7 @@ namespace RealEstateHubAPI.Models
         public string? Other { get; set; }
         public string? Phone { get; set; }
         public DateTime CreatedReport { get; set; } = DateTime.Now;
+        public bool IsHandled { get; set; }
 
         public User? User { get; set; }
         public Post? Post { get; set; }

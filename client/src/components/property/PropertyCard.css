@@ -92,7 +92,7 @@
 }
 
 .transaction-type.sale {
-  background-color: #e63946;
+  background-color: #2f855a;
   color: white;
 }
 
@@ -110,4 +110,24 @@
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 12px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.user-name {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
 } 

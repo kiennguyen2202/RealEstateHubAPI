@@ -22,7 +22,7 @@ namespace RealEstateHubAPI.Services
         public async Task<User?> Authenticate(string email, string password)
         {
             var users = await _userRepository.GetUsersAsync();
-            return users.FirstOrDefault(u => u.Email == email && u.Password == password);
+            return users.FirstOrDefault(u => u.Email == email && u.Password == password && !u.IsLocked);
         }
         public async Task<User?> Register(RegisterModel model)
         {
@@ -33,7 +33,7 @@ namespace RealEstateHubAPI.Services
             var newUser = new User
             {
                 Email = model.Email,
-                Password = model.Password, // nên mã hoá nếu cần bảo mật hơn
+                Password = model.Password,
                 Name = model.Name,
                 Phone =model.Phone,
                

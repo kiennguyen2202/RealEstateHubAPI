@@ -159,6 +159,9 @@ namespace RealEstateHubAPI.Migrations
                     b.Property<string>("ImageURL")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("bit");
+
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
@@ -183,6 +186,9 @@ namespace RealEstateHubAPI.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("UserId1")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AreaId");
@@ -190,6 +196,8 @@ namespace RealEstateHubAPI.Migrations
                     b.HasIndex("CategoryId");
 
                     b.HasIndex("UserId");
+
+                    b.HasIndex("UserId1");
 
                     b.ToTable("Posts");
                 });
@@ -225,7 +233,6 @@ namespace RealEstateHubAPI.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("AvatarUrl")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Create")
@@ -234,6 +241,9 @@ namespace RealEstateHubAPI.Migrations
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsLocked")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -340,6 +350,9 @@ namespace RealEstateHubAPI.Migrations
 
                     b.Property<DateTime>("CreatedReport")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsHandled")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Other")
                         .HasColumnType("nvarchar(max)");
@@ -450,8 +463,12 @@ namespace RealEstateHubAPI.Migrations
                     b.HasOne("RealEstateHubAPI.Model.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("RealEstateHubAPI.Model.User", null)
+                        .WithMany("Posts")
+                        .HasForeignKey("UserId1");
 
                     b.Navigation("Area");
 
@@ -517,6 +534,11 @@ namespace RealEstateHubAPI.Migrations
             modelBuilder.Entity("RealEstateHubAPI.Model.Post", b =>
                 {
                     b.Navigation("Images");
+                });
+
+            modelBuilder.Entity("RealEstateHubAPI.Model.User", b =>
+                {
+                    b.Navigation("Posts");
                 });
 
             modelBuilder.Entity("RealEstateHubAPI.Model.Ward", b =>
