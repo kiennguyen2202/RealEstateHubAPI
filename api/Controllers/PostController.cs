@@ -336,7 +336,15 @@ public async Task<IActionResult> GetPosts([FromQuery] bool? isApproved)
          {
               var posts = await _context.Posts          
               .Include(p => p.Images)
+              .Include(p => p.Category)
+              .Include(p => p.User)
+
+              .Include(p => p.Area)
+                .ThenInclude(a => a.Ward)
+                    .ThenInclude(w => w.District)
+                        .ThenInclude(d => d.City)
               .Where(p => p.UserId == userId)
+
               .OrderByDescending(p => p.Created)
               .ToListAsync();
                return Ok(posts);

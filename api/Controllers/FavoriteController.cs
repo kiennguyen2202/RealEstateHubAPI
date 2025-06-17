@@ -34,7 +34,12 @@ namespace RealEstateHubAPI.Controllers
                     .Include(f => f.Post)
                         .ThenInclude(p => p.Category)
                     .Include(f => f.Post)
+                        .ThenInclude(p => p.User)
+                    .Include(f => f.Post)
                         .ThenInclude(p => p.Area)
+                                    .ThenInclude(a => a.Ward)
+                                        .ThenInclude(w => w.District)
+                                            .ThenInclude(d => d.City)
                     .Where(f => f.UserId == userId)
                     .OrderByDescending(f => f.CreatedFavorite)
                     .ToListAsync();
