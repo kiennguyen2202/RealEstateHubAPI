@@ -61,7 +61,7 @@ const PropertyCard = ({ property,showFavorite = true }) => {
           <div className="property-details">
             <span>{property.area_Size}m²</span>
             <span>{property.category?.name || 'Chưa phân loại'}</span>
-            <span>{property.area ? `${property.area.city}` : 'Chưa có khu vực'}</span>
+            <span>{property.area ? `${property.area.city?.name}` : 'Chưa có khu vực'}</span>
           </div>
           
           <div className="property-meta">

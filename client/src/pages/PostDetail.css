@@ -1,5 +1,3 @@
-
-
 /* Loading Spinner */
 .loading-spinner {
   display: flex;
@@ -412,4 +410,81 @@
 .report-button:hover {
   background: #ffeaea;
   color: #b71c1c;
+}
+
+/* Map Modal Styles */
+.map-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.map-modal-content {
+  background-color: #2e2e2e; /* Dark background to match the image */
+  border-radius: 8px;
+  overflow: hidden;
+  width: 90%; /* Adjust as needed */
+  max-width: 900px; /* Max width for larger screens */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+}
+
+.map-modal-header {
+  background-color: #ff6600; /* Orange color from the image */
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+}
+
+.map-modal-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center; /* Center the title */
+  flex-grow: 1; /* Allow title to take available space */
+}
+
+.map-modal-close-button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 0 10px;
+  line-height: 1;
+}
+
+.map-modal-close-button:hover {
+  color: #e0e0e0;
+}
+
+.map-modal-body {
+  padding: 20px;
+  background-color: #fff; /* White background for the map area */
+}
+
+.clickable-address {
+  cursor: pointer;
+  color: #e2e8f0; /* Optional: make it look like a link */
+}
+
+.clickable-address:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+/* Ensure the map container within the modal scales correctly */
+.map-modal-body .leaflet-container {
+  width: 100%;
+  height: 500px; /* You can adjust this height */
 }

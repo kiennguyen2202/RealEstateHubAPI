@@ -5,6 +5,7 @@ import axiosClient from '../api/axiosClient';
 import './HomePage.css';
 import { useNavigate } from 'react-router-dom';
 import { toTrieu } from '../utils/priceUtils';
+import axiosPrivate from '../api/axiosPrivate';
 
 const TransactionType = {
   Sale: 0, 
@@ -15,6 +16,7 @@ const HomePage = () => {
   const [properties, setProperties] = useState([]);
   const [filteredProperties, setFilteredProperties] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [uniqueCities, setUniqueCities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filters, setFilters] = useState({
@@ -39,10 +41,11 @@ const HomePage = () => {
       setLoading(true);
       setError(null);
       
-      // Fetch cả properties và categories
-      const [propertiesRes, categoriesRes] = await Promise.all([
+      // Fetch properties, categories, and cities
+      const [propertiesRes, categoriesRes, citiesRes] = await Promise.all([
         axiosClient.get('/api/posts?isApproved=true'),
-        axiosClient.get('/api/categories')
+        axiosClient.get('/api/categories'),
+        axiosPrivate.get('/api/areas/cities') // Fetch cities
       ]);
       
       if (propertiesRes.data) {
@@ -53,6 +56,11 @@ const HomePage = () => {
       if (categoriesRes.data) {
         setCategories(categoriesRes.data);
       }
+
+      if (citiesRes.data) {
+        setUniqueCities(citiesRes.data);
+      }
+
     } catch (error) {
       console.error('Error fetching data:', error);
       setError('Không thể tải dữ liệu');
@@ -83,10 +91,10 @@ const HomePage = () => {
       );
     }
 
-    // Lọc theo khu vực
+    // Lọc theo khu vực (cityId)
     if (filters.area) {
       filtered = filtered.filter(property => 
-        property.area?.city.toLowerCase().includes(filters.area.toLowerCase())
+        property.area?.cityId === parseInt(filters.area) // Filter by cityId
       );
     }
 
@@ -167,11 +175,11 @@ const HomePage = () => {
               onChange={(e) => setFilters({...filters, area: e.target.value})}
             >
               <option value="">Khu vực</option>
-              <option value="hcm">TP.HCM</option>
-              <option value="hn">Hà Nội</option>
-              <option value="dn">Đà Nẵng</option>
-              <option value="ct">Cần Thơ</option>
-              <option value="hp">Hải Phòng</option>
+              {uniqueCities.map(city => (
+                <option key={city.id} value={city.id}>
+                  {city.name}
+                </option>
+              ))}
             </select>
 
             {/* Khoảng giá */}

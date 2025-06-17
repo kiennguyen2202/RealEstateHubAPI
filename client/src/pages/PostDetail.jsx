@@ -10,6 +10,8 @@ import {
 import "./PostDetail.css";
 import { PriceUnit, formatPrice } from '../utils/priceUtils';
 import ReportPost from "./ReportPost";
+import MapComponent from "../components/MapComponent.jsx";
+import axiosPrivate from "../api/axiosPrivate";
 
 const TransactionType = {
   Sale: 0, 
@@ -26,6 +28,13 @@ const PostDetail = () => {
   const [error, setError] = useState("");
   const [selectedImage, setSelectedImage] = useState(0);
   const [isEditing, setIsEditing] = useState(false);
+  const [showMapModal, setShowMapModal] = useState(false);
+  const [fullAddressForMap, setFullAddressForMap] = useState('');
+  const [mapModalZoomLevel, setMapModalZoomLevel] = useState(5);
+  const [newImages, setNewImages] = useState(null);
+  const [uniqueCities, setUniqueCities] = useState([]);
+  const [filteredDistricts, setFilteredDistricts] = useState([]);
+  const [filteredWards, setFilteredWards] = useState([]);
   const [editForm, setEditForm] = useState({
     title: "",
     description: "",
@@ -37,20 +46,29 @@ const PostDetail = () => {
     categoryId: "",
     areaId: "",
     transactionType: "",
-    status: ""
+    status: "",
+    city: "",
+    district: "",
+    ward: "",
   });
   const [categories, setCategories] = useState([]);
-  const [areas, setAreas] = useState([]);
+
+  const getMapZoomForDetail = (postData) => {
+    const minZoom = 5;
+    if (postData.street_Name) return minZoom + 13;
+    if (postData.area?.ward?.name) return minZoom + 12;
+    if (postData.area?.district?.name) return minZoom + 10;
+    if (postData.area?.city?.name) return minZoom + 8;
+    return minZoom;
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [categoriesRes, areasRes] = await Promise.all([
-          axiosClient.get('/api/categories'),
-          axiosClient.get('/api/areas')
-        ]);
+        const categoriesRes = await axiosClient.get('/api/categories');
         setCategories(categoriesRes.data);
-        setAreas(areasRes.data);
+        const citiesRes = await axiosPrivate.get('/api/areas/cities');
+        setUniqueCities(citiesRes.data);
       } catch (err) {
         console.error('Error fetching data:', err);
       }
@@ -64,6 +82,7 @@ const PostDetail = () => {
       try {
         const response = await axiosClient.get(`/api/posts/${id}`);
         console.log('Fetched post data:', response.data);
+        console.log('Post Area data:', response.data.area);
         setPost(response.data);
         setEditForm({
           title: response.data.title,
@@ -76,8 +95,19 @@ const PostDetail = () => {
           categoryId: response.data.categoryId,
           areaId: response.data.areaId,
           transactionType: response.data.transactionType,
-          status: response.data.status
+          status: response.data.status,
+          city: response.data.area?.cityId || '',
+          district: response.data.area?.districtId || '',
+          ward: response.data.area?.id || '',
         });
+        const addressParts = [];
+        if (response.data.street_Name) addressParts.push(response.data.street_Name);
+        if (response.data.area?.ward?.name) addressParts.push(response.data.area.ward.name);
+        if (response.data.area?.district?.name) addressParts.push(response.data.area.district.name);
+        if (response.data.area?.city?.name) addressParts.push(response.data.area.city.name);
+        setFullAddressForMap(addressParts.join(', '));
+        const newMapModalZoom = getMapZoomForDetail(response.data);
+        setMapModalZoomLevel(newMapModalZoom);
       } catch (err) {
         setError("Không thể tải thông tin bài viết");
         console.error('Error fetching post:', err);
@@ -94,31 +124,70 @@ const PostDetail = () => {
     setIsEditing(searchParams.get("edit") === "true");
   }, [location]);
 
+  useEffect(() => {
+    const fetchDistricts = async () => {
+      if (editForm.city) {
+        try {
+          const response = await axiosPrivate.get(`/api/areas/cities/${editForm.city}/districts`);
+          setFilteredDistricts(response.data);
+        } catch (err) {
+          console.error('Error fetching districts for edit form:', err);
+        }
+      } else {
+        setFilteredDistricts([]);
+      }
+    };
+
+    fetchDistricts();
+  }, [editForm.city]);
+
+  useEffect(() => {
+    const fetchWards = async () => {
+      if (editForm.district) {
+        try {
+          const response = await axiosPrivate.get(`/api/areas/districts/${editForm.district}/wards`);
+          setFilteredWards(response.data);
+        } catch (err) {
+          console.error('Error fetching wards for edit form:', err);
+        }
+      } else {
+        setFilteredWards([]);
+      }
+    };
+
+    fetchWards();
+  }, [editForm.district]);
+
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     try {
       console.log('Form data before submit:', editForm);
 
-      const postData = {
-        id: parseInt(id),
-        title: editForm.title,
-        description: editForm.description,
-        price: parseFloat(editForm.price),
-        priceUnit: parseInt(editForm.priceUnit),
-        street_Name: editForm.street_Name,
-        area_Size: parseFloat(editForm.area_Size),
-        categoryId: parseInt(editForm.categoryId),
-        areaId: parseInt(editForm.areaId),
-        transactionType: parseInt(editForm.transactionType),
-        userId: post.userId,
-        status: 'active'
-      };
+      const postData = new FormData();
+      postData.append('Id', parseInt(id));
+      postData.append('Title', editForm.title);
+      postData.append('Description', editForm.description);
+      postData.append('Price', parseFloat(editForm.price));
+      postData.append('PriceUnit', parseInt(editForm.priceUnit));
+      postData.append('Street_Name', editForm.street_Name);
+      postData.append('Area_Size', parseFloat(editForm.area_Size));
+      postData.append('CategoryId', parseInt(editForm.categoryId));
+      postData.append('AreaId', parseInt(editForm.ward));
+      postData.append('TransactionType', parseInt(editForm.transactionType));
+      postData.append('UserId', post.userId);
+      postData.append('Status', 'active');
+
+      if (newImages) {
+        Array.from(newImages).forEach(image => {
+          postData.append('Images', image);
+        });
+      }
 
       console.log('Data being sent to server:', postData);
 
       const response = await axiosClient.put(`/api/posts/${id}`, postData, {
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'multipart/form-data'
         }
       });
 
@@ -149,6 +218,14 @@ const PostDetail = () => {
         alert("Không thể xóa bài viết");
       }
     }
+  };
+
+  const handleAddressClick = () => {
+    setShowMapModal(true);
+  };
+
+  const handleCloseMapModal = () => {
+    setShowMapModal(false);
   };
 
   if (loading) {
@@ -184,9 +261,11 @@ const PostDetail = () => {
         <div className="property-content">
           <h1 className="property-title">{post.title}</h1>
           <div className="property-meta">
-            <div className="property-meta-item">
+            <div className="property-meta-item clickable-address" onClick={handleAddressClick}>
               <FaMapMarkerAlt />
-              <span>{post.street_Name}, {post.area?.city}, {post.area?.ward}, {post.area?.district}</span>
+              <span>
+                {post.street_Name}, {post.area?.ward?.name && `${post.area.ward.name}, `}{post.area?.district?.name && `${post.area.district.name}, `}{post.area?.city?.name && post.area.city.name}
+              </span>
             </div>
             <div className="property-meta-item">
               <FaRuler />
@@ -326,6 +405,21 @@ const PostDetail = () => {
         </div>
       </div>
 
+      {/* Map Modal */}
+      {showMapModal && (post.area?.ward?.name || post.street_Name) && (
+        <div className="map-modal-overlay">
+          <div className="map-modal-content">
+            <div className="map-modal-header">
+              <h2 className="map-modal-title">Bản đồ</h2>
+              <button className="map-modal-close-button" onClick={handleCloseMapModal}>&times;</button>
+            </div>
+            <div className="map-modal-body">
+              <MapComponent address={fullAddressForMap} zoom={17} radius={200} mapHeight="500px" />
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Edit Form Modal */}
       {isEditing && (
         <div className="modal-overlay">
@@ -391,14 +485,50 @@ const PostDetail = () => {
                   />
                 </div>
                 <div className="form-group">
-                  <label className="form-label">Tên đường</label>
-                  <input
-                    type="text"
-                    value={editForm.street_Name}
-                    onChange={(e) => setEditForm({ ...editForm, street_Name: e.target.value })}
+                  <label className="form-label">Thành phố</label>
+                  <select
+                    value={editForm.city}
+                    onChange={(e) => setEditForm({ ...editForm, city: e.target.value, district: '', ward: '', areaId: '' })}
                     className="form-input"
                     required
-                  />
+                  >
+                    <option value="">-- Chọn thành phố --</option>
+                    {uniqueCities.map(city => (
+                      <option key={city.id} value={city.id}>{city.name}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label className="form-label">Quận/Huyện</label>
+                  <select
+                    value={editForm.district}
+                    onChange={(e) => setEditForm({ ...editForm, district: e.target.value, ward: '', areaId: '' })}
+                    className="form-input"
+                    required
+                    disabled={!editForm.city}
+                  >
+                    <option value="">-- Chọn Quận/Huyện --</option>
+                    {filteredDistricts.map(district => (
+                      <option key={district.id} value={district.id}>{district.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Phường/Xã</label>
+                  <select
+                    value={editForm.ward}
+                    onChange={(e) => setEditForm({ ...editForm, ward: e.target.value, areaId: e.target.value })}
+                    className="form-input"
+                    required
+                    disabled={!editForm.district}
+                  >
+                    <option value="">-- Chọn Phường/Xã --</option>
+                    {filteredWards.map(ward => (
+                      <option key={ward.id} value={ward.id}>{ward.name}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
               <div className="form-row">
@@ -417,19 +547,25 @@ const PostDetail = () => {
                   </select>
                 </div>
                 <div className="form-group">
-                  <label className="form-label">Khu vực</label>
-                  <select
-                    value={editForm.areaId}
-                    onChange={(e) => setEditForm({ ...editForm, areaId: e.target.value })}
+                  <label className="form-label">Tên đường</label>
+                  <input
+                    type="text"
+                    value={editForm.street_Name}
+                    onChange={(e) => setEditForm({ ...editForm, street_Name: e.target.value })}
                     className="form-input"
                     required
-                  >
-                    <option value="">-- Chọn khu vực --</option>
-                    {areas.map(area => (
-                      <option key={area.id} value={area.id}>{`${area.ward}, ${area.district}, ${area.city}`}</option>
-                    ))}
-                  </select>
+                  />
                 </div>
+              </div>
+              <div className="form-group">
+                <label className="form-label">Hình ảnh mới (nếu muốn thay đổi)</label>
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={(e) => setNewImages(e.target.files)}
+                  className="form-input"
+                />
               </div>
               <div className="form-group">
                 <label className="form-label">Loại giao dịch</label>

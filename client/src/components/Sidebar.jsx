@@ -8,6 +8,7 @@ import {
   AppstoreOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
+import { Map as MapIcon } from '@mui/icons-material';
 
 const { Sider } = Layout;
 
@@ -28,6 +29,7 @@ const Sidebar = ({ selectedKey }) => {
           { key: '/admin/posts', icon: <FileTextOutlined />, label: 'Bài viết' },
           { key: '/admin/reports', icon: <ExclamationCircleOutlined />, label: 'Báo cáo' },
           { key: '/admin/categories', icon: <AppstoreOutlined />, label: 'Danh mục' },
+          {key:'/admin/areas', icon: <MapIcon />, label: 'Khu vực'},
         ]}
       />
     </Sider>

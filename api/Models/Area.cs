@@ -10,7 +10,10 @@ namespace RealEstateHubAPI.Model
         public int CityId { get; set; }
         public int DistrictId { get; set; }
         public int WardId { get; set; }
-       
+        public float? Longitude { get; set; }
+        public float? Latitude { get; set; }
+
+
         public virtual City? City { get; set; }
         public virtual District? District { get; set; }
         public virtual Ward? Ward { get; set; }
@@ -27,7 +30,7 @@ namespace RealEstateHubAPI.Model
         public int Id { get; set; }
         public string Name { get; set; }
         public int CityId { get; set; }
-        public List<City> Cities { get; set; } = new List<City>();
+        public City City { get; set; }
 
     }
     public class Ward
@@ -35,7 +38,7 @@ namespace RealEstateHubAPI.Model
         public int Id { get; set; }
         public string Name { get; set; }
         public int DistrictId { get; set; }
-        public List<District> Districts { get; set; } = new List<District>();
+        public District District { get; set; }
 
     }
 }

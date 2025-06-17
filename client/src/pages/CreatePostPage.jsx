@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axiosPrivate from '../api/axiosPrivate';
 import { useAuth } from '../auth/AuthContext';
+import MessageProvider from '../components/MessageProvider';
+import MapComponent from '../components/MapComponent.jsx';
 import './CreatePostPage.css';
 
 // Định nghĩa enum PriceUnit tương tự như ở backend
@@ -13,6 +15,7 @@ const PriceUnit = {
 const CreatePostPage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { showMessage, contextHolder } = MessageProvider();
   const [formData, setFormData] = useState({
     Title: '',
     Description: '',
@@ -22,15 +25,41 @@ const CreatePostPage = () => {
     Street_Name: '',
     Area_Size: '',
     CategoryId: '',
-    AreaId: '',
+    city: '',
+    district: '',
+    ward: '',
+    AreaId: '', // This will now store the final selected area ID (ward level)
     Images: null,
+    TransactionType: 'Sale', // Set default value to Sale
   });
-
+  const [fullAddress, setFullAddress] = useState('');
+  const [zoomLevel, setZoomLevel] = useState(5); // Default zoom level
+  const [mapZoom,setMapZoom] = useState('');
   const [categories, setCategories] = useState([]);
-  const [areas, setAreas] = useState([]);
+  const [allAreas, setAllAreas] = useState([]); // Stores all areas from API
+  const [uniqueCities, setUniqueCities] = useState([]);
+  const [filteredDistricts, setFilteredDistricts] = useState([]);
+  const [filteredWards, setFilteredWards] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(null);
+
+  // New states for selected area names
+  const [selectedStreetName, setSelectedStreetName] = useState('');
+  const [selectedCityName, setSelectedCityName] = useState('');
+  const [selectedDistrictName, setSelectedDistrictName] = useState('');
+  const [selectedWardName, setSelectedWardName] = useState('');
+
+  const getMapZoom = () => {    
+    let zoomLevel = (() => {
+      const minZoom = 5; // Giảm xuống để có thể nhìn thấy toàn bộ Việt Nam
+      if (formData.ward) return minZoom + 12; // Zoom vừa phải cho phường/xã, để thấy vòng tròn bao quanh
+      if (formData.district) return minZoom + 10; // Zoom vừa phải cho quận/huyện
+      if (formData.city) return minZoom + 8; // Zoom vừa phải cho thành phố
+       // Zoom sát hơn cho đường (chỉ khi chưa có phường/xã)
+      return minZoom;
+    })();
+    return zoomLevel;
+};
 
   useEffect(() => {
     if (!user) {
@@ -40,12 +69,22 @@ const CreatePostPage = () => {
 
     const fetchData = async () => {
       try {
-        const [categoriesRes, areasRes] = await Promise.all([
+        console.log('Fetching categories and areas...');
+        const [categoriesRes, citiesRes, districtsRes, wardsRes] = await Promise.all([
           axiosPrivate.get('/api/categories'),
-          axiosPrivate.get('/api/areas')
+          axiosPrivate.get('/api/areas/cities'),
+          axiosPrivate.get('/api/areas/districts'),
+          axiosPrivate.get('/api/areas/wards')
         ]);
+        console.log('Categories response:', categoriesRes.data);
+        console.log('Cities response:', citiesRes.data);
+        console.log('Districts response:', districtsRes.data);
+        console.log('Wards response:', wardsRes.data);
+        
         setCategories(categoriesRes.data);
-        setAreas(areasRes.data);
+        setUniqueCities(citiesRes.data); // Set cities directly from the response
+        setAllAreas([...districtsRes.data, ...wardsRes.data]); // Store districts and wards
+
       } catch (err) {
         console.error('Error fetching data:', err);
         setError('Không thể tải dữ liệu. Vui lòng thử lại sau.');
@@ -55,12 +94,142 @@ const CreatePostPage = () => {
     fetchData();
   }, [user, navigate]);
 
+  // Effect for filtering districts based on selected city
+  useEffect(() => {
+    const fetchDistricts = async () => {
+      if (formData.city) {
+        try {
+          console.log('Fetching districts for city:', formData.city);
+          const response = await axiosPrivate.get(`/api/areas/cities/${formData.city}/districts`);
+          console.log('Districts response:', response.data);
+          setFilteredDistricts(response.data);
+          setFilteredWards([]); // Reset wards when city changes
+          setFormData(prev => ({ ...prev, district: '', ward: '', AreaId: '' }));
+        } catch (err) {
+          console.error('Error fetching districts:', err);
+          setError('Không thể tải danh sách quận/huyện. Vui lòng thử lại sau.');
+        }
+      } else {
+        setFilteredDistricts([]);
+        setFilteredWards([]);
+        setFormData(prev => ({ ...prev, district: '', ward: '', AreaId: '' }));
+      }
+    };
+
+    fetchDistricts();
+  }, [formData.city]);
+
+  // Effect for filtering wards based on selected district
+  useEffect(() => {
+    const fetchWards = async () => {
+      if (formData.district) {
+        try {
+          console.log('Fetching wards for district:', formData.district);
+          const response = await axiosPrivate.get(`/api/areas/districts/${formData.district}/wards`);
+          console.log('Wards response:', response.data);
+          setFilteredWards(response.data);
+          setFormData(prev => ({ ...prev, ward: '', AreaId: '' }));
+        } catch (err) {
+          console.error('Error fetching wards:', err);
+          setError('Không thể tải danh sách phường/xã. Vui lòng thử lại sau.');
+        }
+      } else {
+        setFilteredWards([]);
+        setFormData(prev => ({ ...prev, ward: '', AreaId: '' }));
+      }
+    };
+
+    fetchWards();
+  }, [formData.district]);
+
+  // Effect for updating fullAddress for the map
+  useEffect(() => {
+    let addressParts = [];
+    // Only include Street_Name if no ward is selected for geocoding purposes.
+    if (formData.ward) {
+      const selectedWardObj = filteredWards.find(w => w.id === parseInt(formData.ward));
+      if (selectedWardObj) {
+        addressParts.push(selectedWardObj.name);
+      }
+    } else if (formData.Street_Name) {
+      addressParts.push(formData.Street_Name);
+    }
+    
+    if (formData.district) {
+      const selectedDistrictObj = filteredDistricts.find(d => d.id === parseInt(formData.district));
+      if (selectedDistrictObj) {
+        addressParts.push(selectedDistrictObj.name);
+      }
+    }
+    if (formData.city) {
+      const selectedCityObj = uniqueCities.find(c => c.id === parseInt(formData.city));
+      if (selectedCityObj) {
+        addressParts.push(selectedCityObj.name);
+      }
+    }
+
+    const fullAddress = addressParts.filter(part => part !== null && part !== undefined).join(', ');
+    setFullAddress(fullAddress);
+    
+    // Cập nhật các state tên địa chỉ để truyền xuống MapComponent
+    setSelectedStreetName(formData.Street_Name);
+    setSelectedWardName(formData.ward ? filteredWards.find(w => w.id === parseInt(formData.ward)).name : '');
+    setSelectedDistrictName(formData.district ? filteredDistricts.find(d => d.id === parseInt(formData.district)).name : '');
+    setSelectedCityName(formData.city ? uniqueCities.find(c => c.id === parseInt(formData.city)).name : '');
+
+    // Cập nhật zoom level dựa trên địa chỉ
+    const newZoomLevel = getMapZoom();
+    setZoomLevel(newZoomLevel);
+    
+    // Log để debug
+    console.log('Full address:', fullAddress);
+    console.log('Zoom level:', newZoomLevel);
+
+  }, [formData.Street_Name, formData.city, formData.district, formData.ward, uniqueCities, filteredDistricts, filteredWards]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    console.log(`Handling input change for ${name} with value:`, value);
+
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
+
+    // Special handling for AreaId based on ward selection
+    if (name === 'ward') {
+      const selectedWard = filteredWards.find(w => w.id === parseInt(value));
+      console.log('Selected ward:', selectedWard);
+      
+      if (selectedWard) {
+        console.log('Setting AreaId to ward ID:', selectedWard.id);
+        setFormData(prev => {
+          const newFormData = {
+            ...prev,
+            AreaId: selectedWard.id // This will be used to create a new Area on the server
+          };
+          console.log('Updated form data:', newFormData);
+          return newFormData;
+        });
+      }
+    } else if (name === 'city') {
+      console.log('City changed, resetting district, ward and AreaId');
+      setFormData(prev => ({
+        ...prev,
+        city: value,
+        district: '',
+        ward: '',
+        AreaId: ''
+      }));
+    } else if (name === 'district') {
+      console.log('District changed, resetting ward and AreaId');
+      setFormData(prev => ({
+        ...prev,
+        district: value,
+        ward: '',
+        AreaId: ''
+      }));
+    }
   };
 
   const handleFileChange = (e) => {
@@ -74,13 +243,15 @@ const CreatePostPage = () => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    setSuccessMessage(null);
 
     try {
+      // Log form data before validation
+      console.log('Form data before validation:', formData);
+
       // Validate required fields
       if (!formData.Title || !formData.Description || !formData.Price || 
           !formData.Area_Size || !formData.Street_Name || !formData.CategoryId || 
-          !formData.AreaId || !formData.Images) {
+          !formData.AreaId || !formData.Images || !formData.TransactionType) {
         throw new Error('Vui lòng điền đầy đủ thông tin bắt buộc');
       }
 
@@ -94,13 +265,19 @@ const CreatePostPage = () => {
       const priceUnit = parseInt(formData.PriceUnit);
 
       // Log values for debugging
-      console.log('Parsed values:', {
-        price,
-        areaSize,
-        categoryId,
-        areaId,
-        priceUnit,
-        userId: user?.id
+      console.log('Form data before sending:', {
+        Title: formData.Title,
+        Description: formData.Description,
+        Price: price,
+        PriceUnit: priceUnit,
+        Status: formData.Status,
+        Street_Name: formData.Street_Name,
+        Area_Size: areaSize,
+        CategoryId: categoryId,
+        AreaId: areaId,
+        UserId: user?.id,
+        Images: formData.Images,
+        TransactionType: formData.TransactionType,
       });
 
       // Validate each numeric value separately
@@ -126,14 +303,15 @@ const CreatePostPage = () => {
       // Append data with correct field names matching CreatePostDto
       postData.append('Title', formData.Title);
       postData.append('Description', formData.Description);
-      postData.append('Price', price.toFixed(2)); // Convert to decimal string
-      postData.append('PriceUnit', priceUnit);
+      postData.append('Price', formData.Price);
+      postData.append('PriceUnit', formData.PriceUnit);
       postData.append('Status', formData.Status);
       postData.append('Street_Name', formData.Street_Name);
-      postData.append('Area_Size', areaSize);
-      postData.append('CategoryId', categoryId);
-      postData.append('AreaId', areaId);
+      postData.append('Area_Size', formData.Area_Size);
+      postData.append('CategoryId', formData.CategoryId);
+      postData.append('AreaId', formData.AreaId);
       postData.append('UserId', user.id);
+      postData.append('TransactionType', formData.TransactionType);
 
       // Add images
       if (formData.Images) {
@@ -142,20 +320,11 @@ const CreatePostPage = () => {
         });
       }
 
-      // Log the data being sent (for debugging)
-      console.log('Sending data:', {
-        Title: formData.Title,
-        Description: formData.Description,
-        Price: price,
-        PriceUnit: priceUnit,
-        Status: formData.Status,
-        Area_Size: areaSize,
-        Street_Name: formData.Street_Name,
-        CategoryId: categoryId,
-        AreaId: areaId,
-        UserId: user.id,
-        ImagesCount: formData.Images ? formData.Images.length : 0
-      });
+      // Log the FormData contents
+      console.log('FormData contents:');
+      for (let pair of postData.entries()) {
+        console.log(pair[0] + ': ' + pair[1]);
+      }
 
       console.log('Sending request to create post...');
       const response = await axiosPrivate.post('/api/posts', postData, {
@@ -168,32 +337,27 @@ const CreatePostPage = () => {
 
       if (response.data) {
         console.log('Post created successfully, navigating to:', `/chi-tiet/${response.data.id}`);
-        setSuccessMessage('Bài đăng đã được tạo thành công!');
+        showMessage.success('Bài đăng đã được tạo thành công!');
         
-        // Hiển thị thông báo thành công trước khi chuyển trang
         setTimeout(() => {
           navigate(`/chi-tiet/${response.data.id}`);
-        }, 1500); // Đợi 1.5 giây để người dùng thấy thông báo
+        }, 1500);
       } else {
         throw new Error('Không nhận được dữ liệu từ server');
       }
     } catch (err) {
       console.error('Error creating post:', err);
       if (err.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
         console.error('Error response data:', err.response.data);
         console.error('Error response status:', err.response.status);
         console.error('Error response headers:', err.response.headers);
-        setError(err.response.data.message || 'Đã xảy ra lỗi khi tạo bài đăng.');
+        showMessage.error(err.response.data || 'Đã xảy ra lỗi khi tạo bài đăng.');
       } else if (err.request) {
-        // The request was made but no response was received
         console.error('Error request:', err.request);
-        setError('Không thể kết nối đến máy chủ. Vui lòng thử lại sau.');
+        showMessage.error('Không thể kết nối đến máy chủ. Vui lòng thử lại sau.');
       } else {
-        // Something happened in setting up the request that triggered an Error
         console.error('Error message:', err.message);
-        setError(err.message || 'Đã xảy ra lỗi khi tạo bài đăng.');
+        showMessage.error(err.message || 'Đã xảy ra lỗi khi tạo bài đăng.');
       }
     } finally {
       setLoading(false);
@@ -202,22 +366,8 @@ const CreatePostPage = () => {
 
   return (
     <div className="create-post-page">
+      {contextHolder}
       <h1>Đăng tin bất động sản mới</h1>
-      {error && <div className="error-message">{error}</div>}
-      {successMessage && (
-        <div className="success-message" style={{
-          backgroundColor: '#4CAF50',
-          color: 'white',
-          padding: '15px',
-          borderRadius: '4px',
-          marginBottom: '20px',
-          textAlign: 'center',
-          fontSize: '16px',
-          fontWeight: 'bold'
-        }}>
-          {successMessage}
-        </div>
-      )}
       <form onSubmit={handleSubmit} className="post-form">
         <div className="form-group">
           <label htmlFor="Title">Tiêu đề:</label>
@@ -245,6 +395,21 @@ const CreatePostPage = () => {
             placeholder="Nhập mô tả chi tiết về bất động sản"
             rows="6"
           />
+        </div>
+        <div className="form-group">
+          <label htmlFor="TransactionType">Loại giao dịch:</label>
+          <select 
+            id="TransactionType" 
+            name="TransactionType" 
+            value={formData.TransactionType} 
+            onChange={handleInputChange} 
+            required
+            className="form-select"
+          >
+            <option value="">-- Chọn loại giao dịch --</option>
+            <option value="Sale">Mua Bán</option>
+            <option value="Rent">Cho thuê</option>
+          </select>
         </div>
 
         <div className="form-row">
@@ -296,22 +461,6 @@ const CreatePostPage = () => {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="Street_Name">Tên đường:</label>
-            <input 
-              type="text" 
-              id="Street_Name" 
-              name="Street_Name" 
-              value={formData.Street_Name} 
-              onChange={handleInputChange} 
-              required
-              className="form-input"
-              placeholder="Nhập tên đường"
-            />
-          </div>
-        </div>
-
-        <div className="form-row">
-          <div className="form-group">
             <label htmlFor="CategoryId">Loại bất động sản:</label>
             <select 
               id="CategoryId" 
@@ -327,21 +476,87 @@ const CreatePostPage = () => {
               ))}
             </select>
           </div>
+          
+        </div>
+
+        <div className="form-row">
+          
           <div className="form-group">
-            <label htmlFor="AreaId">Khu vực:</label>
+            <label htmlFor="city">Thành phố:</label>
             <select 
-              id="AreaId" 
-              name="AreaId" 
-              value={formData.AreaId} 
+              id="city" 
+              name="city" 
+              value={formData.city} 
               onChange={handleInputChange} 
               required
               className="form-select"
             >
-              <option value="">-- Chọn khu vực --</option>
-              {areas.map(area => (
-                <option key={area.id} value={area.id}>{`${area.ward}, ${area.district}, ${area.city}`}</option>
+              <option value="">-- Chọn thành phố --</option>
+              {uniqueCities && uniqueCities.map(city => (
+                <option key={city.id} value={city.id}>{city.name}</option>
               ))}
             </select>
+          </div>
+            <div className="form-group">
+            <label htmlFor="district">Quận/Huyện:</label>
+            <select 
+              id="district" 
+              name="district" 
+              value={formData.district} 
+              onChange={handleInputChange} 
+              required
+              className="form-select"
+              disabled={!formData.city}
+            >
+              <option value="">-- Chọn Quận/Huyện --</option>
+              {filteredDistricts && filteredDistricts.map(district => (
+                <option key={district.id} value={district.id}>{district.name}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div className="form-row">
+
+          <div className="form-group">
+            <label htmlFor="ward">Phường/Xã:</label>
+            <select 
+              id="ward" 
+              name="ward" 
+              value={formData.ward} 
+              onChange={handleInputChange} 
+              required
+              className="form-select"
+              disabled={!formData.district}
+            >
+              <option value="">-- Chọn Phường/Xã --</option>
+              {filteredWards && filteredWards.map(ward => (
+                <option key={ward.id} value={ward.id}>{ward.name}</option>
+              ))}
+            </select>
+          </div>
+          <div className="form-group">
+            <label htmlFor="Street_Name">Tên đường:</label>
+            <input 
+              type="text" 
+              id="Street_Name" 
+              name="Street_Name" 
+              value={formData.Street_Name} 
+              onChange={handleInputChange} 
+              required
+              className="form-input"
+              placeholder="Nhập tên đường"
+            />
+          </div>
+        </div>
+
+        <div className="form-group">
+          <label>Bản đồ khu vực:</label>
+          <div className="map-container">
+            <MapComponent 
+              address={fullAddress} 
+              zoom={zoomLevel} 
+            />
           </div>
         </div>
 
@@ -358,6 +573,8 @@ const CreatePostPage = () => {
             className="file-input"
           />
         </div>
+
+        
 
         <button 
           type="submit" 

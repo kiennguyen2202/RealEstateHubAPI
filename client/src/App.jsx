@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Header from "./components/layout/Header";
+import Footer from "./components/layout/Footer";
 import HomePage from "./pages/HomePage";
 
 import Home from "./pages/Home";
@@ -23,6 +24,7 @@ import UsersPage from './pages/UsersPage';
 import PostsPage from './pages/PostsPage';
 import ReportsPage from './pages/ReportsPage';
 import CategoriesPage from './pages/CategoriesPage';
+import AreaPage from './pages/AreaPage';
 import "./App.css";
 
 const App = () => {
@@ -51,6 +53,7 @@ const App = () => {
                 <Route path="/dang-tin" element={<CreatePostPage />} />
                 <Route path="/messages" element={<MessagingFeature />} />
                 <Route path="/chi-tiet/:id/report" element={<ReportPost />} />
+                
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/post-history" element={<PostHistory />} />
                 <Route path="/favorites" element={<Favorites />} />
@@ -62,22 +65,22 @@ const App = () => {
                 <Route path="/admin/users" element={<UsersPage />} />
                 <Route path="/admin/posts" element={<PostsPage />} />
                 <Route path="/admin/reports" element={<ReportsPage />} />
+                <Route path="/admin/areas" element={<AreaPage/>}/>
                 <Route path="/admin/categories" element={<CategoriesPage />} />
               </Route>
             </Routes>
           </main>
+          <Footer />
           <ToastContainer
             position="top-right"
-            autoClose={5000}
+            autoClose={3000}
             hideProgressBar={false}
             newestOnTop
-            closeOnClick={false}
+            closeOnClick
             rtl={false}
             pauseOnFocusLoss
             draggable
             pauseOnHover
-            theme="light"
-            style={{ fontSize: '14px' }}
           />
         </div>
       </Router>
