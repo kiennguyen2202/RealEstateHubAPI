@@ -42,6 +42,7 @@ const CreatePostPage = () => {
   const [filteredWards, setFilteredWards] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [imagePreviews, setImagePreviews] = useState([]);
 
   // New states for selected area names
   const [selectedStreetName, setSelectedStreetName] = useState('');
@@ -51,11 +52,11 @@ const CreatePostPage = () => {
 
   const getMapZoom = () => {    
     let zoomLevel = (() => {
-      const minZoom = 5; // Giảm xuống để có thể nhìn thấy toàn bộ Việt Nam
-      if (formData.ward) return minZoom + 12; // Zoom vừa phải cho phường/xã, để thấy vòng tròn bao quanh
-      if (formData.district) return minZoom + 10; // Zoom vừa phải cho quận/huyện
-      if (formData.city) return minZoom + 8; // Zoom vừa phải cho thành phố
-       // Zoom sát hơn cho đường (chỉ khi chưa có phường/xã)
+      const minZoom = 5; 
+      if (formData.ward) return minZoom + 12; 
+      if (formData.district) return minZoom + 10; 
+      if (formData.city) return minZoom + 8;
+
       return minZoom;
     })();
     return zoomLevel;
@@ -233,9 +234,42 @@ const CreatePostPage = () => {
   };
 
   const handleFileChange = (e) => {
+    const newFiles = Array.from(e.target.files);
+    let updatedFiles = [];
+    if (formData.Images) {
+      updatedFiles = Array.from(formData.Images).concat(newFiles);
+    } else {
+      updatedFiles = newFiles;
+    }
+
+    // Tạo preview cho từng ảnh
+    const previews = updatedFiles.map(file => URL.createObjectURL(file));
+    setImagePreviews(previews);
+
+    // Dùng DataTransfer để tạo FileList mới
+    const dataTransfer = new DataTransfer();
+    updatedFiles.forEach(file => dataTransfer.items.add(file));
     setFormData(prev => ({
       ...prev,
-      Images: e.target.files
+      Images: dataTransfer.files
+    }));
+  };
+  const handleRemoveImage = (removeIdx) => {
+    // Xóa preview
+    const newPreviews = imagePreviews.filter((_, idx) => idx !== removeIdx);
+
+    // Xóa file tương ứng
+    const filesArr = Array.from(formData.Images || []);
+    filesArr.splice(removeIdx, 1);
+
+    // Tạo lại FileList mới
+    const dataTransfer = new DataTransfer();
+    filesArr.forEach(file => dataTransfer.items.add(file));
+
+    setImagePreviews(newPreviews);
+    setFormData(prev => ({
+      ...prev,
+      Images: dataTransfer.files
     }));
   };
 
@@ -243,6 +277,8 @@ const CreatePostPage = () => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    
+
 
     try {
       // Log form data before validation
@@ -562,16 +598,36 @@ const CreatePostPage = () => {
 
         <div className="form-group">
           <label htmlFor="Images">Hình ảnh:</label>
-          <input 
-            type="file" 
-            id="Images" 
-            name="Images" 
-            onChange={handleFileChange} 
-            multiple 
-            accept="image/*"
-            required
-            className="file-input"
-          />
+<div className="custom-image-upload">
+            <label htmlFor="Images" className="image-upload-label">
+              <span className="plus-icon">+</span>
+              <span>Thêm ảnh</span>
+              <input
+                type="file"
+                id="Images"
+                name="Images"
+                onChange={handleFileChange}
+                multiple
+                accept="image/*"
+                style={{ display: "none" }}
+              />
+            </label>
+            <div className="image-preview-list">
+              {imagePreviews.map((src, idx) => (
+                <div className="image-preview-wrapper" key={idx}>
+                  <img src={src} alt={`preview-${idx}`} className="image-preview" />
+                  <button
+                    type="button"
+                    className="remove-image-btn"
+                    onClick={() => handleRemoveImage(idx)}
+                    title="Xóa ảnh"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
         

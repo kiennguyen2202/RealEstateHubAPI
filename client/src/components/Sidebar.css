@@ -1,0 +1,28 @@
+.ant-menu-item-selected {
+  background-color: #1890ff !important;
+}
+
+.ant-menu-item {
+  transition: all 0.3s !important;
+}
+
+.ant-menu-item:hover {
+  background-color: #e6f7ff !important;
+}
+
+.logo {
+  color: #fff;
+  font-weight: bold;
+  font-size: 24px;
+  padding: 36px;
+  text-align: center;
+}
+
+.ant-layout-sider {
+  min-height: 100vh;
+  margin-left: -30px;
+}
+
+.ant-menu {
+  border-right: 0;
+} 

@@ -282,73 +282,89 @@ const PostDetail = () => {
       {/* Main Content */}
       <div className="property-content">
         <div className="property-grid">
-          {/* Left Column - Images */}
-          <div className="property-images">
-            <img
-              src={
-                post.images && post.images.length > 0
-                  ? `http://localhost:5134${post.images[selectedImage].url}`
-                  : "https://via.placeholder.com/800x500?text=No+Image"
-              }
-              alt={post.title}
-              className="main-image"
-            />
-            <button className='report-button' onClick ={() => navigate(`/chi-tiet/${post.id}/report`)}>
-              <i className="fas fa-flag"></i> Báo cáo
-            </button>
-            {post.images && post.images.length > 1 && (
-              <div className="thumbnail-grid">
-                {post.images.map((image, index) => (
-                  <div
-                    key={index}
-                    className={`thumbnail ${selectedImage === index ? "selected" : ""}`}
-                    onClick={() => setSelectedImage(index)}
-                  >
-                    <img
-                      src={`http://localhost:5134${image.url}`}
-                      alt={`${post.title} - ${index + 1}`}
-                    />
-                  </div>
-                ))}
+          {/* Left Column - Images and Info */}
+          <div className="property-left-column">
+            <div className="property-images">
+              <div className="image-navigation">
+                <button 
+                  className="nav-button prev-button"
+                  onClick={() => setSelectedImage(prev => (prev > 0 ? prev - 1 : post.images.length - 1))}
+                  disabled={!post.images || post.images.length <= 1}
+                >
+                  &#10094;
+                </button>
+                <img
+                  src={
+                    post.images && post.images.length > 0
+                      ? `http://localhost:5134${post.images[selectedImage].url}`
+                      : "https://via.placeholder.com/800x500?text=No+Image"
+                  }
+                  alt={post.title}
+                  className="main-image"
+                />
+                <button 
+                  className="nav-button next-button"
+                  onClick={() => setSelectedImage(prev => (prev < post.images.length - 1 ? prev + 1 : 0))}
+                  disabled={!post.images || post.images.length <= 1}
+                >
+                  &#10095;
+                </button>
               </div>
-            )}
-            
+              <button className='report-button' onClick={() => navigate(`/chi-tiet/${post.id}/report`)}>
+                <i className="fas fa-flag"></i> Báo cáo
+              </button>
+              {post.images && post.images.length > 1 && (
+                <div className="thumbnail-grid">
+                  {post.images.map((image, index) => (
+                    <div
+                      key={index}
+                      className={`thumbnail ${selectedImage === index ? "selected" : ""}`}
+                      onMouseEnter={() => setSelectedImage(index)}
+                    >
+                      <img
+                        src={`http://localhost:5134${image.url}`}
+                        alt={`${post.title} - ${index + 1}`}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Info Section */}
+            <div className="property-info-section">
+              <div className="info-section">
+                <h3>Thông tin chi tiết</h3>
+                <div className="info-grid">
+                  <div className="info-item">
+                    <FaHome />
+                    <span>Loại: {post.category?.name}</span>
+                  </div>
+                  <div className="info-item">
+                    <FaRuler />
+                    <span>Diện tích: {post.area_Size} m²</span>
+                  </div>
+                  <div className="info-item">
+                    <FaUser />
+                    <span>Người đăng: {post.user?.name}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="description">
+                <h3>Mô tả</h3>
+                <p>{post.description}</p>
+              </div>
+            </div>
           </div>
 
-          {/* Right Column - Info */}
-          <div className="property-info">
+          {/* Right Column - Contact */}
+          <div className="property-contact">
             <div className="price-tag">
               {formatPrice(post.price, post.priceUnit)}
             </div>
-            <div className={`status-badge ${post.transactionType === 0 ? 'sale' : 'rent'}`}>
+            <div className={`transaction-type ${post.transactionType === 0 ? 'sale' : 'rent'}`}>
               {post.transactionType === 0 ? "Mua bán" : "Cho thuê"}
-            </div>
-
-            <div className="info-section">
-              <h3>Thông tin chi tiết</h3>
-              <div className="info-grid">
-                <div className="info-item">
-                  <FaHome />
-                  <span>Loại: {post.category?.name}</span>
-                </div>
-                <div className="info-item">
-                  <FaRuler />
-                  <span>Diện tích: {post.area_Size} m²</span>
-                </div>
-                {/* <div className="info-item">
-                  <FaMapMarkerAlt />
-                  <span>Địa chỉ: {post.address}</span>
-                </div> */}
-                <div className="info-item">
-                  <FaUser />
-                  <span>Người đăng: {post.user?.name}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="description">
-              <h3>Mô tả</h3>
-              <p>{post.description}</p>
             </div>
 
             {/* Contact Information */}
@@ -372,7 +388,7 @@ const PostDetail = () => {
 
             {/* Add Chat Button */}
             {user && user.id !== post.userId && (
-              <div className="chat-button-container mt-4">
+              <div className="chat-button-container">
                 <Link 
                   to={`/messages?postId=${post.id}&userId=${post.user.id}&postTitle=${encodeURIComponent(post.title)}&postUsername=${encodeURIComponent(post.user.name)}`}
                   className="chat-button"
@@ -383,7 +399,7 @@ const PostDetail = () => {
               </div>
             )}
 
-            {user && (user.id === post.userId ) && (
+            {user && (user.id === post.userId) && (
               <div className="action-buttons">
                 <button
                   className="edit-button"

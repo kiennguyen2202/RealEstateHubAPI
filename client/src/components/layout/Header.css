@@ -1,91 +1,139 @@
 .header {
   background: #fff;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 1000;
+  height: 70px;
 }
 
 .header-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 30px;
+  height: 100%;
+  padding: 0 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.logo img {
-  height: 40px;
+/* Logo */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
 }
 
+.logo-img {
+  height: 40px;
+  width: 40px;
+  object-fit: contain;
+}
+
+.logo-text {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ff5a5f;
+  letter-spacing: 0.5px;
+}
+
+/* Navigation */
 .main-nav ul {
   display: flex;
   list-style: none;
   margin: 0;
   padding: 0;
-  gap: 30px;
+  gap: 32px;
 }
 
 .main-nav a {
   text-decoration: none;
-  color: #333;
+  color: #484848;
   font-weight: 500;
-  font-size: 16px;
-  transition: color 0.3s;
+  font-size: 15px;
+  transition: color 0.2s;
+  padding: 8px 0;
+  position: relative;
+}
+
+.main-nav a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: #ff5a5f;
+  transition: width 0.2s;
 }
 
 .main-nav a:hover {
-  color: #f60;
+  color: #ff5a5f;
 }
 
+.main-nav a:hover::after {
+  width: 100%;
+}
+
+/* User Actions */
 .user-actions {
   display: flex;
-  gap: 15px;
   align-items: center;
+  gap: 16px;
 }
 
 .post-button {
-  background: #f60;
+  background: #ff5a5f;
   color: white;
-  padding: 8px 20px;
+  padding: 10px 20px;
   border-radius: 4px;
   text-decoration: none;
   font-weight: 500;
-  transition: background 0.3s;
+  font-size: 14px;
+  transition: background-color 0.2s;
 }
 
 .post-button:hover {
-  background: #f50;
+  background: #ff3b40;
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 12px;
 }
 
 .login-button,
 .register-button {
-  color: #333;
   text-decoration: none;
   font-weight: 500;
-  padding: 8px 20px;
+  font-size: 14px;
+  padding: 8px 16px;
   border-radius: 4px;
-  transition: all 0.3s;
+  transition: all 0.2s;
 }
 
-.login-button:hover,
-.register-button:hover {
-  color: #f60;
+.login-button {
+  color: #484848;
+}
+
+.login-button:hover {
+  color: #ff5a5f;
 }
 
 .register-button {
-  border: 1px solid #f60;
-  color: #f60;
+  color: #ff5a5f;
+  border: 1px solid #ff5a5f;
 }
 
 .register-button:hover {
-  background: #f60;
+  background: #ff5a5f;
   color: white;
 }
 
+/* User Menu */
 .user-menu {
   position: relative;
 }
@@ -97,50 +145,128 @@
   background: none;
   border: none;
   cursor: pointer;
-  padding: 5px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.user-menu-button:hover {
+  background: #f7f7f7;
+}
+
+.user-menu-button:hover .user-avatar {
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .user-avatar {
-  width: 32px;       /* hoặc 32px tuỳ bạn */
-  height: 40px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   object-fit: cover;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+}
+
+.user-menu-button:hover .user-avatar {
+  border-color: #ff5a5f;
+}
+
+.user-name {
+  color: #484848;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.user-menu-button:hover .user-name {
+  color: #ff5a5f;
 }
 
 .user-dropdown {
   position: absolute;
-  top: 100%;
+  top: calc(100% + 4px);
   right: 0;
   background: white;
-  border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   padding: 8px 0;
   min-width: 200px;
   display: none;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.2s ease;
+  z-index: 1000;
 }
 
+/* Tạo vùng hover liên tục */
 .user-menu:hover .user-dropdown {
   display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Thêm pseudo-element để tạo vùng hover liên tục */
+.user-menu::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 20px;
+  background: transparent;
 }
 
 .user-dropdown a,
 .user-dropdown button {
-  display: block;
+  display: flex;
+  align-items: center;
   width: 100%;
-  padding: 8px 16px;
+  padding: 10px 16px;
   text-align: left;
   background: none;
   border: none;
-  color: #333;
+  color: #484848;
   font-size: 14px;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.user-dropdown a::before,
+.user-dropdown button::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 3px;
+  background: #ff5a5f;
+  transform: scaleY(0);
+  transition: transform 0.2s ease;
 }
 
 .user-dropdown a:hover,
 .user-dropdown button:hover {
-  background: #f5f5f5;
-  color: #f60;
+  background: #f7f7f7;
+  color: #ff5a5f;
+  padding-left: 20px;
+}
+
+.user-dropdown a:hover::before,
+.user-dropdown button:hover::before {
+  transform: scaleY(1);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .header-container {
+    padding: 0 16px;
+  }
+  
+  .main-nav ul {
+    gap: 24px;
+  }
 }
 
 @media (max-width: 768px) {
@@ -149,46 +275,20 @@
   }
   
   .user-actions {
-    gap: 10px;
+    gap: 12px;
+  }
+  
+  .user-name {
+    display: none;
+  }
+  
+  .post-button {
+    padding: 8px 16px;
   }
   
   .login-button,
   .register-button {
     padding: 6px 12px;
-    font-size: 14px;
   }
-} 
-.logo-link {
-  display: flex;
-  align-items: center;
-  gap: 16px; /* Khoảng cách giữa logo và text */
-  text-decoration: none;
-}
-
-.logo-img {
-  height: 2.5rem;    /* Chiều cao logo bằng hoặc lớn hơn chữ */
-  width: 2.5rem;     /* Vuông để giữ tỷ lệ */
-  min-width: 2.5rem; /* Đảm bảo không bị nhỏ hơn */
-  border-radius: 16px;
-  box-shadow: 0 2px 8px rgba(246, 96, 0, 0.10);
-  transition: transform 0.2s, box-shadow 0.2s;
-  background: #fff;
-  padding: 6px;
-  object-fit: contain; /* Giữ tỷ lệ ảnh */
-}
-
-.logo-link:hover .logo-img {
-  transform: scale(1.1) rotate(-6deg);
-  box-shadow: 0 4px 16px rgba(246, 96, 0, 0.18);
-}
-
-.logo-text {
-  font-size: 2.1rem;
-  font-weight: bold;
-  color: #f60;
-  letter-spacing: 1.5px;
-  font-family: 'Segoe UI', Arial, sans-serif;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.07);
-  line-height: 1;
 }
 
