@@ -353,7 +353,7 @@ const CreatePostPage = () => {
               name="CategoryId" 
               value={formData.CategoryId} 
               onChange={handleInputChange} 
-              required
+              
               className="form-select"
             >
               <option value="">-- Chọn loại --</option>

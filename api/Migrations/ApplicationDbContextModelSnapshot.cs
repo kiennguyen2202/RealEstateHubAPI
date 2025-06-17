@@ -186,9 +186,6 @@ namespace RealEstateHubAPI.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("UserId1")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("AreaId");
@@ -196,8 +193,6 @@ namespace RealEstateHubAPI.Migrations
                     b.HasIndex("CategoryId");
 
                     b.HasIndex("UserId");
-
-                    b.HasIndex("UserId1");
 
                     b.ToTable("Posts");
                 });
@@ -463,12 +458,8 @@ namespace RealEstateHubAPI.Migrations
                     b.HasOne("RealEstateHubAPI.Model.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("RealEstateHubAPI.Model.User", null)
-                        .WithMany("Posts")
-                        .HasForeignKey("UserId1");
 
                     b.Navigation("Area");
 
@@ -534,11 +525,6 @@ namespace RealEstateHubAPI.Migrations
             modelBuilder.Entity("RealEstateHubAPI.Model.Post", b =>
                 {
                     b.Navigation("Images");
-                });
-
-            modelBuilder.Entity("RealEstateHubAPI.Model.User", b =>
-                {
-                    b.Navigation("Posts");
                 });
 
             modelBuilder.Entity("RealEstateHubAPI.Model.Ward", b =>

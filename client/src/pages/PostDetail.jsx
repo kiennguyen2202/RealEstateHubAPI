@@ -12,8 +12,8 @@ import { PriceUnit, formatPrice } from '../utils/priceUtils';
 import ReportPost from "./ReportPost";
 
 const TransactionType = {
-  Sale: 0, 
-  Rent: 1   
+  Sale: 0,
+  Rent: 1
 };
 
 const PostDetail = () => {
@@ -230,9 +230,27 @@ const PostDetail = () => {
                 ))}
               </div>
             )}
-            <button className='report-button' onClick ={() => navigate(`/chi-tiet/${post.id}/report`)}>
+            <button className='report-button' onClick={() => navigate(`/chi-tiet/${post.id}/report`)}>
               <i className="fas fa-flag"></i> Báo cáo
             </button>
+
+            <div class="property-info-description">
+              <h2>{post.title}</h2>
+              <p><strong>3 PN</strong> · Hướng Đông Nam · Nhà ngõ, hẻm</p>
+              <p><strong>Đơn giá:</strong> {post.price} Tỷ · {post.PriceUnit} m²</p>
+              <p><strong>Địa chỉ:</strong> {post.street_Name}</p>
+              <ul class="property-details">
+                <li><strong>Trạng thái: </strong>{post.status}</li>
+                <li><strong><FaRuler /> Diện tích sử dụng: </strong> {post.area_Size}</li>
+                <li><strong><FaRuler /> Giá/m²: </strong> {post.price}</li>
+              </ul>
+
+              <h3>Mô tả chi tiết</h3>
+              <p>
+                {post.description}
+              </p>
+            </div>
+
           </div>
 
           {/* Right Column - Info */}
@@ -244,48 +262,21 @@ const PostDetail = () => {
               {post.transactionType === 0 ? "Mua bán" : "Cho thuê"}
             </div>
 
-            <div className="info-section">
-              <h3>Thông tin chi tiết</h3>
-              <div className="info-grid">
-                <div className="info-item">
-                  <FaHome />
-                  <span>Loại: {post.category?.name}</span>
-                </div>
-                <div className="info-item">
-                  <FaRuler />
-                  <span>Diện tích: {post.area_Size} m²</span>
-                </div>
-                {/* <div className="info-item">
-                  <FaMapMarkerAlt />
-                  <span>Địa chỉ: {post.address}</span>
-                </div> */}
-                <div className="info-item">
-                  <FaUser />
-                  <span>Người đăng: {post.user?.name}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="description">
-              <h3>Mô tả</h3>
-              <p>{post.description}</p>
-            </div>
-
             {/* Contact Information */}
             <div className="contact-section">
               <h2 className="section-title">Thông tin liên hệ</h2>
               <div className="contact-info">
                 <div className="contact-item">
                   <FaUser className="contact-icon" />
-                  <span>{post.user?.name}</span>
+                  <span> {post.user?.name}</span>
                 </div>
                 <div className="contact-item">
                   <FaPhone className="contact-icon" />
-                  <span>{post.user?.phone}</span>
+                  <span> {post.user?.phone}</span>
                 </div>
                 <div className="contact-item">
                   <FaEnvelope className="contact-icon" />
-                  <span>{post.user?.email}</span>
+                  <span> {post.user?.email}</span>
                 </div>
               </div>
             </div>
@@ -293,7 +284,7 @@ const PostDetail = () => {
             {/* Add Chat Button */}
             {user && user.id !== post.userId && (
               <div className="chat-button-container mt-4">
-                <Link 
+                <Link
                   to={`/messages?postId=${post.id}&userId=${post.user.id}&postTitle=${encodeURIComponent(post.title)}&postUsername=${encodeURIComponent(post.user.name)}`}
                   className="chat-button"
                 >
@@ -303,7 +294,7 @@ const PostDetail = () => {
               </div>
             )}
 
-            {user && (user.id === post.userId ) && (
+            {user && (user.id === post.userId) && (
               <div className="action-buttons">
                 <button
                   className="edit-button"

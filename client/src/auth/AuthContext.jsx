@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await axiosClient.post("/api/auth/login", {
+      const response = await axiosPrivate.post("/api/auth/login", {
         email,
         password,
       });
@@ -53,7 +53,7 @@ export const AuthProvider = ({ children }) => {
       return { success: false, error: errorMessage };
     } catch (error) {
       console.error("Login error:", error);
-      const errorMessage = error.response?.data || "Đăng nhập thất bại"; // Use error.response.data directly for consistency
+      const errorMessage = error.response?.data || "Đăng nhập thất bại";
       return { success: false, error: errorMessage };
     }
   };

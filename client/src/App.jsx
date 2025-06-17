@@ -1,7 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { Toaster } from "react-hot-toast";
 import Header from "./components/layout/Header";
 import HomePage from "./pages/HomePage";
 
@@ -66,18 +65,15 @@ const App = () => {
               </Route>
             </Routes>
           </main>
-          <ToastContainer
+          <Toaster
             position="top-right"
-            autoClose={5000}
-            hideProgressBar={false}
-            newestOnTop
-            closeOnClick={false}
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="light"
-            style={{ fontSize: '14px' }}
+            toastOptions={{
+              duration: 5000,
+              style: {
+                background: '#363636',
+                color: '#fff',
+              },
+            }}
           />
         </div>
       </Router>
