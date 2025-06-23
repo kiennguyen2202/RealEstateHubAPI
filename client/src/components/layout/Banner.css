@@ -1,0 +1,118 @@
+.main-banner {
+  width: 100%;
+  min-height: 260px;
+  background: linear-gradient(90deg, #fffbe6 60%, #ffe0b2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 18px;
+  margin: 2rem 0 2.5rem 0;
+  box-shadow: 0 6px 32px rgba(255, 152, 0, 0.08);
+  padding: 2.5rem 3rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.banner-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  z-index: 2;
+}
+
+.banner-title {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #ff9800;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.banner-highlight {
+  font-size: 2.7rem;
+  color: #ff9800;
+  background: #fff3e0;
+  border-radius: 8px;
+  padding: 0.2rem 1.2rem;
+  display: inline-block;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+.banner-desc {
+  color: #18191a;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-top: 0.2rem;
+}
+.banner-info {
+  display: flex;
+  gap: 1.5rem;
+  font-size: 1.1rem;
+  color: #ff9800;
+  font-weight: 600;
+}
+.banner-time, .banner-date {
+  background: #fffde7;
+  border-radius: 6px;
+  padding: 0.3rem 1rem;
+}
+.banner-social {
+  display: flex;
+  gap: 1.2rem;
+  font-size: 2rem;
+  color: #ff9800;
+}
+.banner-social i {
+  transition: color 0.2s, transform 0.2s;
+  cursor: pointer;
+}
+.banner-social i:hover {
+  color: #18191a;
+  transform: scale(1.15);
+}
+.banner-image {
+  flex: 0 0 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+.banner-image img {
+  width: 220px;
+  height: auto;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(255, 152, 0, 0.12);
+  background: #fff;
+}
+@media (max-width: 900px) {
+  .main-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 2rem 1rem;
+    min-height: 180px;
+  }
+  .banner-image {
+    margin-top: 1.5rem;
+    flex: none;
+  }
+}
+@media (max-width: 600px) {
+  .main-banner {
+    padding: 1.2rem 0.5rem;
+    min-height: 120px;
+  }
+  .banner-title {
+    font-size: 1.3rem;
+  }
+  .banner-highlight {
+    font-size: 1.5rem;
+    padding: 0.1rem 0.7rem;
+  }
+  .banner-desc {
+    font-size: 1rem;
+  }
+  .banner-image img {
+    width: 120px;
+    border-radius: 10px;
+  }
+} 

@@ -1,22 +1,32 @@
 .header {
-  background: #fff;
+  background: #191919;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  position: fixed;
+  position: relative;
   top: 0;
   left: 0;
   right: 0;
   z-index: 1000;
   height: 70px;
+  min-width: 320px;
 }
 
 .header-container {
-  max-width: 1200px;
-  margin: 0 auto;
+  max-width: none;
+  margin: 0;
   height: 100%;
-  padding: 0 20px;
+  padding: 0;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 18px;
+  position: relative;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  flex-shrink: 0;
 }
 
 /* Logo */
@@ -25,6 +35,7 @@
   align-items: center;
   gap: 12px;
   text-decoration: none;
+  flex-shrink: 0;
 }
 
 .logo-img {
@@ -41,6 +52,10 @@
 }
 
 /* Navigation */
+.main-nav {
+  flex-shrink: 0;
+}
+
 .main-nav ul {
   display: flex;
   list-style: none;
@@ -78,11 +93,57 @@
   width: 100%;
 }
 
+/* Search Form */
+.search-form {
+  display: flex;
+  align-items: center;
+  background: #232323;
+  border-radius: 32px;
+  padding: 0.5rem 1.5rem;
+  min-width: 320px;
+  max-width: 480px;
+  flex: 1 1 320px;
+  margin: 0 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.search-input {
+  border: none;
+  background: transparent;
+  color: #fff;
+  font-size: 1rem;
+  padding: 0.5rem 0.5rem 0.5rem 0;
+  width: 100%;
+  outline: none;
+}
+
+.search-btn {
+  background: #007bff;
+  border: none;
+  color: #fff;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.4rem 0.7rem;
+  border-radius: 50%;
+  margin-left: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.search-btn:hover {
+  background: #0056b3;
+}
+
 /* User Actions */
 .user-actions {
   display: flex;
   align-items: center;
   gap: 16px;
+  flex-shrink: 0;
+  min-width: 180px;
+  margin-left: auto;
 }
 
 .post-button {
@@ -292,3 +353,29 @@
   }
 }
 
+.pro-header-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: linear-gradient(90deg, #ffb300 60%, #ffd54f 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-size: 1.08rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(255,193,7,0.10);
+  transition: background 0.18s, transform 0.15s;
+  margin-right: 18px;
+}
+.pro-header-btn:hover {
+  background: linear-gradient(90deg, #ffa000 60%, #ffd54f 100%);
+  color: #fffde7;
+  transform: scale(1.04);
+}
+.pro-crown-icon {
+  color: #fffde7;
+  font-size: 1.2em;
+  margin-right: 2px;
+}

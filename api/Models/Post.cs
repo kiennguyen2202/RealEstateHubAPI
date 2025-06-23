@@ -28,6 +28,7 @@ namespace RealEstateHubAPI.Model
         public int CategoryId { get; set; }
         public int AreaId { get; set; }
         public bool IsApproved { get; set; }
+        public DateTime? ExpiryDate { get; set; }
         public virtual User? User { get; set; }
         public virtual Category? Category { get; set; }
         public virtual Area? Area { get; set; }

@@ -5,7 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer";
 import HomePage from "./pages/HomePage";
-
+import MembershipPage from "./pages/MembershipPage";
 import Home from "./pages/Home";
 import Login from "./auth/Login";
 import Register from "./auth/Register";
@@ -25,12 +25,17 @@ import PostsPage from './pages/PostsPage';
 import ReportsPage from './pages/ReportsPage';
 import CategoriesPage from './pages/CategoriesPage';
 import AreaPage from './pages/AreaPage';
+import CheckoutPage from './pages/CheckoutPage';
+import ScrollToTop from './components/layout/ScrollToTop';
+import Membership from "./pages/Membership";
 import "./App.css";
+
 
 const App = () => {
   return (
     <AuthProvider>
       <Router>
+        <ScrollToTop />
         <div className="app">
           <Header />
           <main className="main-content">
@@ -53,10 +58,11 @@ const App = () => {
                 <Route path="/dang-tin" element={<CreatePostPage />} />
                 <Route path="/messages" element={<MessagingFeature />} />
                 <Route path="/chi-tiet/:id/report" element={<ReportPost />} />
-                
+                <Route path="/membership" element={<MembershipPage />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/post-history" element={<PostHistory />} />
                 <Route path="/favorites" element={<Favorites />} />
+                <Route path="/checkout" element={<CheckoutPage />} />
               </Route>
 
               {/* Admin Routes */}
@@ -67,6 +73,7 @@ const App = () => {
                 <Route path="/admin/reports" element={<ReportsPage />} />
                 <Route path="/admin/areas" element={<AreaPage/>}/>
                 <Route path="/admin/categories" element={<CategoriesPage />} />
+                <Route path="/admin/membership" element={<Membership />} />
               </Route>
             </Routes>
           </main>

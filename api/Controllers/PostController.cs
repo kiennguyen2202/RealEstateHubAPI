@@ -5,6 +5,8 @@ using RealEstateHubAPI.DTOs;
 using RealEstateHubAPI.Model;
 using RealEstateHubAPI.Models;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace RealEstateHubAPI.Controllers
 {
@@ -23,6 +25,32 @@ namespace RealEstateHubAPI.Controllers
             _env = env;
             _logger = logger;
         }
+        
+        private List<string> GetUserRoles() {
+            return User
+                .Claims
+                .Where(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")
+                .Select(c => c.Value)
+                .ToList();
+        }
+        
+        private int? GetUserId()
+        {
+            var userId = User
+                .Claims
+                .Where(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
+                .Select(c => c.Value)
+                .FirstOrDefault();
+            int id;
+            if (int.TryParse(userId, out id))
+            {
+                return id;
+            }
+            else {
+                return null;
+            }
+        }
+
         [AllowAnonymous]
 [HttpGet]
 public async Task<IActionResult> GetPosts([FromQuery] bool? isApproved)
@@ -38,7 +66,24 @@ public async Task<IActionResult> GetPosts([FromQuery] bool? isApproved)
         .AsQueryable();
 
     if (isApproved.HasValue)
-        posts = posts.Where(p => p.IsApproved == isApproved.Value);
+    {
+        if (isApproved.Value)
+        {
+            var oneDayAgo = DateTime.Now.AddDays(-1);
+            posts = posts.Where(p => p.IsApproved == true && (p.ExpiryDate == null || p.ExpiryDate > oneDayAgo));            
+        }
+        else
+        {
+            
+            posts = posts.Where(p => p.IsApproved == false);
+        }
+    }
+    else
+    {
+        
+        posts = posts.Where(p => p.IsApproved == true && 
+            (p.ExpiryDate == null || p.ExpiryDate > DateTime.Now));
+    }
 
     return Ok(await posts.ToListAsync());
 }
@@ -73,8 +118,32 @@ public async Task<IActionResult> GetPosts([FromQuery] bool? isApproved)
 
         // POST: api/posts
         [HttpPost]
-        public async Task<IActionResult> Create([FromForm] CreatePostDto dto)
+        public async Task<IActionResult> Create([FromForm] CreatePostDto dto,int role)
         {
+            
+            if (GetUserRoles().Contains("Membership"))
+            {
+                var soLuongPostTrong5Ngay = _context.Posts
+                    .Where(p => p.UserId == GetUserId() && p.Created.AddDays(30) >= DateTime.Now)
+                    .Count();
+                
+                if (soLuongPostTrong5Ngay >= 100) 
+                {
+                    return BadRequest("Bạn đã đạt giới hạn 100 bài viết trong 30 ngày. Vui lòng nâng cấp tài khoản để đăng thêm bài.");
+                }
+            }
+            else
+            {
+                var soLuongPostTrong60Ngay = _context.Posts
+                    .Where(p => p.UserId == GetUserId() && p.Created.AddDays(30) >= DateTime.Now)
+                    .Count();
+                
+                if (soLuongPostTrong60Ngay >= 5) 
+                {
+                    return BadRequest("Bạn đã đạt giới hạn 5 bài viết trong 30 ngày");
+                }
+            }
+
             try
             {
                 // Log received data
@@ -133,6 +202,19 @@ public async Task<IActionResult> GetPosts([FromQuery] bool? isApproved)
                     return BadRequest($"User with ID {dto.UserId} not found");
                 }
 
+                // Tính toán thời gian hết hạn dựa trên role
+                DateTime? expiryDate = null;
+                if (GetUserRoles().Contains("Membership"))
+                {
+                    
+                    expiryDate = DateTime.Now.AddSeconds(10);
+                }
+                else
+                {
+                    
+                    expiryDate = DateTime.Now.AddDays(7);
+                }
+
                 var post = new Post
                 {
                     Title = dto.Title,
@@ -146,8 +228,9 @@ public async Task<IActionResult> GetPosts([FromQuery] bool? isApproved)
                     Created = DateTime.Now,
                     CategoryId = dto.CategoryId,
                     AreaId = area.Id, 
-                    UserId = dto.UserId,
+                    UserId = GetUserId() ?? dto.UserId,
                     IsApproved = false,
+                    ExpiryDate = expiryDate,
                     Images = new List<PostImage>()
                 };
 
@@ -213,6 +296,30 @@ public async Task<IActionResult> GetPosts([FromQuery] bool? isApproved)
             if (post == null)
                 return NotFound("Bài đăng không tìm thấy.");
 
+            // Verify Ward exists and create Area
+            var ward = await _context.Wards
+                .Include(w => w.District)
+                .ThenInclude(d => d.City)
+                .FirstOrDefaultAsync(w => w.Id == updateDto.AreaId);
+
+            if (ward == null)
+            {
+                _logger.LogWarning($"Ward with ID {updateDto.AreaId} not found");
+                return BadRequest($"Ward with ID {updateDto.AreaId} not found. Please select a valid ward.");
+            }
+
+            // Create new Area
+            var area = new Area
+            {
+                CityId = ward.District.CityId,
+                DistrictId = ward.DistrictId,
+                WardId = ward.Id
+            };
+
+            _context.Areas.Add(area);
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation($"Created new Area with ID: {area.Id} for Ward: {ward.Id}");
            
             post.Title = updateDto.Title;
             post.Description = updateDto.Description;
@@ -223,7 +330,7 @@ public async Task<IActionResult> GetPosts([FromQuery] bool? isApproved)
             post.Street_Name = updateDto.Street_Name;
             post.Area_Size = updateDto.Area_Size;
             post.CategoryId = updateDto.CategoryId;
-            post.AreaId = updateDto.AreaId;
+            post.AreaId = area.Id;
             
 
             // Handle new images
@@ -354,4 +461,6 @@ public async Task<IActionResult> GetPosts([FromQuery] bool? isApproved)
 
 
     }
+
+    
 }

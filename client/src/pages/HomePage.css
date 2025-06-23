@@ -1,75 +1,101 @@
-.home-page {
-  padding-top: 80px;
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
 }
 
 .search-section {
-  background: linear-gradient(to right, #f60, #f90);
-  padding: 40px 0;
-  color: white;
-}
-
-.search-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  padding: 3rem 2rem;
+  border-radius: 15px;
+  margin-bottom: 3rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .search-container h1 {
-  margin: 0 0 20px;
-  font-size: 28px;
+  color: white;
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
   text-align: center;
+  font-weight: 600;
 }
 
 .search-filters {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 15px;
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  gap: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 1.5rem;
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
 }
 
 .search-filters select {
   width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
-  color: #333;
+  padding: 0.8rem 1rem;
+  border: none;
+  border-radius: 8px;
   background: white;
+  color: #333;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.search-filters select:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.search-filters select:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
 }
 
 .properties-section {
-  padding: 40px 0;
-  background: #f5f5f5;
+  padding: 2rem 0;
 }
 
 .properties-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
+  min-height: 400px;
 }
 
 .properties-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  padding: 1rem;
 }
 
-.loading {
+.loading, .error, .no-data {
   text-align: center;
-  padding: 40px;
-  font-size: 18px;
+  padding: 3rem;
+  font-size: 1.2rem;
   color: #666;
+  background: #f8f9fa;
+  border-radius: 10px;
+  margin: 2rem 0;
+}
+
+.error {
+  color: #dc3545;
+  background: #fff5f5;
 }
 
 @media (max-width: 768px) {
-  .search-filters {
-    grid-template-columns: 1fr;
+  .container {
+    padding: 1rem;
   }
   
-  .properties-grid {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  .search-section {
+    padding: 2rem 1rem;
+  }
+  
+  .search-container h1 {
+    font-size: 2rem;
+  }
+  
+  .search-filters {
+    grid-template-columns: 1fr;
   }
 } 

@@ -6,6 +6,7 @@ import './HomePage.css';
 import { useNavigate } from 'react-router-dom';
 import { toTrieu } from '../utils/priceUtils';
 import axiosPrivate from '../api/axiosPrivate';
+import HeroBanner from '../components/layout/HeroBanner';
 
 const TransactionType = {
   Sale: 0, 
@@ -142,6 +143,7 @@ const HomePage = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <HeroBanner />
       <div className="search-section">
         <div className="search-container">
           <h1>Tìm kiếm bất động sản</h1>
@@ -220,9 +222,16 @@ const HomePage = () => {
             <div className="no-data">Không có bất động sản nào phù hợp với bộ lọc</div>
           ) : (
             <div className="properties-grid">
-              {filteredProperties.map(property => (
-                <PropertyCard key={property.id} property={property} />
-              ))}
+              {filteredProperties
+                .slice()
+                .sort((a, b) => {
+                  const aIsPro = a.user?.role === 'Membership' ? 1 : 0;
+                  const bIsPro = b.user?.role === 'Membership' ? 1 : 0;
+                  return bIsPro - aIsPro;
+                })
+                .map(property => (
+                  <PropertyCard key={property.id} property={property} />
+                ))}
             </div>
           )}
         </div>

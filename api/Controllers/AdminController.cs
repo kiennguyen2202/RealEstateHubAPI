@@ -67,11 +67,26 @@ namespace RealEstateHubAPI.Controllers
         [HttpPost("posts/{postId}/approve")]
         public async Task<IActionResult> ApprovePost(int postId)
         {
-            var post = await _context.Posts.FindAsync(postId);
+            var post = await _context.Posts
+                .Include(p => p.User)
+                .FirstOrDefaultAsync(p => p.Id == postId);
             if (post == null)
                 return NotFound();
 
             post.IsApproved = true;
+            
+           
+            if (post.User.Role == "Membership")
+            {
+                
+                post.ExpiryDate = DateTime.Now.AddDays(60);
+            }
+            else
+            {
+               
+                post.ExpiryDate = DateTime.Now.AddDays(7);
+            }
+            
             await _context.SaveChangesAsync();
             return Ok(post);
         }
@@ -542,6 +557,27 @@ namespace RealEstateHubAPI.Controllers
             {
                 return StatusCode(500, "Internal server error");
             }
+        }
+
+        [HttpGet("payment-confirmations")]
+        public async Task<IActionResult> GetPaymentConfirmations()
+        {
+            var confirmations = await _context.PaymentConfirmations
+                .OrderByDescending(x => x.CreatedAt)
+                .Select(x => new {
+                    x.Id,
+                    x.UserId,
+                    x.Name,
+                    x.Phone,
+                    x.Email,
+                    x.PaymentMethod,
+
+                    x.ReceiptUrl,
+                    x.CreatedAt,
+                    
+                })
+                .ToListAsync();
+            return Ok(confirmations);
         }
     }
 }

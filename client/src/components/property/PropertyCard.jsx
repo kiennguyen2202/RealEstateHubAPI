@@ -1,14 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './PropertyCard.css';
 import { PriceUnit, formatPrice } from '../../utils/priceUtils';
 import FavoriteButton from '../Favorite/FavoriteButton';
+import { FaCrown } from 'react-icons/fa';
 
 
-// Định nghĩa enum PriceUnit tương tự như ở backend
+
 
 
 const PropertyCard = ({ property,showFavorite = true }) => {
+  const [showExpiredAlert, setShowExpiredAlert] = useState(false);
+
   const getFirstImageUrl = (images) => {
     if (!images || images.length === 0) return null;
     if (typeof images[0] === 'object' && images[0] !== null && images[0].url)
@@ -27,10 +30,36 @@ const PropertyCard = ({ property,showFavorite = true }) => {
     return `http://localhost:5134${imageUrl}`;
   };
 
+  // Check expired status (show expired badge if the property is expired)
+  const isExpired = property.expiryDate && new Date(property.expiryDate) < new Date();
+  const expiredDate = property.expiryDate ? new Date(property.expiryDate) : null;
+  const now = new Date();
+  const showExpiredBadge = isExpired && expiredDate && (now - expiredDate <= 24 * 60 * 60 * 1000);
+
   return (
-    <div className="property-card">
-      <Link to={`/chi-tiet/${property.id}`} className="property-link">
-        <div className="property-image">
+    <div className={`property-card${property.user?.role === 'Membership' ? ' membership-card' : ''}${showExpiredBadge ? ' expired' : ''}`}>
+      <Link
+        to={showExpiredBadge ? '#' : `/chi-tiet/${property.id}`}
+        className="property-link"
+        onClick={e => {
+          if (showExpiredBadge) {
+            e.preventDefault();
+            setShowExpiredAlert(true);
+          }
+        }}
+      >
+        <div className="property-image" style={{position: 'relative'}}>
+          {/* Expired Badge */}
+          {showExpiredBadge && (
+            <div className="expired-badge">Tin hết hạn</div>
+          )}
+          {/* Pro Badge */}
+          {property.user?.role === 'Membership' && (
+            <div className="pro-badge">
+              <FaCrown className="pro-crown-icon" />
+              Pro
+            </div>
+          )}
           <img 
             src={getFullImageUrl(getFirstImageUrl(property.images))}
             alt={property.title} 
@@ -72,6 +101,12 @@ const PropertyCard = ({ property,showFavorite = true }) => {
           </div>
         </div>
       </Link>
+      {showExpiredAlert && (
+        <div className="expired-popup">
+          Tin đã hết hạn, vui lòng xem tin khác
+          <button onClick={() => setShowExpiredAlert(false)}>Đóng</button>
+        </div>
+      )}
     </div>
   );
 };

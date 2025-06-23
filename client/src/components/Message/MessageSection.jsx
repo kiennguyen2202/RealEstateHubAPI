@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { messageService } from '../../api/messageService';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { useAuth } from '../../auth/AuthContext';
+import { useLocation } from 'react-router-dom';
 
 const MessageSection = ({ postId, postTitle, receiverId }) => {
     const { user } = useAuth();
@@ -10,7 +11,9 @@ const MessageSection = ({ postId, postTitle, receiverId }) => {
     const [newMessage, setNewMessage] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const messagesEndRef = React.useRef(null);
+    const messagesEndRef = useRef(null);
+    const sectionRef = useRef();
+    const { pathname } = useLocation();
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -39,6 +42,12 @@ const MessageSection = ({ postId, postTitle, receiverId }) => {
     useEffect(() => {
         scrollToBottom();
     }, [messages]);
+
+    useEffect(() => {
+        if (sectionRef.current) {
+            sectionRef.current.scrollTop = sectionRef.current.scrollHeight;
+        }
+    }, [messages, postId, receiverId]);
 
     const handleSendMessage = async (e) => {
         e.preventDefault();
@@ -73,7 +82,7 @@ const MessageSection = ({ postId, postTitle, receiverId }) => {
     }
 
     return (
-        <div className="bg-white rounded-lg shadow-md p-4 mt-4">
+        <div className="bg-white rounded-lg shadow-md p-4 mt-4" ref={sectionRef}>
             <h3 className="text-lg font-semibold mb-4">Tin nhắn về bài đăng</h3>
             
             {error && <div className="text-red-500 text-sm mb-4">{error}</div>}

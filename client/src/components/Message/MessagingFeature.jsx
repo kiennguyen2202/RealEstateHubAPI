@@ -30,11 +30,13 @@ const quickReplies = [
   "Tình trạng giấy tờ như thế nào ạ?",
   "Tôi có thể trả góp không?",
   "Giá có thương lượng không ạ?",
-  // ... thêm các câu khác nếu muốn
+  
 ];
 const MessagingFeature = () => {
   const { user } = useAuth();
   const location = useLocation();
+  const chatRef = useRef();
+  const { pathname } = useLocation();
 
   const currentUserId = user?.id;
 
@@ -45,8 +47,8 @@ const MessagingFeature = () => {
   // Tin nhắn trong cuộc hội thoại đang chọn
   const [messages, setMessages] = useState([]);
   // Trạng thái loading, error
-  const [loading, setLoading] = useState(true); // Loading for initial conversations list
-  const [loadingMessages, setLoadingMessages] = useState(false); // Loading for messages of selected conversation
+  const [loading, setLoading] = useState(true); 
+  const [loadingMessages, setLoadingMessages] = useState(false); 
   const [error, setError] = useState(null);
 
   // Gửi tin nhắn
@@ -71,8 +73,13 @@ const MessagingFeature = () => {
       scrollToBottom();
       setShouldScrollToBottom(false); // Reset sau khi cuộn
     }
-  }, [shouldScrollToBottom]); // Depend only on shouldScrollToBottom
+  }, [shouldScrollToBottom]); 
 
+  useEffect(() => {
+    if (chatRef.current) {
+      chatRef.current.scrollTop = 0;
+    }
+  }, [pathname]);
 
   // Lấy danh sách hội thoại khi currentUserId hoặc query param thay đổi
   useEffect(() => {
@@ -126,7 +133,7 @@ const MessagingFeature = () => {
         });
 
         const fetchedConversations = Array.from(conversationMap.values());
-        // Sort conversations by last message time, newest first
+       
         fetchedConversations.sort((a, b) => new Date(b.lastMessage?.sentTime) - new Date(a.lastMessage?.sentTime));
 
         setConversations(fetchedConversations);
@@ -140,7 +147,7 @@ const MessagingFeature = () => {
         const initialPostUsername = params.get('postUsername');
 
         if (initialPostId && initialUserId) {
-          // Find conversation in the fetched list
+          
           const conversationToSelect = fetchedConversations.find(
             (conv) => conv.postId === initialPostId && conv.otherUserId === initialUserId
           );
@@ -151,7 +158,7 @@ const MessagingFeature = () => {
       postUsername: conversationToSelect.postUsername || initialPostUsername,
     });
   } else {
-             // If not found in the list (e.g., new conversation), set basic info
+             
               setSelectedConversation({
                 postId: initialPostId,
                 otherUserId: initialUserId,
@@ -177,7 +184,7 @@ const MessagingFeature = () => {
     };
 
     fetchConversations();
-  }, [currentUserId, location.search]); // Added location.search as dependency
+  }, [currentUserId, location.search]); 
 
 
   // Lấy tin nhắn khi thay đổi cuộc hội thoại
@@ -195,7 +202,7 @@ const MessagingFeature = () => {
         // Thay đổi từ getPostMessages sang getConversation
         const data = await messageService.getConversation(currentUserId, selectedConversation.otherUserId, selectedConversation.postId);
 
-        // Sort messages by sentTime in ascending order (oldest first)
+        
         const sortedMessages = data.sort((a, b) => new Date(a.sentTime) - new Date(b.sentTime));
 
         if (isMounted) {
@@ -242,9 +249,9 @@ const MessagingFeature = () => {
         }
       } catch (err) {
         console.error('Error fetching messages:', err);
-        // Handle error fetching messages, maybe set messages to empty and show error message in chat area
+       
       } finally {
-        if (isMounted) setLoadingMessages(false); // End loading messages
+        if (isMounted) setLoadingMessages(false); 
       }
     };
 
@@ -257,7 +264,7 @@ const MessagingFeature = () => {
     //   isMounted = false;
     //   clearInterval(intervalId);
     // };
-  }, [selectedConversation]); // Depend only on selectedConversation changing
+  }, [selectedConversation]); 
 
 
   // Xử lý gửi tin nhắn
@@ -290,10 +297,9 @@ const MessagingFeature = () => {
         content: newMessageContent.trim(),
       };
 
-      // Temporarily add the new message to the state for instant display
-       // This avoids waiting for the re-fetch and makes UI feel faster
+      
        const tempNewMessage = {
-           id: `temp-${Date.now()}`, // Temporary ID
+           id: `temp-${Date.now()}`, 
            senderId: user.id,
            receiverId: selectedConversation.otherUserId,
            postId: selectedConversation.postId,
@@ -305,19 +311,19 @@ const MessagingFeature = () => {
            post: { user: { name: selectedConversation.postUsername } }, // Add post owner info if available
        };
 
-      // Add the temporary message and sort, then scroll
+     
       setMessages(prevMessages => {
           const updated = [...prevMessages, tempNewMessage];
-           // Sort including the new temp message
+           
            return updated.sort((a, b) => new Date(a.sentTime) - new Date(b.sentTime));
       });
 
-       // Scroll to bottom immediately after adding the temp message
+       
        scrollToBottom();
 
-      setNewMessageContent(''); // Clear input immediately
+      setNewMessageContent(''); 
 
-      // Send the message to the backend
+      
       await messageService.sendMessage(messageData);
 
       // Cập nhật lại lastMessage trong conversation list
@@ -331,8 +337,7 @@ const MessagingFeature = () => {
              ...messageData, // basic message data
              sentTime: new Date().toISOString(), // client-side time
              senderName: user.name, // current user's name
-             // Other details like postTitle, receiverName/otherUserName, postUsername might be needed depending on list display requirements
-             // It's best if the object structure matches the conversationMap logic above
+             
               postTitle: selectedConversation.postTitle,
               otherUserName: selectedConversation.otherUserName,
               postUsername: selectedConversation.postUsername,
@@ -345,13 +350,12 @@ const MessagingFeature = () => {
             ...newConversations[index],
             lastMessage: latestMessageForConv, // Use the constructed lastMessage object
           };
-          // Optionally move the updated conversation to the top of the list
+         
            newConversations.splice(index, 1);
-           newConversations.unshift(updatedConv); // Add at the beginning
+           newConversations.unshift(updatedConv); 
           return newConversations;
         } else {
-           // Case where the conversation was not in the initial list (e.g. first message sent to a post via URL)
-           // Add this new conversation to the list. Use details from selectedConversation.
+           
             const newConv = {
                postId: selectedConversation.postId,
                otherUserId: selectedConversation.otherUserId,
@@ -369,9 +373,8 @@ const MessagingFeature = () => {
     } catch (err) {
       setInputError(err.message || 'Không thể gửi tin nhắn. Vui lòng thử lại sau.');
       console.error('Error sending message:', err);
-      // If sending fails, maybe remove the temporary message or show error state on it.
-      // For now, just show input error.
-       setMessages(prevMessages => prevMessages.filter(msg => msg.id !== tempNewMessage.id)); // Remove temporary message on error
+      
+       setMessages(prevMessages => prevMessages.filter(msg => msg.id !== tempNewMessage.id)); 
     } finally {
       setSending(false);
     }
@@ -397,7 +400,7 @@ const MessagingFeature = () => {
   if (loading) {
     return (
       <div className="flex justify-center p-4">
-        <span>Đang tải danh sách hội thoại...</span> {/* More specific loading message */}
+        <span>Đang tải danh sách hội thoại...</span> 
       </div>
     );
   }
@@ -411,7 +414,7 @@ const MessagingFeature = () => {
   }
 
   return (
-    <div className="messaging-feature-container" style={{ paddingTop: '2.5rem' }}>
+    <div className="messaging-feature-container" style={{ paddingTop: '2.5rem' }} ref={chatRef}>
       <h1 className="text-2xl font-bold mb-4">Tin nhắn</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-[700px]">
@@ -419,9 +422,9 @@ const MessagingFeature = () => {
         <div className="md:col-span-2 conversation-list">
           <h2 className="text-lg font-semibold mb-4">Danh sách hội thoại</h2>
           <div className="overflow-y-auto h-[calc(100%-60px)]">
-             {/* Loading state handled above */}
+            
             {!loading && conversations.length === 0 && (
-              <div className="text-gray-500 text-center">Bạn chưa có cuộc hội thoại nào.</div> // Centered text
+              <div className="text-gray-500 text-center">Bạn chưa có cuộc hội thoại nào.</div> 
             )}
             {conversations.map((conv) => {
               const isSelected =

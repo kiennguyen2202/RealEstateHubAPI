@@ -1,0 +1,929 @@
+.container {
+  max-width: 900px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.10);
+  padding: 40px 24px;
+  font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+}
+.header {
+  text-align: center;
+  margin-bottom: 36px;
+}
+.header h1 {
+  color: #ff9800;
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+.header p {
+  color: #555;
+  font-size: 1.15rem;
+  font-weight: 500;
+}
+.benefits {
+  display: flex;
+  gap: 36px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.benefitCard {
+  background: #f7f7f7;
+  border-radius: 16px;
+  padding: 32px 28px 28px 28px;
+  flex: 1;
+  min-width: 260px;
+  max-width: 350px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+}
+.benefitCard:hover {
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.13);
+}
+.benefitCard h2 {
+  color: #333;
+  font-size: 1.35rem;
+  margin-bottom: 18px;
+  font-weight: 700;
+}
+.benefitCard ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 18px 0;
+}
+.benefitCard ul li {
+  margin-bottom: 12px;
+  color: #444;
+  font-size: 1.05rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.checkIcon {
+  color: #2ecc40;
+  font-size: 1.1em;
+  margin-right: 4px;
+}
+.pro {
+  background: linear-gradient(135deg, #fffbe6 80%, #ffe0b2 100%);
+  border: 3px solid;
+  border-image: linear-gradient(90deg, #ff9800, #ffb347, #ffd580) 1;
+  box-shadow: 0 4px 24px rgba(255,152,0,0.10);
+  position: relative;
+  z-index: 1;
+}
+.pro::after {
+  content: 'PRO';
+  position: absolute;
+  top: -18px;
+  right: 18px;
+  background: linear-gradient(90deg, #ff9800, #ffd580);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 3px 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(255,152,0,0.13);
+  letter-spacing: 1px;
+}
+.subscribeBtn {
+  background: linear-gradient(90deg, #ff9800 60%, #ffb347 100%);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 14px 38px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(255,152,0,0.10);
+  transition: background 0.2s, transform 0.15s;
+  margin-top: 8px;
+}
+.subscribeBtn:hover {
+  background: linear-gradient(90deg, #ff7800 60%, #ffb347 100%);
+  transform: scale(1.04);
+}
+.paymentModal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.25s;
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.paymentModalContent {
+  background: #fff;
+  border-radius: 16px;
+  padding: 36px 28px 28px 28px;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.16);
+  position: relative;
+  animation: modalPop 0.25s;
+}
+@keyframes modalPop {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.paymentModalContent h2 {
+  color: #ff9800;
+  margin-bottom: 16px;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+.confirmForm {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 18px 0 0 0;
+}
+.confirmForm input[type='text'],
+.confirmForm input[type='file'] {
+  padding: 10px;
+  border-radius: 7px;
+  border: 1.5px solid #ffd580;
+  font-size: 1rem;
+  background: #fffbe6;
+  transition: border 0.2s;
+}
+.confirmForm input[type='text']:focus {
+  border: 1.5px solid #ff9800;
+  outline: none;
+}
+.confirmForm button {
+  background: linear-gradient(90deg, #ff9800 60%, #ffb347 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 0;
+  font-size: 1.08rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(255,152,0,0.10);
+  transition: background 0.2s, transform 0.15s;
+}
+.confirmForm button:hover {
+  background: linear-gradient(90deg, #ff7800 60%, #ffb347 100%);
+  transform: scale(1.03);
+}
+.closeModal {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  color: #ff9800;
+  cursor: pointer;
+  font-weight: 700;
+  transition: color 0.2s;
+}
+.closeModal:hover {
+  color: #ff7800;
+}
+.paymentMethods {
+  display: flex;
+  gap: 18px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+.paymentMethodBtn {
+  display: flex;
+  align-items: center;
+  background: #f5f5f5;
+  border: 2px solid #eee;
+  border-radius: 10px;
+  padding: 10px 18px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: border 0.2s, background 0.2s, color 0.2s;
+  min-width: 160px;
+  gap: 8px;
+}
+.paymentMethodBtn.selected, .paymentMethodBtn:hover {
+  border: 2px solid #ff9800;
+  background: #fffbe6;
+  color: #ff9800;
+}
+.paymentMethodInfo {
+  margin-bottom: 16px;
+  font-size: 1.05rem;
+  color: #444;
+}
+.qrSection {
+  text-align: center;
+  margin-bottom: 18px;
+}
+.qrImg {
+  width: 190px;
+  height: 190px;
+  object-fit: contain;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(255,152,0,0.10);
+  margin: 10px 0;
+  border: 3px solid #fffbe6;
+  transition: box-shadow 0.2s, border 0.2s;
+}
+.qrImg:hover {
+  box-shadow: 0 8px 32px rgba(255,152,0,0.18);
+  border: 3px solid #ff9800;
+}
+.qrTitle {
+  font-weight: 700;
+  color: #ff9800;
+  margin-bottom: 6px;
+  font-size: 1.08rem;
+}
+@media (max-width: 900px) {
+  .container {
+    padding: 18px 4px;
+  }
+  .benefits {
+    flex-direction: column;
+    gap: 18px;
+  }
+  .benefitCard {
+    max-width: 100%;
+  }
+}
+@media (max-width: 600px) {
+  .container {
+    padding: 8px 0;
+  }
+  .paymentModalContent {
+    padding: 18px 4px 12px 4px;
+    max-width: 98vw;
+  }
+  .qrImg {
+    width: 120px;
+    height: 120px;
+  }
+}
+.darkBg {
+  background: #191919 url('https://static.chotot.com/storage/default_images/pty/subscription_landing_page/background-decor-tiny.png') repeat-x center bottom;
+  background-size: auto 100%;
+  min-height: 100vh;
+  padding: 48px 0 64px 0;
+  position: relative;
+  z-index: 0;
+}
+.membershipBgDecor {
+  position: fixed;
+  left: 0; right: 0; top: 0; bottom: 0;
+  z-index: 0;
+  background: url('https://static.chotot.com/storage/default_images/pty/subscription_landing_page/background-decor-tiny.png') center center/cover no-repeat;
+  opacity: 0.13;
+  pointer-events: none;
+}
+.pricingTable {
+  display: flex;
+  gap: 32px;
+  justify-content: center;
+  align-items: flex-end;
+  max-width: 1100px;
+  margin: 0 auto 40px auto;
+  flex-wrap: wrap;
+}
+.planCard {
+  background: #232323;
+  border-radius: 18px;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.18);
+  padding: 32px 28px 28px 28px;
+  min-width: 300px;
+  max-width: 340px;
+  flex: 1 1 320px;
+  color: #fff;
+  position: relative;
+  border: 2px solid #232323;
+  transition: transform 0.18s, box-shadow 0.18s, border 0.18s;
+  margin-bottom: 16px;
+}
+.planCardHighlight {
+  border: 2.5px solid #ff9800;
+  box-shadow: 0 8px 40px 0 rgba(255,152,0,0.18);
+  z-index: 2;
+  transform: scale(1.04);
+}
+.planBadge {
+  position: absolute;
+  top: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, #ff9800, #ffd580);
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.05rem;
+  padding: 5px 22px;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(255,152,0,0.13);
+  letter-spacing: 1px;
+  z-index: 3;
+}
+.planHeader {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 12px;
+}
+.planIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  margin-right: 2px;
+}
+.planName {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+.planDesc {
+  color: #e0e0e0;
+  font-size: 1.01rem;
+  font-weight: 400;
+}
+.planPriceSection {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  margin: 18px 0 2px 0;
+}
+.planPrice {
+  font-size: 2.1rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 1px;
+}
+.planPriceNote {
+  font-size: 1.1rem;
+  color: #ff9800;
+  font-weight: 600;
+}
+.planSave {
+  color: #ffd580;
+  font-size: 1.01rem;
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+.planBtnWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.planBtnBasic {
+  background: #3a2c1a;
+  color: #ff9800;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 0;
+  font-size: 1.08rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 0;
+  transition: background 0.18s, color 0.18s;
+}
+.planBtnBasic:hover {
+  background: #ff9800;
+  color: #fff;
+}
+.planBtnPro {
+  background: #ff9800;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 0;
+  font-size: 1.08rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 0;
+  box-shadow: 0 2px 8px rgba(255,152,0,0.10);
+  transition: background 0.18s, color 0.18s;
+}
+.planBtnPro:hover {
+  background: #ff7800;
+  color: #fff;
+}
+.planBtnVip {
+  background: #232323;
+  color: #3b82f6;
+  border: 2px solid #3b82f6;
+  border-radius: 8px;
+  padding: 12px 0;
+  font-size: 1.08rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 0;
+  transition: background 0.18s, color 0.18s;
+}
+.planBtnVip:hover {
+  background: #3b82f6;
+  color: #fff;
+}
+.planTrialBtn {
+  background: #232323;
+  color: #ffd580;
+  border: 2px solid #ffd580;
+  border-radius: 8px;
+  padding: 10px 0;
+  font-size: 1.01rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 0;
+  transition: background 0.18s, color 0.18s;
+}
+.planTrialBtn:hover {
+  background: #ffd580;
+  color: #232323;
+}
+.planFeatures {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  margin-top: 10px;
+}
+.featureOk {
+  color: #ffd580;
+  font-size: 1.07rem;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+}
+.featureNo {
+  color: #888;
+  font-size: 1.07rem;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 400;
+  opacity: 0.7;
+}
+.checkIcon {
+  color: #ffd580;
+  font-size: 1.1em;
+  margin-right: 4px;
+}
+.crossIcon {
+  color: #444;
+  font-size: 1.1em;
+  margin-right: 4px;
+  opacity: 0.7;
+}
+@media (max-width: 1100px) {
+  .pricingTable {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 24px;
+  }
+  .planCard {
+    max-width: 100%;
+    min-width: 0;
+  }
+}
+.heroSection {
+  text-align: center;
+  margin-bottom: 36px;
+  margin-top: 0;
+}
+.heroTitle {
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+}
+.heroSubtitle {
+  font-size: 1.25rem;
+  color: #ffd580;
+  font-weight: 600;
+  margin-bottom: 0;
+}
+.heroHighlight {
+  color: #ff9800;
+  font-weight: 800;
+  font-size: 1.3em;
+}
+.benefitSection {
+  max-width: 950px;
+  margin: 0 auto 38px auto;
+  padding: 0 8px;
+}
+.benefitTitle {
+  text-align: center;
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 22px;
+}
+.benefitList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: center;
+}
+.benefitItem {
+  background: #232323;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(255,152,0,0.07);
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 18px 22px 18px 18px;
+  min-width: 220px;
+  max-width: 340px;
+  flex: 1 1 220px;
+}
+.benefitIcon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.benefitItemTitle {
+  color: #ffd580;
+  font-size: 1.08rem;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+.benefitItemDesc {
+  color: #e0e0e0;
+  font-size: 1.01rem;
+  font-weight: 400;
+}
+.contactSection {
+  margin-top: 48px;
+  display: flex;
+  justify-content: center;
+}
+.contactBox {
+  background: #232323;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(255,152,0,0.10);
+  padding: 32px 32px 24px 32px;
+  min-width: 280px;
+  max-width: 400px;
+  text-align: center;
+}
+.contactTitle {
+  color: #ff9800;
+  font-size: 1.18rem;
+  font-weight: 700;
+  margin-bottom: 18px;
+}
+.contactInfoRow {
+  color: #fff;
+  font-size: 1.05rem;
+  margin-bottom: 10px;
+}
+.contactInfoRow a {
+  color: #ffd580;
+  text-decoration: underline;
+  font-weight: 600;
+}
+.zaloBtn {
+  background: #00b3ff;
+  color: #fff !important;
+  border-radius: 8px;
+  padding: 6px 18px;
+  font-weight: 700;
+  margin-left: 8px;
+  text-decoration: none !important;
+  transition: background 0.18s;
+  display: inline-block;
+}
+.zaloBtn:hover {
+  background: #0086c3;
+}
+@media (max-width: 900px) {
+  .benefitList {
+    flex-direction: column;
+    gap: 16px;
+  }
+  .benefitItem {
+    max-width: 100%;
+    min-width: 0;
+  }
+  .contactBox {
+    padding: 18px 8px 12px 8px;
+  }
+}
+.contactSectionForm {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 0;
+  margin: 48px auto 0 auto;
+  max-width: 950px;
+  background: #191919;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.13);
+}
+.contactFormLeft {
+  flex: 1 1 50%;
+  min-width: 280px;
+  position: relative;
+  background: #232323;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 340px;
+}
+.contactFormBg {
+  position: absolute;
+  inset: 0;
+  background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80') center center/cover no-repeat;
+  opacity: 0.7;
+  z-index: 1;
+}
+.contactFormLeftContent {
+  position: relative;
+  z-index: 2;
+  color: #fff;
+  text-align: left;
+  padding: 32px 24px 24px 32px;
+  width: 100%;
+}
+.contactFormTitle {
+  font-size: 1.45rem;
+  font-weight: 800;
+  margin-bottom: 18px;
+  color: #fff;
+}
+.contactFormHotline {
+  font-size: 1.08rem;
+  color: #fff;
+  margin-bottom: 8px;
+}
+.contactFormHotlineLink {
+  color: #ff9800;
+  font-weight: 700;
+  text-decoration: underline;
+}
+.contactFormTime {
+  color: #ffd580;
+  font-size: 0.98rem;
+}
+.contactFormRight {
+  flex: 1 1 50%;
+  min-width: 320px;
+  background: #111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px 24px 24px;
+}
+.contactForm {
+  width: 100%;
+  max-width: 370px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: #191919;
+  border-radius: 12px;
+  padding: 18px 18px 12px 18px;
+  box-shadow: 0 2px 12px rgba(255,152,0,0.07);
+}
+.contactForm input,
+.contactForm textarea {
+  background: #232323;
+  color: #fff;
+  border: 1.5px solid #ffd580;
+  border-radius: 7px;
+  padding: 10px;
+  font-size: 1rem;
+  font-family: inherit;
+  margin-bottom: 0;
+  transition: border 0.2s;
+}
+.contactForm input:focus,
+.contactForm textarea:focus {
+  border: 1.5px solid #ff9800;
+  outline: none;
+}
+.contactForm textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+.contactForm button {
+  background: linear-gradient(90deg, #ff9800 60%, #ffb347 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 0;
+  font-size: 1.08rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background 0.18s, transform 0.15s;
+}
+.contactForm button:hover {
+  background: linear-gradient(90deg, #ff7800 60%, #ffb347 100%);
+  transform: scale(1.03);
+}
+.contactFormNote {
+  color: #aaa;
+  font-size: 0.98rem;
+  margin-bottom: 0;
+}
+.contactFormNote a {
+  color: #00b3ff;
+  text-decoration: underline;
+}
+.contactFormSent {
+  color: #2ecc40;
+  font-size: 1.12rem;
+  font-weight: 700;
+  text-align: center;
+  padding: 32px 0;
+}
+@media (max-width: 900px) {
+  .contactSectionForm {
+    flex-direction: column;
+    border-radius: 0 0 16px 16px;
+  }
+  .contactFormLeft, .contactFormRight {
+    min-width: 0;
+    padding: 18px 8px 12px 8px;
+  }
+  .contactFormBg {
+    min-height: 180px;
+  }
+}
+.hero2Section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  max-width: 1200px;
+  margin: 0 auto 48px auto;
+  min-height: 420px;
+  position: relative;
+  z-index: 2;
+  overflow: hidden;
+}
+.hero2Left {
+  flex: 1 1 50%;
+  min-width: 320px;
+  padding: 48px 0 48px 32px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  z-index: 2;
+}
+.hero2Breadcrumbs {
+  color: #bdbdbd;
+  font-size: 0.98rem;
+  margin-bottom: 10px;
+}
+.hero2Breadcrumbs a {
+  color: #00b3ff;
+  text-decoration: underline;
+}
+.hero2Badge {
+  display: inline-block;
+  background: #232323;
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.08rem;
+  border-radius: 10px;
+  padding: 6px 22px;
+  margin-bottom: 24px;
+  letter-spacing: 1px;
+  box-shadow: 0 2px 8px rgba(255,152,0,0.10);
+}
+.hero2Title {
+  font-size: 2.6rem;
+  font-weight: 900;
+  margin-bottom: 32px;
+  color: #fff;
+  line-height: 1.18;
+  letter-spacing: 0.5px;
+}
+.hero2Bullets {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 32px 0;
+}
+.hero2Bullets li {
+  font-size: 1.22rem;
+  color: #ffd580;
+  font-weight: 700;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  letter-spacing: 0.1px;
+}
+.hero2BtnRow {
+  display: flex;
+  gap: 20px;
+  margin-top: 8px;
+}
+.hero2BtnMain {
+  background: linear-gradient(90deg, #ff9800 60%, #ffb347 100%);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 16px 40px;
+  font-size: 1.18rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(255,152,0,0.10);
+  transition: background 0.18s, transform 0.15s;
+}
+.hero2BtnMain:hover {
+  background: linear-gradient(90deg, #ff7800 60%, #ffb347 100%);
+  transform: scale(1.04);
+}
+.hero2BtnOutline {
+  background: #232323;
+  color: #fff;
+  border: 2.5px solid #ffd580;
+  border-radius: 10px;
+  padding: 16px 40px;
+  font-size: 1.18rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s, border 0.18s;
+}
+.hero2BtnOutline:hover {
+  background: #ffd580;
+  color: #232323;
+  border: 2.5px solid #ff9800;
+}
+.hero2Right {
+  flex: 1 1 50%;
+  min-width: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  height: 100%;
+  min-height: 340px;
+  z-index: 2;
+}
+.hero2ImgMain {
+  position: relative;
+  z-index: 2;
+  border-radius: 32px;
+  overflow: hidden;
+  box-shadow: 0 12px 48px rgba(255,152,0,0.18);
+  width: 500px;
+  height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+}
+.hero2ImgMain img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 32px;
+}
+@media (max-width: 1100px) {
+  .hero2Section {
+    flex-direction: column;
+    gap: 18px;
+    min-height: unset;
+    padding: 0 8px;
+  }
+  .hero2Left, .hero2Right {
+    min-width: 0;
+    width: 100%;
+    padding: 18px 0 0 0;
+  }
+  .hero2ImgMain {
+    width: 320px;
+    height: 320px;
+  }
+}
+@media (max-width: 700px) {
+  .hero2Title {
+    font-size: 1.4rem;
+    margin-bottom: 18px;
+  }
+  .hero2ImgMain {
+    width: 180px;
+    height: 180px;
+  }
+  .hero2Left {
+    padding: 18px 0 18px 0;
+  }
+}
