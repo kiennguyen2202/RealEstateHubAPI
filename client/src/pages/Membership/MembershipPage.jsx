@@ -268,11 +268,18 @@ const MembershipPage = () => {
             <div className={styles.planBtnWrap}>
               <button
                 className={styles['planBtn' + (plan.highlight ? 'Pro' : plan.key.charAt(0).toUpperCase() + plan.key.slice(1))]}
-                onClick={() => navigate('/checkout')}
-              >
+                onClick={() => {
+                  if (plan.key === 'pro') {
+                    navigate('/checkout');
+                  } else {
+                    navigate('/dang-tin');
+                  }
+                }}>
+              
                 {plan.button.label}
               </button>
             </div>
+
             <ul className={styles.planFeatures}>
               {plan.features.map((f, i) => (
                 <li key={i} className={f.ok ? styles.featureOk : styles.featureNo}>

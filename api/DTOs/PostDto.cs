@@ -26,6 +26,14 @@ namespace RealEstateHubAPI.DTOs
         public string Street_Name { get; set; }
         [Required]
         public float Area_Size { get; set; }
+        public int? SoPhongNgu { get; set; } 
+        public int? SoPhongTam { get; set; } 
+        public int? SoTang { get; set; } 
+        public string? HuongNha { get; set; } 
+        public string? HuongBanCong { get; set; }
+        public float? MatTien { get; set; } 
+        public float? DuongVao { get; set; } 
+        public string? PhapLy { get; set; } 
 
         [Required]
         public int CategoryId { get; set; }
@@ -57,6 +65,14 @@ namespace RealEstateHubAPI.DTOs
         public string Street_Name { get; set; }
         [Required]
         public float Area_Size { get; set; }
+        public int? SoPhongNgu { get; set; } 
+        public int? SoPhongTam { get; set; } 
+        public int? SoTang { get; set; }
+        public string? HuongNha { get; set; } 
+        public string? HuongBanCong { get; set; } 
+        public float? MatTien { get; set; } 
+        public float? DuongVao { get; set; } 
+        public string? PhapLy { get; set; } 
 
         [Required]
         public int CategoryId { get; set; }

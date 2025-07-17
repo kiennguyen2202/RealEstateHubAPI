@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using RealEstateHubAPI.Model;
 using RealEstateHubAPI.Models;
@@ -17,13 +18,19 @@ namespace RealEstateHubAPI.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IUserRepository _userRepository;
         private readonly IAreaRepository _areaRepository;
+        private readonly IHubContext<NotificationHub> _hubContext;
+        
+        //private readonly IEmailService _emailService;
 
-        public AdminController(ApplicationDbContext context, ICategoryRepository categoryRepository, IUserRepository userRepository, IAreaRepository areaRepository)
+        public AdminController(ApplicationDbContext context, ICategoryRepository categoryRepository, IUserRepository userRepository,
+            IAreaRepository areaRepository, IHubContext<NotificationHub> hubContext)
         {
             _context = context;
             _categoryRepository = categoryRepository;
             _userRepository = userRepository;
             _areaRepository = areaRepository;
+            _hubContext = hubContext;
+            //_emailService = emailService;
         }
 
         // Get admin dashboard stats
@@ -78,16 +85,35 @@ namespace RealEstateHubAPI.Controllers
            
             if (post.User.Role == "Membership")
             {
-                
-                post.ExpiryDate = DateTime.Now.AddDays(60);
+                post.ExpiryDate = DateTime.Now.AddSeconds(15); 
             }
             else
             {
-               
-                post.ExpiryDate = DateTime.Now.AddDays(7);
+                post.ExpiryDate = DateTime.Now.AddSeconds(15); 
             }
             
             await _context.SaveChangesAsync();
+
+            
+            var notification = new Notification
+            {
+                UserId = post.User.Id,
+                PostId = post.Id,
+                Title = "Tin đăng đã được duyệt",
+                Message = $"Tin đăng '{post.Title}' của bạn đã được admin duyệt thành công.",
+                Type = "approved",
+                IsRead = false,
+                CreatedAt = DateTime.Now
+            };
+            _context.Notifications.Add(notification);
+            await _context.SaveChangesAsync();
+
+            
+            await _hubContext.Clients.User(post.User.Id.ToString()).SendAsync("ReceiveNotification", notification);
+
+            
+            //await _emailService.SendAsync(post.User.Email, notification.Title, notification.Message);
+
             return Ok(post);
         }
 

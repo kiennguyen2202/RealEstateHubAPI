@@ -35,7 +35,14 @@ namespace RealEstateHubAPI.Model
 
         public List<PostImage>? Images { get; set; }
 
-        
+        public int? SoPhongNgu { get; set; } 
+        public int? SoPhongTam { get; set; } 
+        public int? SoTang { get; set; } 
+        public string? HuongNha { get; set; } 
+        public string? HuongBanCong { get; set; } 
+        public float? MatTien { get; set; } 
+        public float? DuongVao { get; set; } 
+        public string? PhapLy { get; set; } 
 
     }
 }

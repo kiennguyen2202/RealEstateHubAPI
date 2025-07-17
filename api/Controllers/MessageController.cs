@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.SignalR;
+using RealEstateHubAPI.Models;
 
 namespace RealEstateHubAPI.Controllers
 {
@@ -14,10 +16,13 @@ namespace RealEstateHubAPI.Controllers
     public class MessageController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly IHubContext<NotificationHub>   _hubContext;
 
-        public MessageController(ApplicationDbContext context)
+
+        public MessageController(ApplicationDbContext context, IHubContext<NotificationHub> hubContext)
         {
             _context = context;
+            _hubContext = hubContext;
         }
 
         [HttpPost]
@@ -57,6 +62,24 @@ namespace RealEstateHubAPI.Controllers
 
             _context.Messages.Add(message);
             await _context.SaveChangesAsync();
+
+            // Tạo notification cho người nhận
+            var notification = new Notification
+            {
+                UserId = receiver.Id,
+                PostId = post.Id,
+                SenderId = sender.Id,
+                Title = "Tin nhắn mới",
+                Message = $"Có người gửi tin nhắn về bài đăng '{post.Title}'.",
+                Type = "message",
+                IsRead = false,
+                CreatedAt = DateTime.Now
+            };
+            _context.Notifications.Add(notification);
+            await _context.SaveChangesAsync();
+
+            // Gửi SignalR real-time
+            await _hubContext.Clients.User(receiver.Id.ToString()).SendAsync("ReceiveNotification", notification);
 
             return Ok(new MessageDto
             {

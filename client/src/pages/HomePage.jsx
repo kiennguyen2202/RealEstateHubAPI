@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { toTrieu } from '../utils/priceUtils';
 import axiosPrivate from '../api/axiosPrivate';
 import HeroBanner from '../components/layout/HeroBanner';
+import PopupMembership from '../components/PopupMembership';
 
 const TransactionType = {
   Sale: 0, 
@@ -24,10 +25,13 @@ const HomePage = () => {
     transaction: '',     
     category: '',        
     area: '',         
-    priceRange: '',     
+    priceRange: '',
+    soPhongNgu: '',
+    soPhongTam: '',     
     sortBy: 'newest'   
   });
   const navigate = useNavigate();
+  const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -36,6 +40,17 @@ const HomePage = () => {
   useEffect(() => {
     filterProperties();
   }, [filters, properties]);
+
+  useEffect(() => {
+    // Kiểm tra nếu đã từng đóng popup trong session này thì không hiện lại
+    const hasClosed = sessionStorage.getItem('membershipPopupClosed');
+    if (!hasClosed) {
+      const timer = setTimeout(() => {
+        setShowPopup(true);
+      }, 1000); // Hiện popup sau 3 giây
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   const fetchData = async () => {
     try {
@@ -113,6 +128,19 @@ const HomePage = () => {
     return priceTrieu >= min && priceTrieu <= max;
   });
 }
+    //Lọc theo số lượng phòng ngủ
+    if (filters.soPhongNgu) {
+      filtered = filtered.filter(property => 
+        property.soPhongNgu >= parseInt(filters.soPhongNgu)
+      );
+    }
+
+    // Lọc theo số lượng phòng tắm
+    if (filters.soPhongTam) {
+      filtered = filtered.filter(property =>
+        property.soPhongTam >= parseInt(filters.soPhongTam)
+      );
+    }
 
     // Sắp xếp
     switch (filters.sortBy) {
@@ -139,6 +167,11 @@ const HomePage = () => {
     }
 
     setFilteredProperties(filtered);
+  };
+
+  const handleClosePopup = () => {
+    setShowPopup(false);
+    sessionStorage.setItem('membershipPopupClosed', 'true');
   };
 
   return (
@@ -208,6 +241,31 @@ const HomePage = () => {
               <option value="area-asc">Diện tích tăng dần</option>
               <option value="area-desc">Diện tích giảm dần</option>
             </select>
+
+            {/* Số lượng phòng ngủ */}
+            <select
+              value={filters.soPhongNgu}
+              onChange={(e) => setFilters({...filters, soPhongNgu: e.target.value})}
+            >
+              <option value="">Số lượng phòng ngủ</option>
+              <option value="1">1 phòng</option>
+              <option value="2">2 phòng</option>
+              <option value="3">3 phòng</option>
+              <option value="4">4 phòng</option>
+              <option value="5">5 phòng</option>
+            </select>
+            {/* Số lượng phòng tắm */}
+            <select
+              value={filters.soPhongTam}
+              onChange={(e) => setFilters({...filters, soPhongTam: e.target.value})}
+            >
+              <option value="">Số lượng phòng tắm</option>
+              <option value="1">1 phòng</option>
+              <option value="2">2 phòng</option>
+              <option value="3">3 phòng</option>
+              <option value="4">4 phòng</option>
+              <option value="5">5 phòng</option>
+            </select>
           </div>
         </div>
       </div>
@@ -236,6 +294,8 @@ const HomePage = () => {
           )}
         </div>
       </div>
+
+      {showPopup && <PopupMembership onClose={handleClosePopup} />}
     </div>
   );
 };

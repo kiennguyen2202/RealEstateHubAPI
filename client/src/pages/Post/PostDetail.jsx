@@ -5,7 +5,7 @@ import { useAuth } from "../../auth/AuthContext.jsx";
 import {
   FaHome, FaRuler, FaMapMarkerAlt, FaUser,
   FaPhone, FaEnvelope, FaEdit, FaTrash, FaExclamationTriangle,
-  FaCommentDots, FaCrown
+  FaCommentDots, FaCrown, FaBed, FaBath, FaBuilding, FaRoad,FaMoneyBillWave,FaCompass,FaLocationArrow,FaFileAlt,FaWarehouse	
 } from "react-icons/fa";
 import "./PostDetail.css";
 import { PriceUnit, formatPrice } from '../../utils/priceUtils.js';
@@ -50,6 +50,14 @@ const PostDetail = () => {
     city: "",
     district: "",
     ward: "",
+    soPhongNgu: '',
+    soPhongTam: '',
+    soTang: '',
+    huongNha: '',
+    huongBanCong: '',
+    matTien: '',
+    duongVao: '',
+    phapLy: '',
   });
   const [categories, setCategories] = useState([]);
 
@@ -99,9 +107,16 @@ const PostDetail = () => {
           city: response.data.area?.cityId || '',
           district: response.data.area?.districtId || '',
           ward: response.data.area?.id || '',
+          soPhongNgu: response.data.soPhongNgu || '',
+          soPhongTam: response.data.soPhongTam || '',
+          soTang: response.data.soTang || '',
+          huongNha: response.data.huongNha || '',
+          huongBanCong: response.data.huongBanCong || '',
+          matTien: response.data.matTien || '',
+          duongVao: response.data.duongVao || '',
+          phapLy: response.data.phapLy || '',
         });
         const addressParts = [];
-        if (response.data.street_Name) addressParts.push(response.data.street_Name);
         if (response.data.area?.ward?.name) addressParts.push(response.data.area.ward.name);
         if (response.data.area?.district?.name) addressParts.push(response.data.area.district.name);
         if (response.data.area?.city?.name) addressParts.push(response.data.area.city.name);
@@ -181,6 +196,14 @@ const PostDetail = () => {
       postData.append('TransactionType', parseInt(editForm.transactionType));
       postData.append('UserId', post.userId);
       postData.append('Status', 'active');
+      postData.append('SoPhongNgu', editForm.soPhongNgu);
+      postData.append('SoPhongTam', editForm.soPhongTam);
+      postData.append('SoTang', editForm.soTang);
+      postData.append('HuongNha', editForm.huongNha);
+      postData.append('HuongBanCong', editForm.huongBanCong);
+      postData.append('MatTien', editForm.matTien);
+      postData.append('DuongVao', editForm.duongVao);
+      postData.append('PhapLy', editForm.phapLy);
 
       if (newImages) {
         Array.from(newImages).forEach(image => {
@@ -258,6 +281,23 @@ const PostDetail = () => {
       </div>
     );
   }
+
+  // Tính đơn giá theo m²
+  const getPricePerSquareMeter = () => {
+    if (!post?.price || !post?.area_Size) return null;
+  
+    // Tính giá theo triệu
+    let totalPriceInMillions = post.price;
+  
+    if (post.priceUnit === PriceUnit.Tỷ) {
+      totalPriceInMillions = post.price * 1000;
+    }
+  
+    const unitPriceInMillions = totalPriceInMillions / post.area_Size;
+  
+    return `~${unitPriceInMillions.toFixed(1)} triệu/m²`;
+  };
+  
 
   return (
     <div className="property-detail">
@@ -353,6 +393,10 @@ const PostDetail = () => {
                     <span>Loại: {post.category?.name}</span>
                   </div>
                   <div className="info-item">
+                    <FaMoneyBillWave />
+                    <span>Giá: {formatPrice(post.price, post.priceUnit)}</span>
+                  </div>
+                  <div className="info-item">
                     <FaRuler />
                     <span>Diện tích: {post.area_Size} m²</span>
                   </div>
@@ -360,6 +404,54 @@ const PostDetail = () => {
                     <FaUser />
                     <span>Người đăng: {post.user?.name}</span>
                   </div>
+                  {post.soPhongNgu ? (
+                    <div className="info-item">
+                      <FaBed />
+                      <span>Số phòng ngủ: {post.soPhongNgu}</span>
+                    </div>
+                  ) : null}
+                  {post.soPhongTam ? (
+                    <div className="info-item">
+                      <FaBath />
+                      <span>Số phòng tắm/WC: {post.soPhongTam}</span>
+                    </div>
+                  ) : null}
+                  {post.soTang ? (
+                    <div className="info-item">
+                      <FaBuilding />
+                      <span>Số tầng: {post.soTang}</span>
+                    </div>
+                  ) : null}
+                  {post.huongNha ? (
+                    <div className="info-item">
+                      <FaCompass />
+                      <span>Hướng nhà: {post.huongNha}</span>
+                    </div>
+                  ) : null}
+                  {post.huongBanCong ? (
+                    <div className="info-item">
+                      <FaLocationArrow />
+                      <span>Hướng ban công: {post.huongBanCong}</span>
+                    </div>
+                  ) : null}
+                  {post.matTien ? (
+                    <div className="info-item">
+                      <FaWarehouse />
+                      <span>Mặt tiền: {post.matTien} m</span>
+                    </div>
+                  ) : null}
+                  {post.duongVao ? (
+                    <div className="info-item">
+                      <FaRoad />
+                      <span>Đường vào: {post.duongVao} m</span>
+                    </div>
+                  ) : null}
+                  {post.phapLy ? (
+                    <div className="info-item">
+                      <FaFileAlt />
+                      <span>Pháp lý: {post.phapLy}</span>
+                    </div>
+                  ) : null}
                 </div>
               </div>
 
@@ -373,7 +465,10 @@ const PostDetail = () => {
           {/* Right Column - Contact */}
           <div className="property-contact">
             <div className="price-tag">
-              {formatPrice(post.price, post.priceUnit)}
+              {formatPrice(post.price, post.priceUnit)}              
+            </div>
+            <div className="price-per-m2" >
+              {getPricePerSquareMeter()}
             </div>
             <div className={`transaction-type ${post.transactionType === 0 ? 'sale' : 'rent'}`}>
               {post.transactionType === 0 ? "Mua bán" : "Cho thuê"}
@@ -569,6 +664,93 @@ const PostDetail = () => {
                       <option key={ward.id} value={ward.id}>{ward.name}</option>
                     ))}
                   </select>
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label className="form-label">Số phòng ngủ</label>
+                  <input
+                    type="number"
+                    value={editForm.soPhongNgu}
+                    onChange={e => setEditForm({ ...editForm, soPhongNgu: e.target.value })}
+                    className="form-input"
+                    min="0"
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Số phòng tắm/WC</label>
+                  <input
+                    type="number"
+                    value={editForm.soPhongTam}
+                    onChange={e => setEditForm({ ...editForm, soPhongTam: e.target.value })}
+                    className="form-input"
+                    min="0"
+                  />
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label className="form-label">Số tầng</label>
+                  <input
+                    type="number"
+                    value={editForm.soTang}
+                    onChange={e => setEditForm({ ...editForm, soTang: e.target.value })}
+                    className="form-input"
+                    min="0"
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Hướng nhà</label>
+                  <input
+                    type="text"
+                    value={editForm.huongNha}
+                    onChange={e => setEditForm({ ...editForm, huongNha: e.target.value })}
+                    className="form-input"
+                  />
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label className="form-label">Hướng ban công</label>
+                  <input
+                    type="text"
+                    value={editForm.huongBanCong}
+                    onChange={e => setEditForm({ ...editForm, huongBanCong: e.target.value })}
+                    className="form-input"
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Mặt tiền (m)</label>
+                  <input
+                    type="number"
+                    value={editForm.matTien}
+                    onChange={e => setEditForm({ ...editForm, matTien: e.target.value })}
+                    className="form-input"
+                    min="0"
+                    step="0.1"
+                  />
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label className="form-label">Đường vào (m)</label>
+                  <input
+                    type="number"
+                    value={editForm.duongVao}
+                    onChange={e => setEditForm({ ...editForm, duongVao: e.target.value })}
+                    className="form-input"
+                    min="0"
+                    step="0.1"
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Pháp lý</label>
+                  <input
+                    type="text"
+                    value={editForm.phapLy}
+                    onChange={e => setEditForm({ ...editForm, phapLy: e.target.value })}
+                    className="form-input"
+                  />
                 </div>
               </div>
               <div className="form-row">

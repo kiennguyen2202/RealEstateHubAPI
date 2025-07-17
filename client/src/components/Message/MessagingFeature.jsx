@@ -257,13 +257,13 @@ const MessagingFeature = () => {
 
     fetchMessages();
 
-    // Poll messages every 3 seconds
-    // const intervalId = setInterval(fetchMessages, 5000);
-
-    // return () => {
-    //   isMounted = false;
-    //   clearInterval(intervalId);
-    // };
+    
+    const intervalId = setInterval(fetchMessages, 5000);
+    
+    return () => {
+      isMounted = false;
+      clearInterval(intervalId);
+    };
   }, [selectedConversation]); 
 
 

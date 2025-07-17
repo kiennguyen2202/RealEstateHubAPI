@@ -28,6 +28,7 @@ namespace RealEstateHubAPI.Model
         public DbSet<Favorite> Favorites { get; set; }
 
         public DbSet<PaymentConfirmation> PaymentConfirmations { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

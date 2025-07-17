@@ -231,7 +231,15 @@ public async Task<IActionResult> GetPosts([FromQuery] bool? isApproved)
                     UserId = GetUserId() ?? dto.UserId,
                     IsApproved = false,
                     ExpiryDate = expiryDate,
-                    Images = new List<PostImage>()
+                    Images = new List<PostImage>(),
+                    SoPhongNgu = dto.SoPhongNgu,
+                    SoPhongTam = dto.SoPhongTam,
+                    SoTang = dto.SoTang,
+                    HuongNha = dto.HuongNha,
+                    HuongBanCong = dto.HuongBanCong,
+                    MatTien = dto.MatTien,
+                    DuongVao = dto.DuongVao,
+                    PhapLy = dto.PhapLy
                 };
 
                 // Log post object before saving
@@ -331,7 +339,14 @@ public async Task<IActionResult> GetPosts([FromQuery] bool? isApproved)
             post.Area_Size = updateDto.Area_Size;
             post.CategoryId = updateDto.CategoryId;
             post.AreaId = area.Id;
-            
+            post.SoPhongNgu = updateDto.SoPhongNgu;
+            post.SoPhongTam = updateDto.SoPhongTam;
+            post.SoTang = updateDto.SoTang;
+            post.HuongNha = updateDto.HuongNha;
+            post.HuongBanCong = updateDto.HuongBanCong;
+            post.MatTien = updateDto.MatTien;
+            post.DuongVao = updateDto.DuongVao;
+            post.PhapLy = updateDto.PhapLy;
 
             // Handle new images
             if (updateDto.Images != null && updateDto.Images.Any())

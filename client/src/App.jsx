@@ -5,29 +5,30 @@ import "react-toastify/dist/ReactToastify.css";
 import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer";
 import HomePage from "./pages/HomePage";
-import MembershipPage from "./pages/MembershipPage";
+import MembershipPage from "./pages/Membership/MembershipPage";
 import Home from "./pages/Home";
 import Login from "./auth/Login";
 import Register from "./auth/Register";
-import CreatePostPage from "./pages/CreatePostPage";
-import PostDetail from "./pages/PostDetail";
+import CreatePostPage from "./pages/Post/CreatePostPage";
+import PostDetail from "./pages/Post/PostDetail";
 import Profile from "./pages/Profile";
-import AdminDashboard from "./pages/AdminDashboard";
+import AdminDashboard from "./pages/Admin/AdminDashboard";
 import MessagingFeature from './components/Message/MessagingFeature';
-import PostHistory from './pages/PostHistory';
+import PostHistory from './pages/Post/PostHistory';
 import ReportPost from "./pages/ReportPost";
 import Favorites from "./pages/Favorites";
 import { AuthProvider } from "./auth/AuthContext";
 import PrivateRoute from "./auth/PrivateRoute";
 import AdminRoute from "./auth/AdminRoute";
-import UsersPage from './pages/UsersPage';
-import PostsPage from './pages/PostsPage';
-import ReportsPage from './pages/ReportsPage';
-import CategoriesPage from './pages/CategoriesPage';
-import AreaPage from './pages/AreaPage';
-import CheckoutPage from './pages/CheckoutPage';
+import UsersPage from './pages/Admin/UsersPage';
+import PostsPage from './pages/Admin/PostsPage';
+import ReportsPage from './pages/Admin/ReportsPage';
+import CategoriesPage from './pages/Admin/CategoriesPage';
+import AreaPage from './pages/Admin/AreaPage';
+import CheckoutPage from './pages/Checkout/CheckoutPage';
 import ScrollToTop from './components/layout/ScrollToTop';
-import Membership from "./pages/Membership";
+import Membership from "./pages/Membership/Membership";
+import CreatePostWizard from "./pages/Post/CreatePostWizard";
 import "./App.css";
 
 
@@ -55,7 +56,7 @@ const App = () => {
               
               {/* Protected Routes */}
               <Route element={<PrivateRoute />}>
-                <Route path="/dang-tin" element={<CreatePostPage />} />
+                <Route path="/dang-tin" element={<CreatePostWizard />} />
                 <Route path="/messages" element={<MessagingFeature />} />
                 <Route path="/chi-tiet/:id/report" element={<ReportPost />} />
                 <Route path="/membership" element={<MembershipPage />} />

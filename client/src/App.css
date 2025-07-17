@@ -1,5 +1,6 @@
 @import 'react-toastify/dist/ReactToastify.css';
 
+
 .app {
   min-height: 100vh;
   display: flex;
@@ -180,3 +181,75 @@ input, select, textarea {
   padding: 1rem;
   border-top: 1px solid #eee;
 } 
+
+
+.round-input.ant-input-number {
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  padding: 0;
+}
+
+.round-input .ant-input-number-input {
+  background: transparent;
+  color: #fff;
+  font-size: 18px;
+  text-align: center;
+  border: none;
+  width: 32px;
+  padding: 0;
+}
+
+.round-input .ant-input-number-handler-wrap {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background: transparent;
+  border-radius: 0;
+  position: static;
+  box-shadow: none;
+  height: auto;
+}
+
+.round-input .ant-input-number-handler {
+  background: #232428;
+  border: 2px solid #444;
+  color: #fff;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 8px;
+  font-size: 22px;
+  transition: border 0.2s, background 0.2s;
+  box-shadow: none;
+}
+
+.round-input .ant-input-number-handler:hover {
+  background: #333;
+  border-color: #fff;
+  color: #fff;
+}
+
+.round-input .ant-input-number-handler-up-inner,
+.round-input .ant-input-number-handler-down-inner {
+  font-size: 22px;
+  font-weight: bold;
+  color: #fff;
+  line-height: 1;
+}
+
+.round-input .ant-input-number-handler-up {
+  order: 2;
+}
+.round-input .ant-input-number-handler-down {
+  order: 1;
+}
+
+
+.round-input .ant-input-number-handler-wrap {
+  box-shadow: none;
+}

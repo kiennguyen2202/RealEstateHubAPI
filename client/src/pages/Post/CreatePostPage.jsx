@@ -31,6 +31,14 @@ const CreatePostPage = () => {
     AreaId: '', 
     Images: null,
     TransactionType: 'Sale', // Set default value to Sale
+    SoPhongNgu: '',
+    SoPhongTam: '',
+    SoTang: '',
+    HuongNha: '',
+    HuongBanCong: '',
+    MatTien: '',
+    DuongVao: '',
+    PhapLy: '',
   });
   const [fullAddress, setFullAddress] = useState('');
   const [zoomLevel, setZoomLevel] = useState(5); // Default zoom level
@@ -318,7 +326,7 @@ const CreatePostPage = () => {
 
       // Validate each numeric value separately
       if (isNaN(price) || price <= 0) {
-        throw new Error('Giá trị không hợp lệ');
+        throw new Error('Mức giá không hợp lệ');
       }
       if (isNaN(areaSize) || areaSize <= 0) {
         throw new Error('Diện tích không hợp lệ');
@@ -348,6 +356,14 @@ const CreatePostPage = () => {
       postData.append('AreaId', formData.AreaId);
       postData.append('UserId', user.id);
       postData.append('TransactionType', formData.TransactionType);
+      postData.append('SoPhongNgu', formData.SoPhongNgu);
+      postData.append('SoPhongTam', formData.SoPhongTam);
+      postData.append('SoTang', formData.SoTang);
+      postData.append('HuongNha', formData.HuongNha);
+      postData.append('HuongBanCong', formData.HuongBanCong);
+      postData.append('MatTien', formData.MatTien);
+      postData.append('DuongVao', formData.DuongVao);
+      postData.append('PhapLy', formData.PhapLy);
 
       // Add images
       if (formData.Images) {
@@ -450,7 +466,7 @@ const CreatePostPage = () => {
 
         <div className="form-row">
           <div className="form-group">
-            <label htmlFor="Price">Giá trị:</label>
+            <label htmlFor="Price">Mức giá:</label>
             <input 
               type="number" 
               id="Price" 
@@ -461,7 +477,7 @@ const CreatePostPage = () => {
               min="0"
               step="0.01"
               className="form-input"
-              placeholder="Nhập giá trị"
+              placeholder="Nhập Mức giá"
             />
           </div>
           <div className="form-group">
@@ -582,6 +598,118 @@ const CreatePostPage = () => {
               required
               className="form-input"
               placeholder="Nhập tên đường"
+            />
+          </div>
+        </div>
+
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="SoPhongNgu">Số phòng ngủ:</label>
+            <input
+              type="number"
+              id="SoPhongNgu"
+              name="SoPhongNgu"
+              value={formData.SoPhongNgu}
+              onChange={handleInputChange}
+              min="0"
+              className="form-input"
+              placeholder="Nhập số phòng ngủ"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="SoPhongTam">Số phòng tắm/WC:</label>
+            <input
+              type="number"
+              id="SoPhongTam"
+              name="SoPhongTam"
+              value={formData.SoPhongTam}
+              onChange={handleInputChange}
+              min="0"
+              className="form-input"
+              placeholder="Nhập số phòng tắm/WC"
+            />
+          </div>
+        </div>
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="SoTang">Số tầng:</label>
+            <input
+              type="number"
+              id="SoTang"
+              name="SoTang"
+              value={formData.SoTang}
+              onChange={handleInputChange}
+              min="0"
+              className="form-input"
+              placeholder="Nhập số tầng"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="HuongNha">Hướng nhà:</label>
+            <input
+              type="text"
+              id="HuongNha"
+              name="HuongNha"
+              value={formData.HuongNha}
+              onChange={handleInputChange}
+              className="form-input"
+              placeholder="Nhập hướng nhà (VD: Đông, Tây...)"
+            />
+          </div>
+        </div>
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="HuongBanCong">Hướng ban công:</label>
+            <input
+              type="text"
+              id="HuongBanCong"
+              name="HuongBanCong"
+              value={formData.HuongBanCong}
+              onChange={handleInputChange}
+              className="form-input"
+              placeholder="Nhập hướng ban công"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="MatTien">Mặt tiền (m):</label>
+            <input
+              type="number"
+              id="MatTien"
+              name="MatTien"
+              value={formData.MatTien}
+              onChange={handleInputChange}
+              min="0"
+              step="0.1"
+              className="form-input"
+              placeholder="Nhập chiều rộng mặt tiền"
+            />
+          </div>
+        </div>
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="DuongVao">Đường vào (m):</label>
+            <input
+              type="number"
+              id="DuongVao"
+              name="DuongVao"
+              value={formData.DuongVao}
+              onChange={handleInputChange}
+              min="0"
+              step="0.1"
+              className="form-input"
+              placeholder="Nhập chiều rộng đường vào"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="PhapLy">Pháp lý:</label>
+            <input
+              type="text"
+              id="PhapLy"
+              name="PhapLy"
+              value={formData.PhapLy}
+              onChange={handleInputChange}
+              className="form-input"
+              placeholder="Nhập thông tin pháp lý (VD: Sổ đỏ, Sổ hồng...)"
             />
           </div>
         </div>

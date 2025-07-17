@@ -5,8 +5,14 @@ using RealEstateHubAPI.Model;
 using RealEstateHubAPI.Repositories;
 using RealEstateHubAPI.Services;
 using System.Text;
-
 using RealEstateHubAPI.Models;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Linq;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,6 +57,7 @@ builder.Services.AddAuthorization();
 
 // Add Controllers
 builder.Services.AddControllers();
+builder.Services.AddSignalR();
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(c =>
@@ -102,6 +109,7 @@ builder.Services.AddCors(options =>
         });
 });
 
+builder.Services.AddHostedService<ExpireNotificationService>();
 
 
 var app = builder.Build();
@@ -129,5 +137,6 @@ app.UseAuthorization();
 app.UseStaticFiles();
 
 app.MapControllers();
+app.MapHub<NotificationHub>("/notificationHub");
 
 app.Run();

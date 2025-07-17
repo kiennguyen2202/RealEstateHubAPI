@@ -5,10 +5,6 @@ import { PriceUnit, formatPrice } from '../../utils/priceUtils';
 import FavoriteButton from '../Favorite/FavoriteButton';
 import { FaCrown } from 'react-icons/fa';
 
-
-
-
-
 const PropertyCard = ({ property,showFavorite = true }) => {
   const [showExpiredAlert, setShowExpiredAlert] = useState(false);
 
@@ -81,7 +77,7 @@ const PropertyCard = ({ property,showFavorite = true }) => {
             <span className="user-name">{property.user?.name || 'Người dùng'}</span>
           </div>
 
-          <h3 className="property-title">{property.title}</h3>
+          <h3 className="property-title1">{property.title}</h3>
           
           <div className="property-price">
             {formatPrice(property.price, property.priceUnit)}
@@ -92,7 +88,21 @@ const PropertyCard = ({ property,showFavorite = true }) => {
             <span>{property.category?.name || 'Chưa phân loại'}</span>
             <span>{property.area ? `${property.area.city?.name}` : 'Chưa có khu vực'}</span>
           </div>
-          
+
+          {property.soPhongNgu != null && property.soPhongNgu !== '' && (
+            <div className="property-bedrooms">
+              <span className="bedrooms">
+                <i className="fas fa-bed"></i> {property.soPhongNgu} Phòng ngủ
+              </span>
+            </div>
+          )}
+          {property.soPhongTam != null && property.soPhongTam !== '' && (
+            <div className="property-bathrooms">
+              <span className="bathrooms">
+                <i className="fas fa-bath"></i> {property.soPhongTam} Phòng tắm
+              </span>
+            </div>
+          )}
           <div className="property-meta">
             <span className="post-date">{new Date(property.created).toLocaleDateString('vi-VN')}</span>
             <span className={`transaction-type ${property.transactionType === 0 ? 'sale' : 'rent'}`}>

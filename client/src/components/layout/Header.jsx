@@ -4,6 +4,7 @@ import { AuthContext } from '../../auth/AuthContext';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import './Header.css';
 import { FaCrown } from 'react-icons/fa';
+import NotificationBell from '../NotificationBell';
 
 const Header = () => {
   const { user, logout } = useContext(AuthContext);
@@ -71,6 +72,7 @@ const Header = () => {
           </button>
         </form>
         <div className="user-actions">
+          <NotificationBell />
           <Link 
             to="/dang-tin" 
             className="post-button"
