@@ -169,7 +169,7 @@ const CreatePostWizard = () => {
 
   const steps = [
     {
-      title: 'Hình thức giao dịch',
+      title: 'Hình thức',
       content: (
         <Form.Item name="transactionType" label="Nhu cầu" rules={[{ required: true, message: 'Vui lòng chọn nhu cầu!' }]}> 
           <Select placeholder="Chọn hình thức giao dịch">
@@ -233,34 +233,9 @@ const CreatePostWizard = () => {
         </>
       )
     },
+   
     {
-      title: 'Thông tin chính',
-      content: (
-        <>
-          <Form.Item name="categoryId" label="Loại BĐS" rules={[{ required: true, message: 'Vui lòng chọn loại BĐS!' }]}> 
-            <Select placeholder="Chọn loại BĐS">
-              {categories.map(category => (
-                <Option key={category.id} value={category.id}>{category.name}</Option>
-              ))}
-            </Select>
-          </Form.Item>
-          <Form.Item name="area_Size" label="Diện tích (m²)" rules={[{ required: true, message: 'Vui lòng nhập diện tích!' }]}> 
-            <InputNumber min={0} style={{ width: '100%' }} placeholder="Nhập diện tích" />
-          </Form.Item>
-          <Form.Item name="price" label="Mức giá" rules={[{ required: true, message: 'Vui lòng nhập giá!' }]}> 
-            <InputNumber min={0} style={{ width: '100%' }} placeholder="Nhập mức giá" />
-          </Form.Item>
-          <Form.Item name="priceUnit" label="Đơn vị" rules={[{ required: true, message: 'Vui lòng chọn đơn vị!' }]}> 
-            <Select placeholder="Chọn đơn vị">
-              <Option value={PriceUnit.Triệu}>Triệu</Option>
-              <Option value={PriceUnit.Tỷ}>Tỷ</Option>
-            </Select>
-          </Form.Item>
-        </>
-      )
-    },
-    {
-      title: 'Thông tin khác',
+      title: 'Thông tin',
       content: (
         <>
           <Form.Item name="phapLy" label="Giấy tờ pháp lý">
@@ -295,6 +270,8 @@ const CreatePostWizard = () => {
               </Form.Item>
             </Col>
           </Row>
+          <Row gutter={16}>
+            <Col span={12}>
           <Form.Item name="huongNha" label="Hướng nhà">
             <Select placeholder="Chọn hướng nhà">
               <Option value="Đông">Đông</Option>
@@ -307,6 +284,8 @@ const CreatePostWizard = () => {
               <Option value="Tây Nam">Tây Nam</Option>
             </Select>
           </Form.Item>
+            </Col>
+            <Col span={12}>
           <Form.Item name="huongBanCong" label="Hướng ban công">
             <Select placeholder="Chọn hướng ban công">
               <Option value="Đông">Đông</Option>
@@ -319,6 +298,8 @@ const CreatePostWizard = () => {
               <Option value="Tây Nam">Tây Nam</Option>
             </Select>
           </Form.Item>
+            </Col>
+            </Row>
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item name="matTien" label="Mặt tiền (m)">
@@ -331,6 +312,40 @@ const CreatePostWizard = () => {
               </Form.Item>
             </Col>
           </Row>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item name="categoryId" label="Loại BĐS" rules={[{ required: true, message: 'Vui lòng chọn loại BĐS!' }]}> 
+            <Select placeholder="Chọn loại BĐS">
+              {categories.map(category => (
+                <Option key={category.id} value={category.id}>{category.name}</Option>
+              ))}
+            </Select>
+          </Form.Item>
+            </Col>
+            <Col span={12}>
+           <Form.Item name="price" label="Mức giá" rules={[{ required: true, message: 'Vui lòng nhập giá!' }]}> 
+            <InputNumber min={0} style={{ width: '100%' }} placeholder="Nhập mức giá" />
+          </Form.Item>
+          </Col>
+            </Row>
+          <Row gutter={16}>
+            <Col span={12}>
+             
+          <Form.Item name="priceUnit" label="Đơn vị" rules={[{ required: true, message: 'Vui lòng chọn đơn vị!' }]}> 
+            <Select placeholder="Chọn đơn vị">
+              <Option value={PriceUnit.Triệu}>Triệu</Option>
+              <Option value={PriceUnit.Tỷ}>Tỷ</Option>
+            </Select>
+          </Form.Item>
+            </Col>
+            <Col span={12}>
+          <Form.Item name="area_Size" label="Diện tích (m²)" rules={[{ required: true, message: 'Vui lòng nhập diện tích!' }]}> 
+            <InputNumber min={0} style={{ width: '100%' }} placeholder="Nhập diện tích" />
+          </Form.Item>
+            </Col>
+          </Row>
+          
+          
         </>
       )
     },

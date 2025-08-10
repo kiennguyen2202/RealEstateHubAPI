@@ -29,6 +29,14 @@ import CheckoutPage from './pages/Checkout/CheckoutPage';
 import ScrollToTop from './components/layout/ScrollToTop';
 import Membership from "./pages/Membership/Membership";
 import CreatePostWizard from "./pages/Post/CreatePostWizard";
+import PostListPage from "./pages/Post/PostListPage";
+import AgentPage from "./pages/Agent/AgentPage";
+
+import RegisterAgentPage from "./pages/Agent/RegisterAgentPage";
+import AgentProfilePage from "./pages/Agent/AgentProfilePage";
+import AgentListPage from "./pages/Agent/AgentListPage";
+// import EditAgentProfilePage from "./pages/Agent/EditAgentProfilePage";
+import AgentProfileOverviewPage from './pages/Agent/AgentProfileOverviewPage';
 import "./App.css";
 
 
@@ -44,6 +52,9 @@ const App = () => {
               {/* Trang chủ mới */}
               <Route path="/" element={<HomePage />} />
               
+              {/* Trang danh sách bài viết */}
+              <Route path="/Sale" element={<PostListPage />} />
+              <Route path="/Rent" element={<PostListPage />} />
               
               <Route path="/chi-tiet/:id" element={<PostDetail />} />
               {/* Các routes cũ */}
@@ -60,6 +71,9 @@ const App = () => {
                 <Route path="/messages" element={<MessagingFeature />} />
                 <Route path="/chi-tiet/:id/report" element={<ReportPost />} />
                 <Route path="/membership" element={<MembershipPage />} />
+                <Route path="/agent" element={<AgentPage />} />
+                
+              
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/post-history" element={<PostHistory />} />
                 <Route path="/favorites" element={<Favorites />} />
@@ -76,6 +90,14 @@ const App = () => {
                 <Route path="/admin/categories" element={<CategoriesPage />} />
                 <Route path="/admin/membership" element={<Membership />} />
               </Route>
+
+              {/* Agent Profile Routes */}
+              <Route path="/agent-profile" element={<AgentListPage />} />
+              <Route path="/agent-profile/preview" element={<RegisterAgentPage />} />
+              <Route path="/agent-profile/:id" element={<AgentProfilePage />} />
+              {/* <Route path="/agent-profile/:id/edit" element={<EditAgentProfilePage />} /> */}
+              <Route path="/agent-profile/preview/:id" element={<AgentProfileOverviewPage />} />
+              {/* <Route path="/agent-profile/overview/preview/:id" element={<AgentProfileOverviewPage />} /> */}
             </Routes>
           </main>
           <Footer />

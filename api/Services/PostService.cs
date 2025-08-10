@@ -3,6 +3,7 @@ using RealEstateHubAPI.Model;
 using RealEstateHubAPI.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using RealEstateHubAPI.DTOs;
 
 namespace RealEstateHubAPI.Services
 {
@@ -20,6 +21,75 @@ namespace RealEstateHubAPI.Services
             _context = context;
             _env = env;
             _logger = logger;
+        }
+        public async Task<IEnumerable<PostDto>> GetPostsByAgentProfileIdAsync(int agentProfileId)
+        {
+            try
+            {
+                // Lấy userId từ AgentProfileId
+                var agentProfile = await _context.AgentProfiles
+                                                 .FirstOrDefaultAsync(ap => ap.Id == agentProfileId);
+
+                if (agentProfile == null)
+                {
+                    
+                    return new List<PostDto>();
+                }
+
+                var posts = await _context.Posts 
+                                            .Where(p => p.UserId == agentProfile.UserId) 
+                                            .Include(p => p.Area)
+                                            
+                                                .ThenInclude(a => a.District) 
+                                                    .ThenInclude(d => d.City)
+                                            
+                                            .Include(p => p.Category) 
+                                            .Include(p => p.Images)
+                                            .OrderByDescending(p => p.Created)
+                                            .ToListAsync();
+
+                // Map sang PostDto
+                var postDTOs = posts.Select(p => new PostDto
+                {
+                    Id = p.Id,
+                    Title = p.Title,
+                    Price = p.Price,
+                    Area_Size= p.Area_Size,
+                    TimeAgo = FormatTimeAgo(p.Created), 
+                    ImageUrls = p.Images?.Select(i => new PostImage
+                    {
+                        Id = i.Id,
+                        Url = i.Url
+                    }).ToList() ?? new List<PostImage>(),
+                    Street_Name = p.Street_Name,
+                    AreaName = $"{p.Area?.City?.Name}, {p.Area?.District?.Name}",
+                    
+                    
+                }).ToList();
+
+                return postDTOs;
+            }
+            catch (Exception ex)
+            {
+                // _logger.LogError(ex, "Error getting posts for agent profile ID {AgentProfileId}.", agentProfileId);
+                throw; // Ném lỗi để controller xử lý
+            }
+        }
+        private string FormatTimeAgo(DateTime createdDate)
+        {
+            var timeSince = DateTime.Now - createdDate;
+            if (timeSince.TotalDays < 1)
+            {
+                return $"{Math.Round(timeSince.TotalHours)} giờ trước";
+            }
+            else if (timeSince.TotalDays < 30)
+            {
+                return $"{Math.Round(timeSince.TotalDays)} ngày trước";
+            }
+            else
+            {
+                return createdDate.ToString("dd/MM/yyyy");
+            }
         }
 
         public async Task<Post> GetPostById(int id)
@@ -183,5 +253,7 @@ namespace RealEstateHubAPI.Services
                 return false;
             }
         }
+
+        
     }
 } 
