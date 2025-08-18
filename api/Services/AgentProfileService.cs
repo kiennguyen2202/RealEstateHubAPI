@@ -40,6 +40,12 @@ namespace RealEstateHubAPI.Services
             return agent == null ? null : MapToDTO(agent);
         }
 
+        public async Task<AgentProfileDTO> GetByUserIdAsync(int userId)
+        {
+            var agent = await _repo.GetByUserIdAsync(userId);
+            return agent == null ? null : MapToDTO(agent);
+        }
+
         public async Task<AgentProfileDTO> CreateAsync(CreateAgentProfileDTO dto)
         {
             try

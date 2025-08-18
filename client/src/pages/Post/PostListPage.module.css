@@ -1,0 +1,115 @@
+.container {
+  background: #f7f8fa;
+  min-height: 100vh;
+  padding: 24px 0 48px;
+}
+
+.wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.hero {
+  background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
+  border: 1px solid #eef2f8;
+  border-radius: 14px;
+  padding: 28px;
+  margin-bottom: 12px;
+  box-shadow: 0 8px 24px rgba(16, 30, 115, 0.06);
+}
+
+.title {
+  margin: 0 0 8px 0 !important;
+  color: #1f2d3d !important;
+}
+
+.subtitle {
+  margin: 0 0 18px 0 !important;
+  color: #5f6b7a !important;
+}
+
+.chipsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.chip {
+  background: #fff;
+  border: 1px solid #e6ecf3;
+  color: #4a5a6a;
+  padding: 6px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.chip:hover {
+  border-color: #c8d6ea;
+  color: #1f2d3d;
+}
+
+.chipActive {
+  background: #e8f3ff;
+  border-color: #91c2ff;
+  color: #1677ff;
+}
+
+.infoBox {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+  background: #f9fbff;
+  border: 1px dashed #d6e4ff;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.infoText {
+  color: #3b4957;
+}
+
+.infoHighlight {
+  color: #1677ff;
+  font-weight: 600;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  background: #c0c4cc;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.divider {
+  margin: 18px 0 !important;
+}
+
+.emptyWrap {
+  background: #fff;
+  border: 1px solid #eef2f8;
+  border-radius: 12px;
+  padding: 48px 16px;
+}
+
+.skeletonCard {
+  background: #fff;
+  border: 1px solid #eef2f8;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.skeletonImage {
+  height: 180px;
+  background: #f0f2f5;
+}
+
+.skeletonBody {
+  padding: 16px;
+}
+
+

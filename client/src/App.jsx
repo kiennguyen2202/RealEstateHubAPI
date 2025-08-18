@@ -9,11 +9,12 @@ import MembershipPage from "./pages/Membership/MembershipPage";
 import Home from "./pages/Home";
 import Login from "./auth/Login";
 import Register from "./auth/Register";
-import CreatePostPage from "./pages/Post/CreatePostPage";
+
 import PostDetail from "./pages/Post/PostDetail";
 import Profile from "./pages/Profile";
 import AdminDashboard from "./pages/Admin/AdminDashboard";
 import MessagingFeature from './components/Message/MessagingFeature';
+import ChatPage from './pages/Chat/ChatPage';
 import PostHistory from './pages/Post/PostHistory';
 import ReportPost from "./pages/ReportPost";
 import Favorites from "./pages/Favorites";
@@ -25,10 +26,12 @@ import PostsPage from './pages/Admin/PostsPage';
 import ReportsPage from './pages/Admin/ReportsPage';
 import CategoriesPage from './pages/Admin/CategoriesPage';
 import AreaPage from './pages/Admin/AreaPage';
-import CheckoutPage from './pages/Checkout/CheckoutPage';
+import MembershipCheckoutPage from './pages/Checkout/MembershipCheckoutPage';
+import PaymentCallbackVnpay from './pages/Checkout/PaymentCallbackVnpay';
 import ScrollToTop from './components/layout/ScrollToTop';
 import Membership from "./pages/Membership/Membership";
 import CreatePostWizard from "./pages/Post/CreatePostWizard";
+
 import PostListPage from "./pages/Post/PostListPage";
 import AgentPage from "./pages/Agent/AgentPage";
 
@@ -37,6 +40,7 @@ import AgentProfilePage from "./pages/Agent/AgentProfilePage";
 import AgentListPage from "./pages/Agent/AgentListPage";
 // import EditAgentProfilePage from "./pages/Agent/EditAgentProfilePage";
 import AgentProfileOverviewPage from './pages/Agent/AgentProfileOverviewPage';
+import AgentProfileCheckoutPage from './pages/Checkout/AgentProfileCheckoutPage';
 import "./App.css";
 
 
@@ -69,6 +73,7 @@ const App = () => {
               <Route element={<PrivateRoute />}>
                 <Route path="/dang-tin" element={<CreatePostWizard />} />
                 <Route path="/messages" element={<MessagingFeature />} />
+                <Route path="/chat" element={<ChatPage />} />
                 <Route path="/chi-tiet/:id/report" element={<ReportPost />} />
                 <Route path="/membership" element={<MembershipPage />} />
                 <Route path="/agent" element={<AgentPage />} />
@@ -77,7 +82,9 @@ const App = () => {
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/post-history" element={<PostHistory />} />
                 <Route path="/favorites" element={<Favorites />} />
-                <Route path="/checkout" element={<CheckoutPage />} />
+                <Route path="/membership-checkout" element={<MembershipCheckoutPage />} />
+                <Route path="/agent-checkout" element={<AgentProfileCheckoutPage />} />
+                <Route path="/Checkout/PaymentCallbackVnpay" element={<PaymentCallbackVnpay />} />
               </Route>
 
               {/* Admin Routes */}

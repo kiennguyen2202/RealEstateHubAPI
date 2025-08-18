@@ -1,0 +1,357 @@
+.checkoutContainer {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.checkoutHeader {
+  text-align: center;
+  margin-bottom: 32px;
+  max-width: 600px;
+}
+
+.checkoutContent {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 24px;
+  max-width: 1200px;
+  width: 100%;
+}
+
+.leftSection {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.rightSection {
+  position: sticky;
+  top: 24px;
+  height: fit-content;
+}
+
+.planCard,
+.previewCard,
+.benefitsCard,
+.summaryCard,
+.methodCard {
+  background: #2a2a2a;
+  border: 1px solid #404040;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.planCard .ant-card-body,
+.previewCard .ant-card-body,
+.benefitsCard .ant-card-body,
+.summaryCard .ant-card-body,
+.methodCard .ant-card-body {
+  padding: 24px;
+}
+
+.planOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.planOption {
+  border: 2px solid #404040;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: #333;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+
+
+.planSelected {
+  border-color: #ff9800;
+  background: linear-gradient(135deg, #ff9800 0%, #ffb347 100%);
+  color: #fff;
+}
+
+.planSelected .planName,
+.planSelected .currentPrice,
+.planSelected .planFeatures .featureItem {
+  color: #fff !important;
+}
+
+.planSelected .originalPrice {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.planHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.planName {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.planPrice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.currentPrice {
+  font-size: 24px;
+  font-weight: 700;
+  color: #ff9800;
+}
+
+.originalPrice {
+  font-size: 16px;
+  color: #999;
+  text-decoration: line-through;
+}
+
+.planDuration {
+  margin-bottom: 16px;
+}
+
+.planFeatures {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.featureItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.discountTag {
+  font-weight: 600;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.previewCard {
+  background: linear-gradient(135deg, #1e3a1e 0%, #2d4a2d 100%);
+  border-color: #52c41a;
+}
+
+.previewInfo {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.benefitsCard {
+  background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
+}
+
+.benefitItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(255, 152, 0, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 152, 0, 0.2);
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.summaryRow:last-child {
+  margin-bottom: 0;
+}
+
+.methodOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.methodOption {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  border: 2px solid #404040;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: #333;
+}
+
+
+
+.methodSelected {
+  border-color: #ff9800;
+  background: linear-gradient(135deg, #ff9800 0%, #ffb347 100%);
+  color: #fff;
+}
+
+.methodSelected .methodName,
+.methodSelected .methodDesc {
+  color: #fff !important;
+}
+
+.methodIcon {
+  font-size: 24px;
+  color: #ff9800;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 152, 0, 0.1);
+  border-radius: 8px;
+}
+
+.methodSelected .methodIcon {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.methodInfo {
+  flex: 1;
+}
+
+.methodName {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.methodDesc {
+  font-size: 14px;
+  color: #ccc;
+}
+
+.payButton {
+  width: 100%;
+  height: 48px;
+  background: linear-gradient(135deg, #ff9800 0%, #ffb347 100%);
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+}
+
+.payButton:hover {
+  background: linear-gradient(135deg, #ff7800 0%, #ff9800 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(255, 152, 0, 0.3);
+}
+
+.securityInfo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 16px;
+  background: rgba(82, 196, 26, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(82, 196, 26, 0.2);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .checkoutContent {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .rightSection {
+    position: static;
+    order: -1;
+  }
+}
+
+@media (max-width: 768px) {
+  .checkoutContainer {
+    padding: 16px;
+  }
+  
+  .checkoutHeader {
+    margin-bottom: 24px;
+  }
+  
+  .planCard .ant-card-body,
+  .previewCard .ant-card-body,
+  .benefitsCard .ant-card-body,
+  .summaryCard .ant-card-body,
+  .methodCard .ant-card-body {
+    padding: 20px;
+  }
+  
+  .planOption {
+    padding: 16px;
+  }
+  
+  .planName {
+    font-size: 16px;
+  }
+  
+  .currentPrice {
+    font-size: 20px;
+  }
+  
+  .benefitItem {
+    padding: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .checkoutContainer {
+    padding: 12px;
+  }
+  
+  .planCard .ant-card-body,
+  .previewCard .ant-card-body,
+  .benefitsCard .ant-card-body,
+  .summaryCard .ant-card-body,
+  .methodCard .ant-card-body {
+    padding: 16px;
+  }
+  
+  .planOption {
+    padding: 14px;
+  }
+  
+  .planName {
+    font-size: 15px;
+  }
+  
+  .currentPrice {
+    font-size: 18px;
+  }
+  
+  .payButton {
+    height: 44px;
+    font-size: 15px;
+  }
+  
+  .benefitItem {
+    padding: 8px;
+  }
+}

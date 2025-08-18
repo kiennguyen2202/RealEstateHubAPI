@@ -4,6 +4,14 @@ using Microsoft.AspNetCore.Http;
 
 namespace RealEstateHubAPI.Models
 {
+    public class CreateVnPayRequest
+    {
+        public int UserId { get; set; }
+        public decimal AmountVnd { get; set; }
+        public string Plan { get; set; }
+        public string? PreviewId { get; set; }
+    }
+
     public class PaymentConfirmation
     {
         [Key]

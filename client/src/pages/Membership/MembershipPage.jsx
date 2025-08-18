@@ -49,22 +49,59 @@ const plans = [
     highlight: false,
   },
   {
-    key: 'pro',
-    name: 'Gói Pro',
+    key: 'pro_month',
+    name: 'Pro 1 Tháng',
     icon: <span className={styles.planIcon} style={{background:'#ff9800'}}><svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M3 10.5L12 4l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V10.5z" fill="#fff"/><circle cx="12" cy="17" r="2" fill="#ff9800"/><rect x="10" y="15" width="4" height="4" rx="2" fill="#fff"/></svg></span>,
     desc: 'Dành cho môi giới chuyên nghiệp',
-    price: '500.000đ',
-    priceNote: '',
-    save: '',
+    price: '199.000đ',
+    priceNote: '/tháng',
+    save: 'Tiết kiệm 33%',
     features: [
       { label: 'Đăng tối đa 100 tin/tháng', ok: true },
-      { label: 'Tin hiển thị 60 ngày', ok: true },
-      { label: 'Có badge môi giới uy tín', ok: true },
-      { label: 'Ưu tiên hiển thị', ok: true },
+      { label: 'Ưu tiên hiển thị trong tìm kiếm', ok: true },
+      { label: 'Hỗ trợ cơ bản', ok: true },
+      { label: 'Thống kê cơ bản', ok: true },
     ],
     button: { label: 'Đăng ký gói Pro', style: 'pro' },
     highlight: true,
-    badge: 'Khuyên dùng',
+    badge: 'Phổ biến',
+  },
+  {
+    key: 'pro_quarter',
+    name: 'Pro 3 Tháng',
+    icon: <span className={styles.planIcon} style={{background:'#ff9800'}}><svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M3 10.5L12 4l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V10.5z" fill="#fff"/><circle cx="12" cy="17" r="2" fill="#ff9800"/><rect x="10" y="15" width="4" height="4" rx="2" fill="#fff"/></svg></span>,
+    desc: 'Dành cho môi giới chuyên nghiệp',
+    price: '549.000đ',
+    priceNote: '/3 tháng',
+    save: 'Tiết kiệm 39%',
+    features: [
+      { label: 'Tất cả tính năng Pro 1 tháng', ok: true },
+      { label: 'Đăng bài 300 tin/3 tháng', ok: true },
+      { label: 'Hỗ trợ ưu tiên', ok: true },
+      { label: 'Thống kê chi tiết', ok: true },
+      { label: 'Báo cáo hàng tuần', ok: true },
+    ],
+    button: { label: 'Đăng ký gói Pro', style: 'pro' },
+    highlight: false,
+  },
+  {
+    key: 'pro_year',
+    name: 'Pro 12 Tháng',
+    icon: <span className={styles.planIcon} style={{background:'#ff9800'}}><svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M3 10.5L12 4l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V10.5z" fill="#fff"/><circle cx="12" cy="17" r="2" fill="#ff9800"/><rect x="10" y="15" width="4" height="4" rx="2" fill="#fff"/></svg></span>,
+    desc: 'Dành cho môi giới chuyên nghiệp',
+    price: '1.990.000đ',
+    priceNote: '/năm',
+    save: 'Tiết kiệm 45%',
+    features: [
+      { label: 'Tất cả tính năng Pro 3 tháng', ok: true },
+      { label: 'Đăng bài 1200 tin/năm', ok: true },
+      { label: 'Hỗ trợ 24/7', ok: true },
+      { label: 'Thống kê nâng cao', ok: true },
+      { label: 'Báo cáo hàng tháng', ok: true },
+      { label: 'Tùy chỉnh giao diện', ok: true },
+    ],
+    button: { label: 'Đăng ký gói Pro', style: 'pro' },
+    highlight: false,
   },
 ];
 
@@ -244,51 +281,57 @@ const MembershipPage = () => {
 
       {/* Bảng so sánh gói */}
       <div className={styles.pricingTable} ref={plansRef}>
-        {plans.map((plan, idx) => (
-          <div
-            key={plan.key}
-            className={
-              styles.planCard +
-              (plan.highlight ? ' ' + styles.planCardHighlight : '')
-            }
-          >
-            {plan.badge && <div className={styles.planBadge}>{plan.badge}</div>}
-            <div className={styles.planHeader}>
-              {plan.icon}
-              <div>
-                <div className={styles.planName}>{plan.name}</div>
-                <div className={styles.planDesc}>{plan.desc}</div>
+        <div className={styles.pricingTableHeader}>
+          <h2 className={styles.pricingTitle}>Chọn Gói Dịch Vụ Phù Hợp</h2>
+          <p className={styles.pricingSubtitle}>Nâng cấp tài khoản để đăng bài không giới hạn và ưu tiên hiển thị</p>
+        </div>
+        <div className={styles.plansContainer}>
+          {plans.map((plan, idx) => (
+            <div
+              key={plan.key}
+              className={
+                styles.planCard +
+                (plan.highlight ? ' ' + styles.planCardHighlight : '')
+              }
+            >
+              {plan.badge && <div className={styles.planBadge}>{plan.badge}</div>}
+              <div className={styles.planHeader}>
+                {plan.icon}
+                <div>
+                  <div className={styles.planName}>{plan.name}</div>
+                  <div className={styles.planDesc}>{plan.desc}</div>
+                </div>
               </div>
-            </div>
-            <div className={styles.planPriceSection}>
-              <span className={styles.planPrice}>{plan.price}</span>
-              <span className={styles.planPriceNote}>{plan.priceNote}</span>
-            </div>
-            {plan.save && <div className={styles.planSave}>{plan.save}</div>}
-            <div className={styles.planBtnWrap}>
-              <button
-                className={styles['planBtn' + (plan.highlight ? 'Pro' : plan.key.charAt(0).toUpperCase() + plan.key.slice(1))]}
-                onClick={() => {
-                  if (plan.key === 'pro') {
-                    navigate('/checkout');
-                  } else {
-                    navigate('/dang-tin');
-                  }
-                }}>
-              
-                {plan.button.label}
-              </button>
-            </div>
+              <div className={styles.planPriceSection}>
+                <span className={styles.planPrice}>{plan.price}</span>
+                <span className={styles.planPriceNote}>{plan.priceNote}</span>
+              </div>
+              {plan.save && <div className={styles.planSave}>{plan.save}</div>}
+              <div className={styles.planBtnWrap}>
+                <button
+                  className={styles['planBtn' + (plan.highlight ? 'Pro' : plan.key.charAt(0).toUpperCase() + plan.key.slice(1))]}
+                  onClick={() => {
+                    if (plan.key === 'basic') {
+                      navigate('/dang-tin');
+                    } else {
+                      navigate('/membership-checkout');
+                    }
+                  }}>
+                
+                  {plan.button.label}
+                </button>
+              </div>
 
-            <ul className={styles.planFeatures}>
-              {plan.features.map((f, i) => (
-                <li key={i} className={f.ok ? styles.featureOk : styles.featureNo}>
-                  {f.ok ? <Check /> : <Cross />} {f.label}
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
+              <ul className={styles.planFeatures}>
+                {plan.features.map((f, i) => (
+                  <li key={i} className={f.ok ? styles.featureOk : styles.featureNo}>
+                    {f.ok ? <Check /> : <Cross />} {f.label}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Section liên hệ mới */}

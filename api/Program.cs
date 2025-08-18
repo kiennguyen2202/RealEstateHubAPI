@@ -13,6 +13,16 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using RealEstateHubAPI.DTOs;
+using RealEstateHubAPI.Model;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.SignalR;
+using RealEstateHubAPI.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +36,21 @@ builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IAreaRepository, AreaRepository>();
 builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<IPostService, PostService>();
+builder.Services.AddScoped<IAgentProfileRepository, AgentProfileRepository>();
+builder.Services.AddScoped<IAgentProfileService, AgentProfileService>();
+
+//Add VnPay service
+builder.Services.AddScoped<IVNPayService, VNPayService>();
+builder.Services.AddScoped<IPaymentProcessingService, PaymentProcessingService>();
+
+//Add Momo service
+builder.Services.Configure<MomoOptionModel>(builder.Configuration.GetSection("MomoAPI"));
+builder.Services.AddScoped<IMomoService, MomoService>();
+
+//Add Chat service
+builder.Services.AddScoped<IChatService, ChatService>();
+
+
 //builder.Services.AddScoped<IReportRepository, ReportRepository>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -59,7 +84,7 @@ builder.Services.AddAuthorization();
 builder.Services.AddControllers();
 builder.Services.AddSignalR();
 builder.Services.AddEndpointsApiExplorer();
-
+builder.Services.AddMemoryCache();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
@@ -105,8 +130,9 @@ builder.Services.AddCors(options =>
         {
             policy.WithOrigins("http://localhost:5173") 
                   .AllowAnyHeader()
-                  .AllowAnyMethod();
-        });
+                  .AllowAnyMethod()
+            .AllowCredentials();
+});
 });
 
 builder.Services.AddHostedService<ExpireNotificationService>();
@@ -137,6 +163,7 @@ app.UseAuthorization();
 app.UseStaticFiles();
 
 app.MapControllers();
+app.MapHub<ChatHub>("/chatHub");
 app.MapHub<NotificationHub>("/notificationHub");
 
 app.Run();
