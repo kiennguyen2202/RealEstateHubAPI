@@ -13,6 +13,7 @@ import ReportPost from "../ReportPost.jsx";
 import MapComponent from "../../components/MapComponent.jsx";
 import axiosPrivate from "../../api/axiosPrivate.js";
 
+
 const TransactionType = {
   Sale: 0, 
   Rent: 1   
@@ -509,7 +510,7 @@ const PostDetail = () => {
             {user && user.id !== post.userId && (
               <div className="chat-button-container">
                 <Link 
-                  to={`/messages?postId=${post.id}&userId=${post.user.id}&postTitle=${encodeURIComponent(post.title)}&postUsername=${encodeURIComponent(post.user.name)}`}
+                  to={`/chat?u=${post.user.id}&postId=${post.id}&postTitle=${encodeURIComponent(post.title)}&avatar=${encodeURIComponent(post.user.avatarUrl || '')}`}
                   className="chat-button"
                 >
                   <FaCommentDots className="mr-2" />

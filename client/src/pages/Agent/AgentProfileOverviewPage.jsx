@@ -117,20 +117,7 @@ export default function AgentProfileOverviewPage() {
 
   const handleSaveAndPay = async () => {
     if (!isPreview) return;
-
-    try {
-      const response = await axiosPrivate.post(`/api/agent-profile/commit/${id}`);
-      if (response.data && response.data.id) {
-        message.success('Chuyên trang đã được lưu thành công!');
-        navigate(`/agent-profile/${response.data.id}`); 
-      }
-    } catch (err) {
-      console.error('Commit profile error:', err);
-      console.error('Error response:', err.response);
-      console.error('Error data:', err.response?.data);
-      const errorMsg = err.response?.data?.title || err.response?.data || err.message || 'Lỗi khi lưu chuyên trang. Vui lòng thử lại.';
-      message.error(errorMsg);
-    }
+    navigate(`/agent-checkout?previewId=${id}`);
   };
 
   if (loading) {

@@ -13,8 +13,9 @@ import Register from "./auth/Register";
 import PostDetail from "./pages/Post/PostDetail";
 import Profile from "./pages/Profile";
 import AdminDashboard from "./pages/Admin/AdminDashboard";
-import MessagingFeature from './components/Message/MessagingFeature';
-import ChatPage from './pages/Chat/ChatPage';
+
+import StreamChatPage from './pages/Chat/StreamChatPage';
+
 import PostHistory from './pages/Post/PostHistory';
 import ReportPost from "./pages/ReportPost";
 import Favorites from "./pages/Favorites";
@@ -72,8 +73,8 @@ const App = () => {
               {/* Protected Routes */}
               <Route element={<PrivateRoute />}>
                 <Route path="/dang-tin" element={<CreatePostWizard />} />
-                <Route path="/messages" element={<MessagingFeature />} />
-                <Route path="/chat" element={<ChatPage />} />
+                <Route path="/chat" element={<StreamChatPage />} />
+                
                 <Route path="/chi-tiet/:id/report" element={<ReportPost />} />
                 <Route path="/membership" element={<MembershipPage />} />
                 <Route path="/agent" element={<AgentPage />} />

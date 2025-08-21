@@ -52,41 +52,58 @@ namespace RealEstateHubAPI.Controllers
         }
 
         [AllowAnonymous]
-[HttpGet]
-public async Task<IActionResult> GetPosts([FromQuery] bool? isApproved)
-{
-    var posts = _context.Posts
-        .Include(p => p.User)
-        .Include(p => p.Category)
-        .Include(p => p.Area)
-            .ThenInclude(a => a.Ward)
-                .ThenInclude(w => w.District)
-                    .ThenInclude(d => d.City)
-        .Include(p => p.Images)
-        .AsQueryable();
-
-    if (isApproved.HasValue)
-    {
-        if (isApproved.Value)
+        [HttpGet]
+        public async Task<IActionResult> GetPosts(
+            [FromQuery] bool? isApproved,
+            [FromQuery] string? transactionType,
+            [FromQuery] string? categoryType)
         {
-            var oneDayAgo = DateTime.Now.AddDays(-1);
-            posts = posts.Where(p => p.IsApproved == true && (p.ExpiryDate == null || p.ExpiryDate > oneDayAgo));            
-        }
-        else
-        {
-            
-            posts = posts.Where(p => p.IsApproved == false);
-        }
-    }
-    else
-    {
-        
-        posts = posts.Where(p => p.IsApproved == true && 
-            (p.ExpiryDate == null || p.ExpiryDate > DateTime.Now));
-    }
+            var posts = _context.Posts
+                .Include(p => p.User)
+                .Include(p => p.Category)
+                .Include(p => p.Area)
+                    .ThenInclude(a => a.Ward)
+                        .ThenInclude(w => w.District)
+                            .ThenInclude(d => d.City)
+                .Include(p => p.Images)
+                .AsQueryable();
 
-    return Ok(await posts.ToListAsync());
-}
+            // Filter by approval status
+            if (isApproved.HasValue)
+            {
+                if (isApproved.Value)
+                {
+                    var oneDayAgo = DateTime.Now.AddDays(-1);
+                    posts = posts.Where(p => p.IsApproved == true && (p.ExpiryDate == null || p.ExpiryDate > oneDayAgo));            
+                }
+                else
+                {
+                    posts = posts.Where(p => p.IsApproved == false);
+                }
+            }
+            else
+            {
+                posts = posts.Where(p => p.IsApproved == true && 
+                    (p.ExpiryDate == null || p.ExpiryDate > DateTime.Now));
+            }
+
+            // Filter by transaction type
+            if (!string.IsNullOrEmpty(transactionType))
+            {
+                if (Enum.TryParse<TransactionType>(transactionType, true, out var transactionTypeEnum))
+                {
+                    posts = posts.Where(p => p.TransactionType == transactionTypeEnum);
+                }
+            }
+
+            // Filter by category type
+            if (!string.IsNullOrEmpty(categoryType))
+            {
+                posts = posts.Where(p => p.Category.Name.ToLower().Contains(categoryType.ToLower()));
+            }
+
+            return Ok(await posts.ToListAsync());
+        }
 
         // GET: api/posts/{id}
         [HttpGet("{id}")]

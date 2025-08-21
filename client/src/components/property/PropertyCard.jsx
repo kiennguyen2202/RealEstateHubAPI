@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import './PropertyCard.css';
 import { PriceUnit, formatPrice } from '../../utils/priceUtils';
 import FavoriteButton from '../Favorite/FavoriteButton';
+
 import { FaCrown } from 'react-icons/fa';
 
 const PropertyCard = ({ property,showFavorite = true }) => {
@@ -105,10 +106,14 @@ const PropertyCard = ({ property,showFavorite = true }) => {
           )}
           <div className="property-meta">
             <span className="post-date">{new Date(property.created).toLocaleDateString('vi-VN')}</span>
-            <span className={`transaction-type ${property.transactionType === 0 ? 'sale' : 'rent'}`}>
-              {property.transactionType === 0 ? "Mua bán" : "Cho thuê"}
+            <span className={`transaction-type ${
+              (property.transactionType === 'Sale' || property.transactionType === 0) ? 'sale' : 'rent'
+            }`}>
+              {(property.transactionType === 'Sale' || property.transactionType === 0) ? "Mua bán" : "Cho thuê"}
             </span>
           </div>
+          
+          
         </div>
       </Link>
       {showExpiredAlert && (

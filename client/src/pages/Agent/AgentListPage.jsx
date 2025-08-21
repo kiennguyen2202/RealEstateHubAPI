@@ -252,7 +252,9 @@ const AgentListPage = () => {
 
           {/* Actions */}
           <div className="agent-actions-rect">
-            <Button className="contact-btn">Liên hệ</Button>
+            <Link to={`/chat?u=${agent.user?.id || agent.userId || agent.id}&agentName=${encodeURIComponent(agent.shopName || agent.user?.name || agent.name || 'Môi giới')}&avatar=${encodeURIComponent(agent.user?.avatarUrl || agent.avatarUrl || '')}`}>
+              <Button className="contact-btn">Liên hệ</Button>
+            </Link>
             <Link to={`/agent-profile/${agent.id}`}>
               <Button type="primary" className="posts-btn">Xem trang</Button>
             </Link>

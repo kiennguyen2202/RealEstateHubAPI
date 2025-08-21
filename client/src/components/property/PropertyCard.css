@@ -232,3 +232,23 @@
   font-weight: 500;
   cursor: pointer;
 }
+
+/* Property Actions */
+.property-actions {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e0e0e0;
+}
+
+.property-actions .chat-button {
+  width: 100%;
+  justify-content: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .property-actions {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+  }
+}
