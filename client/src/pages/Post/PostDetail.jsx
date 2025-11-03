@@ -9,8 +9,13 @@ import {
 } from "react-icons/fa";
 import "./PostDetail.css";
 import { PriceUnit, formatPrice } from '../../utils/priceUtils.js';
+import { isProRole } from '../../utils/roleUtils.js';
 import ReportPost from "../ReportPost.jsx";
 import MapComponent from "../../components/MapComponent.jsx";
+
+
+import CustomImageTourViewer from "../../components/CustomImageTourViewer.jsx";
+import StreetViewComponent from "../../components/StreetViewComponent.jsx";
 import axiosPrivate from "../../api/axiosPrivate.js";
 
 
@@ -32,6 +37,7 @@ const PostDetail = () => {
   const [showMapModal, setShowMapModal] = useState(false);
   const [fullAddressForMap, setFullAddressForMap] = useState('');
   const [mapModalZoomLevel, setMapModalZoomLevel] = useState(5);
+  const [showFullscreenStreetView, setShowFullscreenStreetView] = useState(false);
   const [newImages, setNewImages] = useState(null);
   const [uniqueCities, setUniqueCities] = useState([]);
   const [filteredDistricts, setFilteredDistricts] = useState([]);
@@ -59,8 +65,34 @@ const PostDetail = () => {
     matTien: '',
     duongVao: '',
     phapLy: '',
+    
   });
   const [categories, setCategories] = useState([]);
+  const [showPanorama, setShowPanorama] = useState(false);
+  const [activeMediaTab, setActiveMediaTab] = useState('photo');
+  const [showFullscreen3D, setShowFullscreen3D] = useState(false);
+
+  // Helpers to mask contact info when viewer is not authenticated
+  const maskPhone = (phone) => {
+    if (!phone) return "";
+    const digits = String(phone).replace(/\s+/g, '');
+    // Show first 6 digits then space and *** (matches screenshot idea like "036868 ***")
+    if (digits.length <= 3) return `${digits} ***`;
+    const visible = digits.slice(0, Math.min(6, digits.length));
+    return `${visible} ***`;
+  };
+
+  const maskEmail = (email) => {
+    if (!email) return "";
+    const parts = String(email).split("@");
+    if (parts.length < 2) return "*".repeat(String(email).length);
+    const [local, domain] = parts;
+    const visible = local.slice(0, 2);
+    const maskedLocal = `${visible}${"*".repeat(Math.max(0, local.length - 2))}`;
+    return `${maskedLocal}@${domain}`;
+  };
+
+  const [showLoginTooltip, setShowLoginTooltip] = useState(false);
 
   const getMapZoomForDetail = (postData) => {
     const minZoom = 5;
@@ -116,6 +148,7 @@ const PostDetail = () => {
           matTien: response.data.matTien || '',
           duongVao: response.data.duongVao || '',
           phapLy: response.data.phapLy || '',
+          
         });
         const addressParts = [];
         if (response.data.area?.ward?.name) addressParts.push(response.data.area.ward.name);
@@ -138,6 +171,13 @@ const PostDetail = () => {
   // Add new useEffect to reset scroll position
   useEffect(() => {
     window.scrollTo(0, 0);
+  }, []);
+
+  // Open 3D tab if URL hash is #view3d
+  useEffect(() => {
+    if (window.location.hash === '#view3d') {
+      setActiveMediaTab('3d');
+    }
   }, []);
 
   useEffect(() => {
@@ -211,6 +251,7 @@ const PostDetail = () => {
           postData.append('Images', image);
         });
       }
+
 
       console.log('Data being sent to server:', postData);
 
@@ -301,23 +342,23 @@ const PostDetail = () => {
   
 
   return (
-    <div className="property-detail">
+    <div className="post-detail">
       {/* Header */}
-      <div className="property-header">
-        <div className="property-content">
-          <h1 className="property-title">{post.title}</h1>
-          <div className="property-meta">
-            <div className="property-meta-item clickable-address" onClick={handleAddressClick}>
+      <div className="post-header">
+        <div className="post-content">
+          <h1 className="post-title">{post.title}</h1>
+          <div className="post-meta">
+            <div className="post-meta-item clickable-address" onClick={handleAddressClick}>
               <FaMapMarkerAlt />
               <span>
                 {post.street_Name}, {post.area?.ward?.name && `${post.area.ward.name}, `}{post.area?.district?.name && `${post.area.district.name}, `}{post.area?.city?.name && post.area.city.name}
               </span>
             </div>
-            <div className="property-meta-item">
+            <div className="post-meta-item">
               <FaRuler />
               <span>{post.area_Size} m²</span>
             </div>
-            <div className="property-meta-item">
+            <div className="post-meta-item">
               <FaHome />
               <span>{post.category?.name}</span>
             </div>
@@ -326,18 +367,94 @@ const PostDetail = () => {
       </div>
 
       {/* Main Content */}
-      <div className="property-content">
-        <div className="property-grid">
+      <div className="post-content">
+        <div className="post-grid">
           {/* Left Column - Images and Info */}
-          <div className="property-left-column">
-            <div className="property-images" style={{position: 'relative'}}>
-              {/* Pro Badge */}
-              {post?.user?.role === 'Membership' && (
+          <div className="post-left-column">
+            <div className="post-images" style={{position: 'relative'}}>
+              {/* Pro Badge - only show on Photo tab */}
+              {activeMediaTab === 'photo' && isProRole(post?.user?.role) && (
                 <div className="pro-badge">
                   <FaCrown className="pro-crown-icon" />
                   Pro
                 </div>
               )}
+              {/* Media Tabs */}
+              <div style={{ 
+                display: 'flex', 
+                gap: 12, 
+                marginBottom: 12, 
+                padding: '12px 16px',
+                background: '#fff',
+                borderRadius: '8px 8px 0 0',
+                borderBottom: '1px solid #e5e7eb'
+              }}>
+                <button 
+                  type="button" 
+                  onClick={() => setActiveMediaTab('photo')} 
+                  style={{
+                    padding: '8px 16px',
+                    border: '1px solid #e5e7eb',
+                    background: activeMediaTab === 'photo' ? '#3b82f6' : '#fff',
+                    color: activeMediaTab === 'photo' ? '#fff' : '#374151',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                    fontWeight: '500'
+                  }}
+                >
+                  Photo
+                </button>
+                <button 
+                  type="button" 
+                  onClick={() => {
+                    // Kiểm tra có panorama images không
+                    const hasPanorama = (post.images && post.images.length > 0);
+                    if (hasPanorama) {
+                      setShowFullscreen3D(true);
+                    } else {
+                      setActiveMediaTab('3d');
+                    }
+                  }} 
+                  style={{
+                    padding: '8px 16px',
+                    border: '1px solid #e5e7eb',
+                    background: activeMediaTab === '3d' ? '#3b82f6' : '#fff',
+                    color: activeMediaTab === '3d' ? '#fff' : '#374151',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                    fontWeight: '500'
+                  }}
+                >
+                  3D view
+                </button>
+                <button 
+                  type="button" 
+                  onClick={() => {
+                    // Kiểm tra có địa chỉ không
+                    const hasAddress = fullAddressForMap || post?.address || (post?.lat && post?.lng);
+                    if (hasAddress) {
+                      setShowFullscreenStreetView(true);
+                    } else {
+                      setActiveMediaTab('street');
+                    }
+                  }} 
+                  style={{
+                    padding: '8px 16px',
+                    border: '1px solid #e5e7eb',
+                    background: activeMediaTab === 'street' ? '#3b82f6' : '#fff',
+                    color: activeMediaTab === 'street' ? '#fff' : '#374151',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                    fontWeight: '500'
+                  }}
+                >
+                  Street view
+                </button>
+              </div>
+              {activeMediaTab === 'photo' && (
               <div className="image-navigation">
                 <button 
                   className="nav-button prev-button"
@@ -363,6 +480,222 @@ const PostDetail = () => {
                   &#10095;
                 </button>
               </div>
+              )}
+              {activeMediaTab === '3d' && (
+                <div style={{ height: 520, background: '#000', borderRadius: 8, position: 'relative' }}>
+                  {(() => {
+                    // Tạo scenes từ images
+                    const panoramaScenes = [];
+                    
+                    // Thêm các ảnh từ images (giả sử tất cả đều là panorama)
+                    if (post.images && post.images.length > 0) {
+                      post.images.forEach((img, idx) => {
+                        panoramaScenes.push({
+                          id: `scene-${idx}`,
+                          imageUrl: img.url,
+                          title: `${post.title} - Ảnh ${idx + 1}`
+                        });
+                      });
+                    }
+                    
+                    // Nếu có nhiều hơn 1 scene, thêm hotspots để điều hướng
+                    if (panoramaScenes.length > 1) {
+                      panoramaScenes.forEach((scene, idx) => {
+                        scene.hotspots = [
+                          // Hotspot bên trái để quay lại ảnh trước
+                          idx > 0 ? {
+                            x: -90, // Bên trái (góc -90 độ)
+                            y: 0,
+                            targetSceneId: panoramaScenes[idx - 1].id,
+                            title: '← Ảnh trước'
+                          } : null,
+                          // Hotspot bên phải để chuyển sang ảnh sau
+                          idx < panoramaScenes.length - 1 ? {
+                            x: 90, // Bên phải (góc 90 độ)
+                            y: 0,
+                            targetSceneId: panoramaScenes[idx + 1].id,
+                            title: 'Ảnh sau →'
+                          } : null
+                        ].filter(Boolean);
+                      });
+                    }
+                    
+                    if (panoramaScenes.length > 0) {
+                      return (
+                        <CustomImageTourViewer
+                          scenes={panoramaScenes}
+                          initialSceneId={panoramaScenes[0].id}
+                          height={520}
+                          controls={true}
+                        />
+                      );
+                    } else {
+                      return (
+                        <div style={{ height: 520, display: 'grid', placeItems: 'center', color: '#6b7280', background: '#0b0f19', borderRadius: 8 }}>
+                          <div style={{ textAlign: 'center' }}>
+                            <div style={{ fontSize: '18px', marginBottom: '8px' }}>🔍</div>
+                            <div>Chưa có ảnh panorama để xem tour 3D</div>
+                            <div style={{ fontSize: '14px', marginTop: '4px' }}>Thêm ảnh panorama 360° để tạo tour</div>
+                          </div>
+                        </div>
+                      );
+                    }
+                  })()}
+                </div>
+              )}
+              {activeMediaTab === 'street' && (
+                <div style={{ height: 520, display: 'grid', placeItems: 'center', color: '#6b7280', background: '#0b0f19', borderRadius: 8 }}>
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontSize: '24px', marginBottom: '8px' }}>🗺️</div>
+                    <div>Nhấn tab "Street view" để mở Street View fullscreen</div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Fullscreen Street View Modal */}
+              {showFullscreenStreetView && (
+                <div style={{
+                  position: 'fixed',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  background: '#000',
+                  zIndex: 9999,
+                  display: 'flex',
+                  flexDirection: 'column'
+                }}>
+                  {/* Close button */}
+                  <button
+                    onClick={() => setShowFullscreenStreetView(false)}
+                    style={{
+                      position: 'absolute',
+                      top: 20,
+                      right: 20,
+                      zIndex: 10001,
+                      background: 'rgba(45, 62, 80, 0.8)',
+                      border: 'none',
+                      color: '#fff',
+                      fontSize: '24px',
+                      width: '40px',
+                      height: '40px',
+                      borderRadius: '50%',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    ✕
+                  </button>
+                  
+                  {/* Fullscreen Street View - nhúng trực tiếp trong modal */}
+                  <StreetViewComponent
+                    address={fullAddressForMap || post?.address}
+                    lat={post?.lat}
+                    lng={post?.lng}
+                    height={window.innerHeight}
+                    apiKey={import.meta?.env?.VITE_GOOGLE_MAPS_API_KEY}
+                  />
+                </div>
+              )}
+              
+              {/* Fullscreen 3D Tour Modal*/}
+              {showFullscreen3D && (() => {
+                // Tạo scenes từ images
+                const panoramaScenes = [];
+                
+                // Thêm các ảnh từ images
+                if (post.images && post.images.length > 0) {
+                  post.images.forEach((img, idx) => {
+                    panoramaScenes.push({
+                      id: `scene-${idx}`,
+                      imageUrl: img.url,
+                      title: `${post.title} - Ảnh ${idx + 1}`,
+                      thumbUrl: img.url
+                    });
+                  });
+                }
+                
+                // Nếu có nhiều hơn 1 scene, thêm hotspots để điều hướng
+                if (panoramaScenes.length > 1) {
+                  panoramaScenes.forEach((scene, idx) => {
+                    scene.hotspots = [
+                      // Hotspot bên trái để quay lại ảnh trước
+                      idx > 0 ? {
+                        x: -90,
+                        y: 0,
+                        targetSceneId: panoramaScenes[idx - 1].id,
+                        title: '← Ảnh trước'
+                      } : null,
+                      // Hotspot bên phải để chuyển sang ảnh sau
+                      idx < panoramaScenes.length - 1 ? {
+                        x: 90,
+                        y: 0,
+                        targetSceneId: panoramaScenes[idx + 1].id,
+                        title: 'Ảnh sau →'
+                      } : null
+                    ].filter(Boolean);
+                  });
+                }
+                
+                if (panoramaScenes.length > 0) {
+                  return (
+                    <div style={{
+                      position: 'fixed',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      background: '#000',
+                      zIndex: 9999,
+                      display: 'flex',
+                      flexDirection: 'column'
+                    }}>
+                      {/* Close button */}
+                      <button
+                        onClick={() => setShowFullscreen3D(false)}
+                        style={{
+                          position: 'absolute',
+                          top: 20,
+                          right: 20,
+                          zIndex: 10000,
+                          background: 'rgba(45, 62, 80, 0.8)',
+                          border: 'none',
+                          color: '#fff',
+                          fontSize: '24px',
+                          width: '40px',
+                          height: '40px',
+                          borderRadius: '50%',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}
+                      >
+                        ✕
+                      </button>
+                      
+                      {/* Fullscreen 3D Viewer */}
+                      <CustomImageTourViewer
+                        scenes={panoramaScenes}
+                        initialSceneId={panoramaScenes[0].id}
+                        height={window.innerHeight}
+                        controls={true}
+                        autoTour={true} // Auto tour - tự động quay camera
+                        autoRotate={true} // Auto rotate camera từ trái sang phải
+                        littlePlanetIntro={true} // Little planet intro effect
+                        showThumbs={true}
+                        fov={150} // Bắt đầu với FOV cao cho little planet
+                        fovMin={70}
+                        fovMax={150}
+                        onClose={() => setShowFullscreen3D(false)}
+                      />
+                    </div>
+                  );
+                }
+                return null;
+              })()}
               <button className='report-button' onClick={() => navigate(`/chi-tiet/${post.id}/report`)}>
                 <i className="fas fa-flag"></i> Báo cáo
               </button>
@@ -385,7 +718,7 @@ const PostDetail = () => {
             </div>
 
             {/* Info Section */}
-            <div className="property-info-section">
+            <div className="post-info-section">
               <div className="info-section">
                 <h3>Thông tin chi tiết</h3>
                 <div className="info-grid">
@@ -464,7 +797,7 @@ const PostDetail = () => {
           </div>
 
           {/* Right Column - Contact */}
-          <div className="property-contact">
+          <div className="post-contact">
             <div className="price-tag">
               {formatPrice(post.price, post.priceUnit)}              
             </div>
@@ -488,20 +821,73 @@ const PostDetail = () => {
                   />
                   <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                     {post.user?.name}
-                    {post.user?.role === 'Membership' && (
+                    {isProRole(post.user?.role) && (
                       <span className="pro-badge" style={{ position: 'static', marginLeft: 6, padding: '4px 10px', fontSize: '0.95em', height: 28 }}>
                         <FaCrown className="pro-crown-icon" /> Pro
                       </span>
                     )}
                   </span>
                 </div>
-                <div className="contact-item">
-                  <FaPhone className="contact-icon" />
-                  <span>{post.user?.phone}</span>
+                {/* Phone Button / Tooltip */}
+                <div className="contact-item" style={{ position: 'relative' }}>
+                  {user ? (
+                    <a
+                      href={`tel:${post.user?.phone || ''}`}
+                      className="chat-button"
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}
+                    >
+                      <FaPhone className="contact-icon" />
+                      <span>{post.user?.phone}</span>
+                    </a>
+                  ) : (
+                    <button
+                      type="button"
+                      className="chat-button"
+                      onClick={() => setShowLoginTooltip(true)}
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}
+                    >
+                      <FaPhone className="contact-icon" />
+                      <span>{maskPhone(post.user?.phone)}</span>
+                    </button>
+                  )}
+                  {!user && showLoginTooltip && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: -12,
+                        left: '100%',
+                        marginLeft: 12,
+                        background: '#1f2937',
+                        color: '#fff',
+                        padding: '12px 14px',
+                        borderRadius: 8,
+                        boxShadow: '0 6px 18px rgba(0,0,0,0.25)',
+                        zIndex: 20,
+                        minWidth: 240
+                      }}
+                    >
+                      <div style={{ fontWeight: 600, marginBottom: 8 }}>Đăng nhập để liên hệ với người bán</div>
+                      <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+                        <button
+                          type="button"
+                          onClick={() => setShowLoginTooltip(false)}
+                          style={{ padding: '6px 10px', background: '#374151', color: '#fff', borderRadius: 6 }}
+                        >
+                          Bỏ qua
+                        </button>
+                        <Link
+                          to="/login"
+                          style={{ padding: '6px 10px', background: '#f97316', color: '#fff', borderRadius: 6 }}
+                        >
+                          Đăng nhập
+                        </Link>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <div className="contact-item">
                   <FaEnvelope className="contact-icon" />
-                  <span>{post.user?.email}</span>
+                  <span>{user ? post.user?.email : maskEmail(post.user?.email)}</span>
                 </div>
               </div>
             </div>
@@ -802,6 +1188,7 @@ const PostDetail = () => {
                   <option value={TransactionType.Rent}>Cho thuê</option>
                 </select>
               </div>
+              
               <div className="modal-footer">
                 <button type="button" onClick={() => setIsEditing(false)} className="cancel-button">
                   Hủy
@@ -813,6 +1200,13 @@ const PostDetail = () => {
             </form>
           </div>
         </div>
+      )}
+
+      {showPanorama && post.images && post.images.length > 0 && (
+        <PanoramaViewer
+          src={`http://localhost:5134${post.images[selectedImage].url}`}
+          onClose={() => setShowPanorama(false)}
+        />
       )}
     </div>
   );

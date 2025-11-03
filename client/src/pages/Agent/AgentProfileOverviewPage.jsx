@@ -4,6 +4,7 @@ import { Card, Avatar, Button, Tag, Rate, Tabs, List, Spin, message, Row, Col, D
 import axiosPrivate from '../../api/axiosPrivate.js';
 import { UserOutlined } from '@ant-design/icons';
 import { getCityById } from '../../services/agentProfileService.js';
+import { useAuth } from '../../auth/AuthContext.jsx';
 
 const { TabPane } = Tabs;
 
@@ -32,6 +33,7 @@ const formatAreaDisplay = (areaList) => {
 
 export default function AgentProfileOverviewPage() {
   const { id } = useParams();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [agent, setAgent] = useState(null);
   const [error, setError] = useState(null);
@@ -53,8 +55,14 @@ export default function AgentProfileOverviewPage() {
       const isPreviewMode = window.location.pathname.includes('/preview/');
       setIsPreview(isPreviewMode);
 
+      // Nếu quay lại từ form và không đổi ảnh, cố gắng lấy previewId đã lưu
+      let previewIdFromSession = null;
+      if (isPreviewMode && user?.id) {
+        previewIdFromSession = sessionStorage.getItem(`agentPreviewId_${user.id}`);
+      }
+
       const endpoint = isPreviewMode 
-        ? `/api/agent-profile/preview/${id}`
+        ? `/api/agent-profile/preview/${previewIdFromSession || id}`
         : `/api/agent-profile/${id}`;
         
       try {
@@ -62,8 +70,23 @@ export default function AgentProfileOverviewPage() {
         const agentData = res.data;
         
         setAgent(agentData);
+        console.log('Agent data loaded:', agentData);
+        console.log('Avatar URL:', agentData.avatarUrl);
+        console.log('Banner URL:', agentData.bannerUrl);
+        console.log('Full agent data:', JSON.stringify(agentData, null, 2));
 
         if (agentData) {
+          // Lưu server URLs để khi quay về trang đăng ký vẫn có ảnh
+          if (isPreviewMode && user?.id) {
+            try {
+              if (agentData.avatarUrl) {
+                sessionStorage.setItem(`agentServerAvatar_${user.id}`, agentData.avatarUrl);
+              }
+              if (agentData.bannerUrl) {
+                sessionStorage.setItem(`agentServerBanner_${user.id}`, agentData.bannerUrl);
+              }
+            } catch (_) {}
+          }
           // Tạo areaNames từ areaIds nếu backend không cung cấp
           if (agentData.areaIds?.length > 0 && !agentData.areaNames) {
             const fetchedAreaCityPairs = await Promise.all(
@@ -117,6 +140,15 @@ export default function AgentProfileOverviewPage() {
 
   const handleSaveAndPay = async () => {
     if (!isPreview) return;
+    
+    // Xóa session storage khi user thực sự thanh toán
+    if (user?.id) {
+      sessionStorage.removeItem(`agentForm_${user.id}`);
+      sessionStorage.removeItem(`agentAvatar_${user.id}`);
+      sessionStorage.removeItem(`agentBanner_${user.id}`);
+      sessionStorage.removeItem(`agentAreas_${user.id}`);
+    }
+    
     navigate(`/agent-checkout?previewId=${id}`);
   };
 
@@ -237,7 +269,7 @@ export default function AgentProfileOverviewPage() {
       {agent.bannerUrl && (
         <div style={{ width: '100%', marginBottom: 24 }}>
           <img
-            src={`http://localhost:5134${agent.bannerUrl}`}
+            src={agent.bannerUrl.startsWith('http') ? agent.bannerUrl : `http://localhost:5134${agent.bannerUrl}`}
             alt="Banner"
             style={{
               width: '100%',
@@ -245,6 +277,13 @@ export default function AgentProfileOverviewPage() {
               objectFit: 'cover',
               borderRadius: 12,
               boxShadow: '0 2px 16px rgba(0,0,0,0.15)'
+            }}
+            onError={(e) => {
+              console.log('Banner load error:', agent.bannerUrl);
+              e.target.style.display = 'none';
+            }}
+            onLoad={() => {
+              console.log('Banner loaded successfully:', agent.bannerUrl);
             }}
           />
         </div>
@@ -255,9 +294,16 @@ export default function AgentProfileOverviewPage() {
             <div style={{ textAlign: 'center', marginBottom: 16 }}>
               <Avatar
                 size={80}
-                src={agent.avatarUrl ? `http://localhost:5134${agent.avatarUrl}` : null}
+                src={agent.avatarUrl ? (agent.avatarUrl.startsWith('http') ? agent.avatarUrl : `http://localhost:5134${agent.avatarUrl}`) : null}
                 icon={<UserOutlined />}
                 style={{ marginBottom: 8 }}
+                onError={(e) => {
+                  console.log('Avatar load error:', agent.avatarUrl);
+                  e.target.style.display = 'none';
+                }}
+                onLoad={() => {
+                  console.log('Avatar loaded successfully:', agent.avatarUrl);
+                }}
               />
               <div style={{ fontWeight: 600, fontSize: 20, marginBottom: 4 }}>{agent.shopName}</div>
               <Rate disabled defaultValue={5} style={{ fontSize: 16, color: '#f59e42' }} />
@@ -265,7 +311,20 @@ export default function AgentProfileOverviewPage() {
               <div style={{ margin: '8px 0', color: '#aaa' }}>Người theo dõi: 148 | Tin đăng: 88</div>
               {isPreview ? (
                 <>
-              <Button type="default" style={{ marginRight: 8 }} onClick={() => navigate(-1)}>
+              <Button type="default" style={{ marginRight: 8 }} onClick={() => {
+                // Lưu lại URL ảnh từ server để khi quay lại form không chọn ảnh mới vẫn giữ được
+                if (isPreview && user?.id) {
+                  try {
+                    if (agent?.avatarUrl) {
+                      sessionStorage.setItem(`agentServerAvatar_${user.id}`, agent.avatarUrl);
+                    }
+                    if (agent?.bannerUrl) {
+                      sessionStorage.setItem(`agentServerBanner_${user.id}`, agent.bannerUrl);
+                    }
+                  } catch (_) {}
+                }
+                navigate(-1);
+              }}>
                 Trở về chỉnh sửa
               </Button>
               <Button type="primary" onClick={handleSaveAndPay}>

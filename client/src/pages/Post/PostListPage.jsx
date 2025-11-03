@@ -2,18 +2,23 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import axiosPrivate from '../../api/axiosPrivate';
 import PropertyCard from '../../components/property/PropertyCard';
+import { toTrieu } from '../../utils/priceUtils';
 import { message, Row, Col, Empty, Typography, Tag, Skeleton, Divider } from 'antd';
 import { HomeOutlined } from '@ant-design/icons';
 import styles from './PostListPage.module.css';
+import { isProRole } from '../../utils/roleUtils';
 
 const PostListPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState([]);
+  const [filteredProperties, setFilteredProperties] = useState([]);
 
   // Lấy params từ URL
-  const categoryType = searchParams.get('category') || '';
+  const categoryType = searchParams.get('category') || searchParams.get('type') || '';
+  const cityId = searchParams.get('cityId') || '';
+  const priceRange = searchParams.get('priceRange') || '';
   const isSale = window.location.pathname.includes('/Sale');
   const isRent = window.location.pathname.includes('/Rent');
 
@@ -21,6 +26,10 @@ const PostListPage = () => {
     fetchProperties();
     fetchCategories();
   }, [categoryType, isSale, isRent]);
+
+  useEffect(() => {
+    applyClientFilters();
+  }, [properties, cityId, priceRange]);
 
   const fetchProperties = async () => {
     try {
@@ -38,7 +47,15 @@ const PostListPage = () => {
       
       // Thêm filter cho category nếu có
       if (categoryType) {
-        params.append('categoryType', getCategoryNameForAPI(categoryType));
+        // Kiểm tra xem categoryType có phải là ID không
+        const categoryId = parseInt(categoryType);
+        if (!isNaN(categoryId)) {
+          // Nếu là số, coi như là category ID
+          params.append('categoryId', categoryId);
+        } else {
+          // Nếu không phải số, coi như là category name
+          params.append('categoryType', getCategoryNameForAPI(categoryType));
+        }
       }
 
       if (params.toString()) {
@@ -47,6 +64,7 @@ const PostListPage = () => {
 
       const response = await axiosPrivate.get(url);
       setProperties(response.data || []);
+      setFilteredProperties(response.data || []);
     } catch (error) {
       console.error('Error fetching properties:', error);
       message.error('Không thể tải danh sách bất động sản');
@@ -62,6 +80,36 @@ const PostListPage = () => {
     } catch (error) {
       console.error('Error fetching categories:', error);
     }
+  };
+
+  const parsePriceRange = (range) => {
+    if (!range) return { min: 0, max: Infinity };
+    if (range.endsWith('+')) {
+      const min = Number(range.replace('+', '')) || 0;
+      return { min, max: Infinity };
+    }
+    const [minStr, maxStr] = range.split('-');
+    const min = Number(minStr) || 0;
+    const max = Number(maxStr) || Infinity;
+    return { min, max };
+  };
+
+  const applyClientFilters = () => {
+    let data = [...properties];
+    // City filter
+    if (cityId) {
+      const cid = parseInt(cityId);
+      data = data.filter(p => p.area?.cityId === cid);
+    }
+    // Price filter (triệu) - convert using priceUnit
+    if (priceRange) {
+      const { min, max } = parsePriceRange(priceRange);
+      data = data.filter(p => {
+        const priceTrieu = toTrieu(p.price, p.priceUnit);
+        return priceTrieu >= min && priceTrieu <= max;
+      });
+    }
+    setFilteredProperties(data);
   };
 
   const getPageTitle = () => {
@@ -181,7 +229,12 @@ const PostListPage = () => {
             {categories.map(cat => (
               <Tag
                 key={cat.id}
-                className={`${styles.chip} ${categoryType && (cat.name.toLowerCase().includes(categoryType.toLowerCase()) || categoryType.toLowerCase().includes(cat.name.toLowerCase())) ? styles.chipActive : ''}`}
+                className={`${styles.chip} ${
+                  categoryType === cat.id.toString() || 
+                  categoryType === cat.name.toLowerCase() ||
+                  (categoryType && cat.name.toLowerCase().includes(categoryType.toLowerCase()))
+                    ? styles.chipActive : ''
+                }`}
                 onClick={() => handleSelectCategory(cat.name)}
               >
                 {cat.name}
@@ -192,7 +245,23 @@ const PostListPage = () => {
           {categoryType && (
             <div className={styles.infoBox}>
               <Typography.Text className={styles.infoText}>
-                Đang xem: <span className={styles.infoHighlight}>{getCategoryName(categoryType)}</span>
+                Đang xem: <span className={styles.infoHighlight}>
+                  {(() => {
+                    // Tìm category theo ID
+                    const categoryById = categories.find(cat => cat.id.toString() === categoryType);
+                    if (categoryById) return categoryById.name;
+                    
+                    // Tìm category theo tên
+                    const categoryByName = categories.find(cat => 
+                      cat.name.toLowerCase() === categoryType.toLowerCase() ||
+                      cat.name.toLowerCase().includes(categoryType.toLowerCase())
+                    );
+                    if (categoryByName) return categoryByName.name;
+                    
+                    // Fallback: sử dụng getCategoryName
+                    return getCategoryName(categoryType);
+                  })()}
+                </span>
               </Typography.Text>
               <span className={styles.dot} />
               <Typography.Text type="secondary">{properties.length} tin đăng</Typography.Text>
@@ -205,9 +274,16 @@ const PostListPage = () => {
         {/* Content */}
         {loading ? (
           renderLoadingGrid()
-        ) : properties.length > 0 ? (
+        ) : filteredProperties.length > 0 ? (
           <Row gutter={[24, 24]}>
-            {properties.map(property => (
+            {filteredProperties
+              .slice()
+              .sort((a, b) => {
+                const aIsPro = isProRole(a.user?.role) ? 1 : 0;
+                const bIsPro = isProRole(b.user?.role) ? 1 : 0;
+                return bIsPro - aIsPro;
+              })
+              .map(property => (
               <Col xs={24} sm={12} lg={8} xl={6} key={property.id}>
                 <PropertyCard property={property} />
               </Col>

@@ -83,14 +83,15 @@ namespace RealEstateHubAPI.Controllers
             post.IsApproved = true;
             
            
-            if (post.User.Role == "Membership")
+            // Set expiry date based on user's role
+            var roleName = post.User.Role ?? "User";
+            post.ExpiryDate = roleName switch
             {
-                post.ExpiryDate = DateTime.Now.AddSeconds(15); 
-            }
-            else
-            {
-                post.ExpiryDate = DateTime.Now.AddSeconds(15); 
-            }
+                "Pro_1" => DateTime.Now.AddDays(30),
+                "Pro_3" => DateTime.Now.AddDays(90),
+                "Pro_12" => DateTime.Now.AddDays(365),
+                _ => DateTime.Now.AddDays(7)
+            };
             
             await _context.SaveChangesAsync();
 
@@ -233,7 +234,7 @@ namespace RealEstateHubAPI.Controllers
 
             if (!Enum.TryParse(typeof(Role), model.Role, true, out var parsedRole))
             {
-                return BadRequest("Invalid role. Role must be either 'Admin', 'User', or 'Membership'");
+                return BadRequest("Invalid role. Role must be one of: Admin, User, Pro_1, Pro_3, Pro_12");
             }
 
             user.Role = parsedRole.ToString();

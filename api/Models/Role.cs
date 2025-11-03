@@ -4,6 +4,9 @@ namespace RealEstateHubAPI.Models
     {
         User,
         Admin,
-        Membership
+        Pro_1,
+        Pro_3,
+        Pro_12,
+
     }
 } 

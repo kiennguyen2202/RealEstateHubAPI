@@ -1,4 +1,4 @@
-// src/auth/AuthContext.jsx
+
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import axiosClient from '../api/axiosClient';
 //import axiosPrivate from '../api/axiosPrivate'; 
@@ -53,7 +53,7 @@ export const AuthProvider = ({ children }) => {
       return { success: false, error: errorMessage };
     } catch (error) {
       console.error("Login error:", error);
-      const errorMessage = error.response?.data || "Đăng nhập thất bại"; // Use error.response.data directly for consistency
+      const errorMessage = error.response?.data || "Đăng nhập thất bại"; 
       return { success: false, error: errorMessage };
     }
   };
@@ -110,6 +110,8 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  
+
   const showNotification = (message, type = 'error') => {
     const baseOptions = {
       duration: 5000,
@@ -161,6 +163,7 @@ export const AuthProvider = ({ children }) => {
     register,
     logout,
     updateProfile,
+    refreshUser: fetchUserProfile,
     showNotification
   };
 

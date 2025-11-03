@@ -44,5 +44,8 @@ namespace RealEstateHubAPI.Model
         public float? DuongVao { get; set; } 
         public string? PhapLy { get; set; } 
 
+        
+        public string? PanoImageUrl { get; set; }
+
     }
 }

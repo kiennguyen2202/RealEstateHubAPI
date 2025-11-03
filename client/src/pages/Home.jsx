@@ -4,49 +4,111 @@ import axiosClient from "../api/axiosClient";
 import { useAuth } from "../auth/AuthContext";
 import "./Home.css";
 import axiosPrivate from "../api/axiosPrivate";
-
+import PropertyCard from "../components/property/PropertyCard";
+import { isProRole } from "../utils/roleUtils";
 
 const Home = () => {
   const [posts, setPosts] = useState([]);
+  const [filteredPosts, setFilteredPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [categories, setCategories] = useState([]);
   const [areas, setAreas] = useState([]);
   const [filters, setFilters] = useState({
+    transactionType: "Sale",
     categoryId: "",
     areaId: "",
     minPrice: "",
     maxPrice: "",
-    status: ""
+    sortBy: "newest"
   });
-  const { user, logout, login, register } = useAuth();
-  const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showRegisterModal, setShowRegisterModal] = useState(false);
-  const [loginForm, setLoginForm] = useState({ email: "", password: "" });
-  const [registerForm, setRegisterForm] = useState({ name: "", phone: "", email: "", password: "", confirmPassword: "" });
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [postsRes, categoriesRes, areasRes] = await Promise.all([
-          axiosClient.get("/api/posts"),
-          axiosClient.get("/api/categories"),
-          axiosClient.get("/api/areas")
-        ]);
-        setPosts(postsRes.data);
-        setCategories(categoriesRes.data);
-        setAreas(areasRes.data);
-      } catch (err) {
-        setError("Không thể tải dữ liệu");
-        console.error("Error fetching data:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchData();
   }, []);
+
+  useEffect(() => {
+    filterPosts();
+  }, [filters, posts]);
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const [postsRes, categoriesRes, areasRes] = await Promise.all([
+        axiosClient.get("/api/posts?isApproved=true"),
+        axiosClient.get("/api/categories"),
+        axiosClient.get("/api/areas")
+      ]);
+      
+      setPosts(postsRes.data);
+      setFilteredPosts(postsRes.data);
+      setCategories(categoriesRes.data);
+      setAreas(areasRes.data);
+    } catch (err) {
+      setError("Không thể tải dữ liệu");
+      console.error("Error fetching data:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filterPosts = () => {
+    let filtered = [...posts];
+
+    // Filter by transaction type
+    if (filters.transactionType) {
+      filtered = filtered.filter(post => 
+        post.transactionType === filters.transactionType || 
+        post.transactionType === (filters.transactionType === "Sale" ? 0 : 1)
+      );
+    }
+
+    // Filter by category
+    if (filters.categoryId) {
+      filtered = filtered.filter(post => post.categoryId === parseInt(filters.categoryId));
+    }
+
+    // Filter by area
+    if (filters.areaId) {
+      filtered = filtered.filter(post => post.areaId === parseInt(filters.areaId));
+    }
+
+    // Filter by price range
+    if (filters.minPrice || filters.maxPrice) {
+      filtered = filtered.filter(post => {
+        const price = parseFloat(post.price);
+        const min = filters.minPrice ? parseFloat(filters.minPrice) : 0;
+        const max = filters.maxPrice ? parseFloat(filters.maxPrice) : Infinity;
+        return price >= min && price <= max;
+      });
+    }
+
+    // Sort posts
+    switch (filters.sortBy) {
+      case "price-asc":
+        filtered.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+        break;
+      case "price-desc":
+        filtered.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+        break;
+      case "area-asc":
+        filtered.sort((a, b) => a.area_Size - b.area_Size);
+        break;
+      case "area-desc":
+        filtered.sort((a, b) => b.area_Size - a.area_Size);
+        break;
+      case "newest":
+      default:
+        filtered.sort((a, b) => new Date(b.created) - new Date(a.created));
+        break;
+    }
+
+    setFilteredPosts(filtered);
+  };
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -56,60 +118,10 @@ const Home = () => {
     }));
   };
 
-  const handleSearch = async () => {
-    setLoading(true);
-    try {
-      const queryParams = new URLSearchParams();
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value) queryParams.append(key, value);
-      });
-
-      const response = await axios.get(`/posts/search?${queryParams.toString()}`);
-      setPosts(response.data);
-    } catch (err) {
-      setError("Không thể tìm kiếm bài viết");
-      console.error("Error searching posts:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleLoginSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await axios.post("/auth/login", loginForm);
-      login(res.data.user, res.data.token);
-      setShowLoginModal(false);
-      navigate("/");
-    } catch {
-      alert("Đăng nhập thất bại");
-    }
-  };
-
-  const handleRegisterSubmit = async (e) => {
-    e.preventDefault();
-    if (registerForm.password !== registerForm.confirmPassword) {
-      return alert("Mật khẩu không khớp");
-    }
-
-    try {
-      await axios.post("/auth/register", {
-        email: registerForm.email,
-        password: registerForm.password,
-      });
-      alert("Đăng ký thành công, hãy đăng nhập");
-      setShowRegisterModal(false);
-      navigate("/login");
-    } catch (err) {
-      alert("Đăng ký thất bại");
-      console.error(err.response?.data || err.message);
-    }
-  };
-
   const handleDeletePost = async (postId) => {
     if (window.confirm("Bạn có chắc chắn muốn xóa bài viết này?")) {
       try {
-        await axiosPrivate.delete(`/posts/${postId}`);
+        await axiosPrivate.delete(`/api/posts/${postId}`);
         setPosts(posts.filter(p => p.id !== postId));
         alert("Xóa bài viết thành công!");
       } catch (err) {
@@ -119,159 +131,167 @@ const Home = () => {
     }
   };
 
-  if (loading) return <div className="text-center p-4">Đang tải...</div>;
-  if (error) return <div className="text-center text-red-500 p-4">{error}</div>;
-
-  return (
-    <div className="min-h-screen bg-gray-100 font-sans">
-      {/* ===== Header ===== */}
-      <header className="bg-white shadow px-6 py-4 sticky top-0 z-50">
-        <div className="container mx-auto flex items-center justify-between">
-          {/* User + Đăng tin */}
-          <div className="flex items-center gap-4">
-            {user ? (
-              <div className="relative group">
-                <button className="flex items-center gap-1 text-gray-800 font-medium">
-                  <span>{user.name}</span>
-                  
-                    
-                  
-                </button>
-                <div className="absolute right-0 mt-2 w-44 bg-white border rounded-lg shadow-lg opacity-0 group-hover:opacity-100 group-hover:translate-y-1 transition-all duration-200 ease-in-out z-50">
-                  <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                    Trang cá nhân
-                  </Link>
-                  <Link to="/messages" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                    Tin nhắn
-                  </Link>
-                  {user.role === "Admin" && (
-                    <Link to="/admin" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                      Quản trị
-                    </Link>
-                  )}
-                  <button
-                    onClick={logout}
-                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Đăng xuất
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className="flex items-center gap-4">
-                <button onClick={() => setShowLoginModal(true)} className="text-blue-600 hover:underline font-medium transition">
-                  Đăng nhập
-                </button>
-                <button onClick={() => setShowRegisterModal(true)} className="text-blue-600 hover:underline font-medium transition">
-                  Đăng ký
-                </button>
-              </div>
-            )}
-
-            <Link
-              to={user ? "/create-post" : "/login"}
-              className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg shadow-md transition"
-            >
-              ĐĂNG TIN
-            </Link>
-          </div>
-        </div>
-      </header>
-
-      {/* ===== Danh sách bài đăng ===== */}
-      <div className="home-container">
-        <h2 className="home-title">Danh sách nhà đất tại TP.HCM</h2>
-        <div className="post-grid">
-          {posts.map((post) => (
-            <div className="post-card" key={post.id}>
-              <div className="post-image">
-                <img
-                  src={
-                    post.images && post.images.length > 0
-                      ? `http://localhost:5134${post.images[0].url}`
-                      : "https://via.placeholder.com/300x200?text=No+Image"
-                  }
-                  alt="Hình đại diện"
-                />
-              </div>
-              <div className="post-info">
-                <h3 className="post-title">{post.title}</h3>
-                <p className="post-price">
-                  {Number(post.price).toLocaleString()} VNĐ
-                </p>
-                <p className="post-meta">
-                  {post.area?.ward}, {post.area?.district}
-                </p>
-                <p className="post-meta">Diện tích: {post.area_Size} m²</p>
-                <p className="post-date">
-                  {new Date(post.created).toLocaleDateString("vi-VN")}
-                </p>
-                <div className="post-actions mt-4 flex justify-between gap-2">
-                  <button
-                    onClick={() => navigate(`/chi-tiet/${post.id}`)}
-                    className="w-1/3 bg-blue-500 text-white text-center py-2 px-2 rounded hover:bg-blue-600 transition text-sm font-medium"
-                  >
-                    Xem chi tiết
-                  </button>
-                  {user && (user.id === post.userId || user.role === "Admin") && (
-                    <>
-                      <button
-                        onClick={() => navigate(`/chi-tiet/${post.id}?edit=true`)}
-                        className="w-1/3 bg-yellow-500 text-white text-center py-2 px-2 rounded hover:bg-yellow-600 transition text-sm font-medium"
-                      >
-                        Sửa
-                      </button>
-                      <button
-                        onClick={() => handleDeletePost(post.id)}
-                        className="w-1/3 bg-red-500 text-white text-center py-2 px-2 rounded hover:bg-red-600 transition text-sm font-medium"
-                      >
-                        Xóa
-                      </button>
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Modal Đăng nhập */}
-      {showLoginModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-80 transform transition-all duration-300 ease-in-out">
-            <h2 className="text-2xl font-bold mb-4 text-center text-blue-600">Đăng nhập</h2>
-            {/* Form đăng nhập */}
-            <form onSubmit={handleLoginSubmit} className="space-y-4">
-              <input type="email" placeholder="Email" value={loginForm.email} onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })} className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required />
-              <input type="password" placeholder="Mật khẩu" value={loginForm.password} onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })} className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required />
-              <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition">Đăng nhập</button>
-            </form>
-            <button onClick={() => setShowLoginModal(false)} className="mt-4 text-gray-500 hover:text-gray-700 transition">Đóng</button>
-          </div>
-        </div>
-      )}
-
-      {/* Modal Đăng ký */}
-      {showRegisterModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-80 transform transition-all duration-300 ease-in-out">
-            <h2 className="text-2xl font-bold mb-4 text-center text-green-600">Đăng ký</h2>
-            {/* Form đăng ký */}
-            <form onSubmit={handleRegisterSubmit} className="space-y-4">
-              <input type="text" placeholder="Tên" value={registerForm.name} onChange={(e) => setRegisterForm({ ...registerForm, name: e.target.value })} className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500" required />
-              <input type="text" placeholder="Số điện thoại" value={registerForm.phone} onChange={(e) => setRegisterForm({ ...registerForm, phone: e.target.value })} className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500" required />
-              <input type="email" placeholder="Email" value={registerForm.email} onChange={(e) => setRegisterForm({ ...registerForm, email: e.target.value })} className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500" required />
-              <input type="password" placeholder="Mật khẩu" value={registerForm.password} onChange={(e) => setRegisterForm({ ...registerForm, password: e.target.value })} className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500" required />
-              <input type="password" placeholder="Xác nhận mật khẩu" value={registerForm.confirmPassword} onChange={(e) => setRegisterForm({ ...registerForm, confirmPassword: e.target.value })} className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500" required />
-              <button type="submit" className="w-full bg-green-500 text-white p-2 rounded hover:bg-green-600 transition">Đăng ký</button>
-            </form>
-            <button onClick={() => setShowRegisterModal(false)} className="mt-4 text-gray-500 hover:text-gray-700 transition">Đóng</button>
-          </div>
-        </div>
-      )}
+  if (loading) return (
+    <div className="loading-container">
+      <div className="loading-spinner"></div>
+      <p>Đang tải dữ liệu...</p>
     </div>
   );
-}
+
+  if (error) return (
+    <div className="error-container">
+      <p>{error}</p>
+      <button onClick={fetchData} className="retry-btn">Thử lại</button>
+    </div>
+  );
+
+  return (
+    <div className="home-page">
+      {/* Hero Section */}
+      <section className="hero-section">
+        <div className="hero-content">
+          <h1 className="hero-title">
+            Tìm kiếm bất động sản <span className="hero-title-highlight">phù hợp</span>
+          </h1>
+          <p className="hero-subtitle">
+            Khám phá hàng nghìn tin đăng bất động sản chất lượng cao
+          </p>
+        </div>
+      </section>
+
+      {/* Search and Filter Section */}
+      <section className="search-section">
+        <div className="container">
+          <div className="search-filters">
+            <div className="filter-group">
+              <label className="filter-label">Loại giao dịch</label>
+              <select 
+                name="transactionType"
+                value={filters.transactionType}
+                onChange={handleFilterChange}
+                className="filter-select"
+              >
+                <option value="Sale">Mua bán</option>
+                <option value="Rent">Cho thuê</option>
+              </select>
+            </div>
+
+            <div className="filter-group">
+              <label className="filter-label">Loại BĐS</label>
+              <select 
+                name="categoryId"
+                value={filters.categoryId}
+                onChange={handleFilterChange}
+                className="filter-select"
+              >
+                <option value="">Tất cả loại</option>
+                {categories.map(category => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="filter-group">
+              <label className="filter-label">Khu vực</label>
+              <select 
+                name="areaId"
+                value={filters.areaId}
+                onChange={handleFilterChange}
+                className="filter-select"
+              >
+                <option value="">Tất cả khu vực</option>
+                {areas.map(area => (
+                  <option key={area.id} value={area.id}>
+                    {area.ward}, {area.district}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="filter-group">
+              <label className="filter-label">Giá từ</label>
+              <input
+                type="number"
+                name="minPrice"
+                value={filters.minPrice}
+                onChange={handleFilterChange}
+                placeholder="Giá tối thiểu"
+                className="filter-input"
+              />
+            </div>
+
+            <div className="filter-group">
+              <label className="filter-label">Giá đến</label>
+              <input
+                type="number"
+                name="maxPrice"
+                value={filters.maxPrice}
+                onChange={handleFilterChange}
+                placeholder="Giá tối đa"
+                className="filter-input"
+              />
+            </div>
+
+            <div className="filter-group">
+              <label className="filter-label">Sắp xếp</label>
+              <select 
+                name="sortBy"
+                value={filters.sortBy}
+                onChange={handleFilterChange}
+                className="filter-select"
+              >
+                <option value="newest">Mới nhất</option>
+                <option value="price-asc">Giá tăng dần</option>
+                <option value="price-desc">Giá giảm dần</option>
+                <option value="area-asc">Diện tích tăng dần</option>
+                <option value="area-desc">Diện tích giảm dần</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Results Section */}
+      <section className="results-section">
+        <div className="container">
+          <div className="results-header">
+            <h2 className="results-title">
+              Kết quả tìm kiếm ({filteredPosts.length} bất động sản)
+            </h2>
+            {user && (
+              <Link to="/dang-tin" className="post-btn">
+                <i className="fas fa-plus"></i>
+                Đăng tin mới
+              </Link>
+            )}
+          </div>
+
+          {filteredPosts.length === 0 ? (
+            <div className="no-results">
+              <i className="fas fa-search no-results-icon"></i>
+              <h3>Không tìm thấy bất động sản nào</h3>
+              <p>Hãy thử thay đổi bộ lọc tìm kiếm</p>
+            </div>
+          ) : (
+            <div className="properties-grid">
+              {filteredPosts
+                .sort((a, b) => {
+                  // Sort Pro users first (any Pro tier)
+                  const aIsPro = isProRole(a.user?.role) ? 1 : 0;
+                  const bIsPro = isProRole(b.user?.role) ? 1 : 0;
+                  return bIsPro - aIsPro;
+                })
+                .map((post) => (
+                  <PropertyCard key={post.id} property={post} />
+                ))}
+            </div>
+          )}
+        </div>
+      </section>
+    </div>
+  );
+};
 
 export default Home;

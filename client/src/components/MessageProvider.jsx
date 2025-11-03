@@ -16,6 +16,7 @@ const MessageProvider = () => {
       whiteSpace: 'normal',
       overflow: 'hidden',
       textOverflow: 'ellipsis',
+      zIndex: 2000,
     };
   
     const showMessage = {
@@ -36,12 +37,18 @@ const MessageProvider = () => {
         messageApi.open({
           type: 'error',
           content,
-          duration: 1.5,
+          duration: 3,
           style: {
             ...baseStyle,
             background: '#fff2f0',
             border: '1px solid #ffccc7',
             color: '#ff4d4f',
+            maxWidth: '96vw',
+              whiteSpace: 'pre-wrap',
+              wordBreak: 'break-word',
+              overflowWrap: 'anywhere',
+              lineHeight: 1.5,
+              fontSize: 14,
           },
         });
       },

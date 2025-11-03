@@ -66,6 +66,20 @@ namespace RealEstateHubAPI.Controllers
             }
         }
 
+        [HttpDelete("channels/{type}/{id}")]
+        public async Task<IActionResult> DeleteChannel([FromRoute] string type, [FromRoute] string id, [FromQuery] bool hardDelete = true)
+        {
+            try
+            {
+                await _chatService.DeleteChannelAsync(type, id, hardDelete);
+                return Ok(new { Success = true });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Failed to delete channel: {ex.Message}");
+            }
+        }
+
         
     }
 }

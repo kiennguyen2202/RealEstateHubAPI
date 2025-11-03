@@ -132,8 +132,28 @@ namespace RealEstateHubAPI.Controllers
 
             return Ok(new { avatarUrl = user.AvatarUrl });
         }
-            
 
+        [HttpGet("{userId}/agent-profile")]
+        public async Task<IActionResult> GetUserAgentProfile(int userId)
+        {
+            try
+            {
+                // Kiểm tra xem user có agent profile không
+                var agentProfile = await _context.AgentProfiles
+                    .FirstOrDefaultAsync(ap => ap.UserId == userId);
+
+                if (agentProfile == null)
+                {
+                    return NotFound("User không có agent profile");
+                }
+
+                return Ok(agentProfile);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
 
     }
 }

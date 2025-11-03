@@ -100,10 +100,12 @@ namespace RealEstateHubAPI.Controllers
                 if (avatarFile != null && avatarFile.Length > 0)
                 {
                     avatarUrl = await SaveFileAsync(avatarFile, "uploads/temp/avatars");
+                    Console.WriteLine($"Avatar file saved: {avatarUrl}");
                 }
                 if (bannerFile != null && bannerFile.Length > 0)
                 {
                     bannerUrl = await SaveFileAsync(bannerFile, "uploads/temp/banners");
+                    Console.WriteLine($"Banner file saved: {bannerUrl}");
                 }
 
                 // 2. Tạo DTO với đường dẫn file tạm
@@ -118,10 +120,10 @@ namespace RealEstateHubAPI.Controllers
                     CategoryIds = dto.CategoryIds,
                     TransactionTypes = dto.TransactionTypes,
                     PhoneNumber = dto.PhoneNumber,
-                    AvatarUrl = avatarUrl, 
-                    BannerUrl = bannerUrl 
+                    AvatarUrl = avatarUrl ?? dto.AvatarUrl ?? "", 
+                    BannerUrl = bannerUrl ?? dto.BannerUrl ?? ""  
                 };
-
+                
                 // 3. Lưu DTO vào cache với một ID duy nhất
                 var previewId = Guid.NewGuid().ToString();
                 var cacheEntryOptions = new MemoryCacheEntryOptions()
@@ -158,6 +160,150 @@ namespace RealEstateHubAPI.Controllers
             return Ok(result);
         }
 
+        
+        // Lưu tin nháp vào session
+        [Authorize]
+        [HttpPost("draft/save")]
+        public async Task<IActionResult> SaveAgentDraft([FromBody] SaveAgentDraftDto dto)
+        {
+            try
+            {
+                var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(currentUserId))
+                {
+                    return Unauthorized("Không tìm thấy thông tin người dùng.");
+                }
+
+                var draftKey = $"agent_profile_draft_{currentUserId}";
+                var draftData = new AgentProfileDraftData
+                {
+                    UserId = currentUserId,
+                    FormData = dto.FormData,
+                    AvatarPreview = dto.AvatarPreview,
+                    BannerPreview = dto.BannerPreview,
+                    SelectedAreas = dto.SelectedAreas,
+                    CreatedAt = DateTime.Now,
+                    LastModified = DateTime.Now
+                };
+
+                var cacheEntryOptions = new MemoryCacheEntryOptions()
+                    .SetSlidingExpiration(TimeSpan.FromDays(7)); // Tin nháp tồn tại 7 ngày
+
+                _cache.Set(draftKey, draftData, cacheEntryOptions);
+
+                return Ok(new { 
+                    message = "Đã lưu tin nháp thành công",
+                    draftId = draftKey,
+                    lastModified = draftData.LastModified
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Lỗi khi lưu tin nháp: {ex.Message}");
+            }
+        }
+
+        // Lấy tin nháp từ session
+        [Authorize]
+        [HttpGet("draft")]
+        public async Task<IActionResult> GetAgentDraft()
+        {
+            try
+            {
+                var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(currentUserId))
+                {
+                    return Unauthorized("Không tìm thấy thông tin người dùng.");
+                }
+
+                var draftKey = $"agent_profile_draft_{currentUserId}";
+                if (_cache.TryGetValue(draftKey, out AgentProfileDraftData draftData))
+                {
+                    return Ok(new
+                    {
+                        hasDraft = true,
+                        formData = draftData.FormData,
+                        avatarPreview = draftData.AvatarPreview,
+                        bannerPreview = draftData.BannerPreview,
+                        selectedAreas = draftData.SelectedAreas,
+                        createdAt = draftData.CreatedAt,
+                        lastModified = draftData.LastModified
+                    });
+                }
+
+                return Ok(new { hasDraft = false });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Lỗi khi lấy tin nháp: {ex.Message}");
+            }
+        }
+
+        // Xóa tin nháp 
+        [Authorize]
+        [HttpDelete("draft")]
+        public async Task<IActionResult> DeleteAgentDraft()
+        {
+            try
+            {
+                var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(currentUserId))
+                {
+                    return Unauthorized("Không tìm thấy thông tin người dùng.");
+                }
+
+                var draftKey = $"agent_profile_draft_{currentUserId}";
+                _cache.Remove(draftKey);
+
+                return Ok(new { message = "Đã xóa tin nháp thành công" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Lỗi khi xóa tin nháp: {ex.Message}");
+            }
+        }
+
+        // Cập nhật tin nháp 
+        [Authorize]
+        [HttpPut("draft")]
+        public async Task<IActionResult> UpdateAgentDraft([FromBody] SaveAgentDraftDto dto)
+        {
+            try
+            {
+                var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(currentUserId))
+                {
+                    return Unauthorized("Không tìm thấy thông tin người dùng.");
+                }
+
+                var draftKey = $"agent_profile_draft_{currentUserId}";
+                if (_cache.TryGetValue(draftKey, out AgentProfileDraftData existingDraft))
+                {
+                    existingDraft.FormData = dto.FormData;
+                    existingDraft.AvatarPreview = dto.AvatarPreview;
+                    existingDraft.BannerPreview = dto.BannerPreview;
+                    existingDraft.SelectedAreas = dto.SelectedAreas;
+                    existingDraft.LastModified = DateTime.Now;
+
+                    var cacheEntryOptions = new MemoryCacheEntryOptions()
+                        .SetSlidingExpiration(TimeSpan.FromDays(7));
+
+                    _cache.Set(draftKey, existingDraft, cacheEntryOptions);
+
+                    return Ok(new { 
+                        message = "Đã cập nhật tin nháp thành công",
+                        lastModified = existingDraft.LastModified
+                    });
+                }
+
+                return NotFound("Không tìm thấy tin nháp để cập nhật");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Lỗi khi cập nhật tin nháp: {ex.Message}");
+            }
+        }
+
        
 
         [HttpPut("{id}")]
@@ -177,12 +323,17 @@ namespace RealEstateHubAPI.Controllers
         }
         private async Task<string> SaveFileAsync(IFormFile file, string subFolder)
         {
-            if (file == null || file.Length == 0) return null;
+            if (file == null || file.Length == 0) 
+            {
+                Console.WriteLine($"File is null or empty for {subFolder}");
+                return null;
+            }
 
             var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, subFolder);
             if (!Directory.Exists(uploadsFolder))
             {
                 Directory.CreateDirectory(uploadsFolder);
+                Console.WriteLine($"Created directory: {uploadsFolder}");
             }
 
             var uniqueFileName = Guid.NewGuid().ToString() + "_" + file.FileName;
@@ -193,7 +344,9 @@ namespace RealEstateHubAPI.Controllers
                 await file.CopyToAsync(stream);
             }
 
-            return $"/{subFolder}/{uniqueFileName}".Replace("\\", "/"); // Trả về đường dẫn tương đối để lưu vào DB/Cache
+            var result = $"/{subFolder}/{uniqueFileName}".Replace("\\", "/");
+            Console.WriteLine($"File saved: {result}");
+            return result; // Trả về đường dẫn tương đối để lưu vào DB/Cache
         }
     }
 } 

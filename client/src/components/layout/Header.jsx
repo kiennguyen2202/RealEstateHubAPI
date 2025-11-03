@@ -1,6 +1,7 @@
 import React, { useContext, useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../auth/AuthContext';
+import axiosPrivate from '../../api/axiosPrivate';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import './Header.css';
 import { FaCrown } from 'react-icons/fa';
@@ -11,12 +12,13 @@ const Header = () => {
   
   const navigate = useNavigate();
   const proDropdownRef = useRef(null);
-
+  const [agentProfile, setAgentProfile] = useState(null);
   const [searchValue, setSearchValue] = useState('');
   const [showProDropdown, setShowProDropdown] = useState(false);
   const [showAgentDropdown, setShowAgentDropdown] = useState(false);
   const [showSaleDropdown, setShowSaleDropdown] = useState(false);
   const [showRentDropdown, setShowRentDropdown] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -31,6 +33,25 @@ const Header = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  useEffect(() => {
+    if (user?.id) {
+      const fetchAgentProfile = async () => {
+        try {
+          const response = await axiosPrivate.get(`/api/users/${user.id}/agent-profile`);
+          if (response.data) {
+            setAgentProfile(response.data);
+            console.log('Agent profile fetched:', response.data);
+          }
+        } catch (error) {
+          console.log('User has no agent profile or error:', error);
+          setAgentProfile(null);
+        }
+      };
+      
+      fetchAgentProfile();
+    }
+  }, [user?.id]);
 
   const handleLogout = () => {
     logout();
@@ -54,58 +75,11 @@ const Header = () => {
   return (
     <header className="header">
       <div className="header-container">
-        {/* Pro Button với Dropdown */}
-        {(!user || (user && user.role?.toLowerCase() !== 'membership')) && (
-          <div 
-            className="pro-dropdown-container"
-            ref={proDropdownRef}
-          >
-            <button 
-              className="pro-header-btn"
-              onClick={() => setShowProDropdown(!showProDropdown)}
-            >
-              <FaCrown className="pro-crown-icon" />
-              <span>Pro</span>
-              <i className="fas fa-chevron-down" style={{ marginLeft: '8px', fontSize: '12px' }}></i>
-            </button>
-            {showProDropdown && (
-              <div 
-                className="pro-dropdown-menu"
-              >
-                <Link 
-                  to="/membership" 
-                  className="pro-dropdown-item"
-                  onClick={() => {
-                    setShowProDropdown(false);
-                    console.log('Clicked Pro Membership');
-                  }}
-                  style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}
-                >
-                  <FaCrown style={{ color: '#fadb14', marginRight: '8px' }} />
-                  <span>Pro Membership</span>
-                </Link>
-                <Link 
-                  to="/agent" 
-                  className="pro-dropdown-item"
-                  onClick={() => {
-                    setShowProDropdown(false);
-                    console.log('Clicked Chuyên trang BĐS');
-                  }}
-                  style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}
-                >
-                  <i className="fas fa-user-tie" style={{ color: '#1890ff', marginRight: '8px' }}></i>
-                  <span>Chuyên trang BĐS</span>
-                </Link>
-              </div>
-            )}
-          </div>
-        )}
-        
         <div className="header-left">
           <div className="logo">
             <Link to="/" className="logo-link">
-              <img src="/real-estate-logo-house-logo-home-logo-sign-symbol-free-vector.jpg" alt="Real Estate Hub" className="logo-img" />
-              <span className="logo-text">RealEstateHub</span>
+              <img src="https://s3-cdn.rever.vn/p/v2.48.50/images/logo-r-white.svg" alt="Real Estate Hub" className="logo-img" />
+              
             </Link>
           </div>
           <nav className="main-nav">
@@ -223,7 +197,8 @@ const Header = () => {
               {/* Môi giới với Dropdown */}
               <li className="nav-dropdown">
                 <Link 
-                  to="/agent-profile" 
+                  to={"/agent-profile"} 
+                  
                   onMouseEnter={() => setShowAgentDropdown(true)}
                   onMouseLeave={() => setShowAgentDropdown(false)}
                 >
@@ -259,6 +234,17 @@ const Header = () => {
                         <i className="fas fa-user-plus" style={{ color: '#52c41a', marginRight: '8px' }}></i>
                         <span>Đăng ký môi giới</span>
                       </Link>
+                      {user?.agentProfile && (
+                        <Link 
+                          to={`/agent-profile/${user.agentProfile.id}`} 
+                          className="agent-dropdown-item"
+                          onMouseEnter={() => setShowAgentDropdown(true)}
+                          onMouseLeave={() => setShowAgentDropdown(false)}
+                        >
+                          <i className="fas fa-user" style={{ color: '#722ed1', marginRight: '8px' }}></i>
+                          <span>Trang của tôi</span>
+                        </Link>
+                      )}
                       <Link 
                         to="/agent" 
                         className="agent-dropdown-item"
@@ -266,7 +252,7 @@ const Header = () => {
                         onMouseLeave={() => setShowAgentDropdown(false)}
                       >
                         <i className="fas fa-trophy" style={{ color: '#fadb14', marginRight: '8px' }}></i>
-                        <span>Thông tin môi giới</span>
+                        <span>Môi giới chuyên nghiệp</span>
                       </Link>
                     </div>
                   </div>
@@ -275,24 +261,12 @@ const Header = () => {
               
               <li><Link to="/du-an">Dự án</Link></li>
               <li><Link to="/tin-tuc">Tin tức</Link></li>
+              <li><Link to="/membership">Pro</Link></li>
             </ul>
           </nav>
         </div>
         
-        <form className="search-form" onSubmit={handleSearch}>
-          <input
-            type="text"
-            className="search-input"
-            placeholder="Tìm kiếm bất động sản"
-            value={searchValue}
-            onChange={e => setSearchValue(e.target.value)}
-          />
-          <button type="submit" className="search-btn">
-            <span className="search-icon">
-              <i className="fas fa-search"></i>
-            </span>
-          </button>
-        </form>
+        
         
         <div className="user-actions">
           <NotificationBell />
@@ -310,10 +284,17 @@ const Header = () => {
                 <img src={`http://localhost:5134/${user?.avatarUrl || 'default-avatar.png'}`} alt="Avatar" className="user-avatar" />
                 <span>{user.name}</span>
               </button>
+              
               <div className="user-dropdown">
                 <Link to="/profile">Tài khoản của tôi</Link>
-                <Link to="/messages">Tin nhắn</Link>
-                <Link to="/post-history">Tin đã đăng</Link>
+                <Link to="/chat">Tin nhắn</Link>
+                {/* Sử dụng agentProfile state local */}
+                {agentProfile ? (
+                  <Link to={`/agent-profile/${agentProfile.id}`}>
+                    
+                    Chuyên trang môi giới
+                  </Link>
+                ) : null}
                 <Link to="/favorites">Tin đã thích</Link>
                 {user.role?.toLowerCase() === 'admin' && <Link to="/admin">Quản trị</Link>}
                 <button onClick={handleLogout}>Đăng xuất</button>
@@ -325,7 +306,46 @@ const Header = () => {
             </>
           )}
         </div>
+
+        
       </div>
+
+      {/* Mobile Menu */}
+      {isMobileMenuOpen && (
+        <div className="mobile-menu">
+          <div className="mobile-menu-header">
+            <img src="https://s3-cdn.rever.vn/p/v2.48.50/images/logo.svg" alt="Logo" className="mobile-logo" />
+            <button 
+              className="mobile-menu-close"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              <i className="fas fa-times"></i>
+            </button>
+          </div>
+          <nav className="mobile-nav">
+            <ul className="mobile-nav-list">
+              <li className="mobile-nav-item"><Link to="/Sale" className="mobile-nav-link">Mua bán</Link></li>
+              <li className="mobile-nav-item"><Link to="/Rent" className="mobile-nav-link">Cho thuê</Link></li>
+              <li className="mobile-nav-item"><Link to="/agent-profile" className="mobile-nav-link">Môi giới</Link></li>
+              <li className="mobile-nav-item"><Link to="/du-an" className="mobile-nav-link">Dự án</Link></li>
+              <li className="mobile-nav-item"><Link to="/tin-tuc" className="mobile-nav-link">Tin tức</Link></li>
+            </ul>
+          </nav>
+          <div className="mobile-actions">
+            {user ? (
+              <>
+                <Link to="/profile" className="btn btn-outline-primary w-100 mb-2">Tài khoản</Link>
+                <button onClick={handleLogout} className="btn btn-primary w-100">Đăng xuất</button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" className="btn btn-outline-primary w-100 mb-2">Đăng nhập</Link>
+                <Link to="/register" className="btn btn-primary w-100">Đăng ký</Link>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </header>
   );
 };

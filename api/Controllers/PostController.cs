@@ -7,6 +7,8 @@ using RealEstateHubAPI.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.Extensions.Caching.Memory;
+using System.Text.Json;
 
 namespace RealEstateHubAPI.Controllers
 {
@@ -18,12 +20,14 @@ namespace RealEstateHubAPI.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IWebHostEnvironment _env;
         private readonly ILogger<PostController> _logger;
+        private readonly IMemoryCache _cache;
 
-        public PostController(ApplicationDbContext context, IWebHostEnvironment env, ILogger<PostController> logger)
+        public PostController(ApplicationDbContext context, IWebHostEnvironment env, ILogger<PostController> logger, IMemoryCache cache)
         {
             _context = context;
             _env = env;
             _logger = logger;
+            _cache = cache;
         }
         
         private List<string> GetUserRoles() {
@@ -74,7 +78,7 @@ namespace RealEstateHubAPI.Controllers
                 if (isApproved.Value)
                 {
                     var oneDayAgo = DateTime.Now.AddDays(-1);
-                    posts = posts.Where(p => p.IsApproved == true && (p.ExpiryDate == null || p.ExpiryDate > oneDayAgo));            
+                    posts = posts.Where(p => p.IsApproved == true && (p.ExpiryDate == null || p.ExpiryDate > oneDayAgo));
                 }
                 else
                 {
@@ -83,7 +87,7 @@ namespace RealEstateHubAPI.Controllers
             }
             else
             {
-                posts = posts.Where(p => p.IsApproved == true && 
+                posts = posts.Where(p => p.IsApproved == true &&
                     (p.ExpiryDate == null || p.ExpiryDate > DateTime.Now));
             }
 
@@ -104,7 +108,6 @@ namespace RealEstateHubAPI.Controllers
 
             return Ok(await posts.ToListAsync());
         }
-
         // GET: api/posts/{id}
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
@@ -137,27 +140,34 @@ namespace RealEstateHubAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromForm] CreatePostDto dto,int role)
         {
-            
-            if (GetUserRoles().Contains("Membership"))
+            // Enforce posting limits based on user's current role
+            var currentUserId = GetUserId();
+            if (currentUserId.HasValue)
             {
-                var soLuongPostTrong5Ngay = _context.Posts
-                    .Where(p => p.UserId == GetUserId() && p.Created.AddDays(30) >= DateTime.Now)
-                    .Count();
-                
-                if (soLuongPostTrong5Ngay >= 100) 
+                var dbUser = await _context.Users.FindAsync(currentUserId.Value);
+                var roleName = dbUser?.Role ?? "User";
+                int limit;
+                int windowDays;
+                switch (roleName)
                 {
-                    return BadRequest("Bạn đã đạt giới hạn 100 bài viết trong 30 ngày. Vui lòng nâng cấp tài khoản để đăng thêm bài.");
+                    case "Pro_1":
+                        limit = 100; windowDays = 30; break;
+                    case "Pro_3":
+                        limit = 300; windowDays = 90; break;
+                    case "Pro_12":
+                        limit = 1200; windowDays = 365; break;
+                    default:
+                        limit = 5; windowDays = 7; break;
                 }
-            }
-            else
-            {
-                var soLuongPostTrong60Ngay = _context.Posts
-                    .Where(p => p.UserId == GetUserId() && p.Created.AddDays(30) >= DateTime.Now)
+
+                var cutoff = DateTime.Now.AddDays(-windowDays);
+                var countInWindow = _context.Posts
+                    .Where(p => p.UserId == currentUserId && p.Created >= cutoff)
                     .Count();
-                
-                if (soLuongPostTrong60Ngay >= 5) 
+
+                if (countInWindow >= limit)
                 {
-                    return BadRequest("Bạn đã đạt giới hạn 5 bài viết trong 30 ngày");
+                    return BadRequest($"Bạn đã đạt giới hạn {limit} bài viết trong {windowDays} ngày. Nâng cấp gói Pro để đăng nhiều hơn (Pro_1: 100/30 ngày, Pro_3: 300/90 ngày, Pro_12: 1200/365 ngày). Vào trang Membership để nâng cấp.");
                 }
             }
 
@@ -221,16 +231,14 @@ namespace RealEstateHubAPI.Controllers
 
                 // Tính toán thời gian hết hạn dựa trên role
                 DateTime? expiryDate = null;
-                if (GetUserRoles().Contains("Membership"))
+                var roleNameForExpiry = user.Role ?? "User";
+                expiryDate = roleNameForExpiry switch
                 {
-                    
-                    expiryDate = DateTime.Now.AddSeconds(10);
-                }
-                else
-                {
-                    
-                    expiryDate = DateTime.Now.AddDays(7);
-                }
+                    "Pro_1" => DateTime.Now.AddDays(30),
+                    "Pro_3" => DateTime.Now.AddDays(90),
+                    "Pro_12" => DateTime.Now.AddDays(365),
+                    _ => DateTime.Now.AddDays(7)
+                };
 
                 var post = new Post
                 {
@@ -256,7 +264,8 @@ namespace RealEstateHubAPI.Controllers
                     HuongBanCong = dto.HuongBanCong,
                     MatTien = dto.MatTien,
                     DuongVao = dto.DuongVao,
-                    PhapLy = dto.PhapLy
+                    PhapLy = dto.PhapLy,
+                    
                 };
 
                 // Log post object before saving
@@ -284,6 +293,8 @@ namespace RealEstateHubAPI.Controllers
                     }
                 }
 
+                
+
                 _context.Posts.Add(post);
                 
                 try
@@ -295,6 +306,15 @@ namespace RealEstateHubAPI.Controllers
                     _logger.LogError($"Database update error: {ex.Message}");
                     _logger.LogError($"Inner exception: {ex.InnerException?.Message}");
                     return StatusCode(500, $"Database error: {ex.InnerException?.Message ?? ex.Message}");
+                }
+
+                // Xóa tin nháp khi đăng tin thành công
+                var userId = GetUserId();
+                if (userId.HasValue)
+                {
+                    var draftKey = $"post_draft_{userId}";
+                    _cache.Remove(draftKey);
+                    _logger.LogInformation($"Đã xóa tin nháp cho user {userId} sau khi đăng tin thành công");
                 }
 
                 return CreatedAtAction(nameof(GetById), new { id = post.Id }, post);
@@ -364,6 +384,7 @@ namespace RealEstateHubAPI.Controllers
             post.MatTien = updateDto.MatTien;
             post.DuongVao = updateDto.DuongVao;
             post.PhapLy = updateDto.PhapLy;
+            
 
             // Handle new images
             if (updateDto.Images != null && updateDto.Images.Any())
@@ -388,6 +409,7 @@ namespace RealEstateHubAPI.Controllers
                     post.Images.Add(new PostImage { Url = $"/uploads/{fileName}" });
                 }
             }
+
 
             await _context.SaveChangesAsync();
             return NoContent();
@@ -488,6 +510,155 @@ namespace RealEstateHubAPI.Controllers
               .ToListAsync();
                return Ok(posts);
          }
+
+        
+        
+        // Lưu tin nháp vào session
+        [Authorize]
+        [HttpPost("draft/save")]
+        public async Task<IActionResult> SaveDraft([FromBody] SaveDraftDto dto)
+        {
+            try
+            {
+                var userId = GetUserId();
+                if (!userId.HasValue)
+                {
+                    return Unauthorized("Không tìm thấy thông tin người dùng.");
+                }
+
+                var draftKey = $"post_draft_{userId}";
+                var draftData = new DraftPostData
+                {
+                    UserId = userId.Value,
+                    FormData = dto.FormData,
+                    CurrentStep = dto.CurrentStep,
+                    CreatedAt = DateTime.Now,
+                    LastModified = DateTime.Now
+                };
+
+                var cacheEntryOptions = new MemoryCacheEntryOptions()
+                    .SetSlidingExpiration(TimeSpan.FromDays(7)); // Tin nháp tồn tại 7 ngày
+
+                _cache.Set(draftKey, draftData, cacheEntryOptions);
+
+                _logger.LogInformation($"Đã lưu tin nháp cho user {userId}");
+
+                return Ok(new { 
+                    message = "Đã lưu tin nháp thành công",
+                    draftId = draftKey,
+                    lastModified = draftData.LastModified
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Lỗi khi lưu tin nháp: {ex.Message}");
+                return StatusCode(500, "Lỗi khi lưu tin nháp");
+            }
+        }
+
+        // Lấy tin nháp từ session
+        [Authorize]
+        [HttpGet("draft")]
+        public async Task<IActionResult> GetDraft()
+        {
+            try
+            {
+                var userId = GetUserId();
+                if (!userId.HasValue)
+                {
+                    return Unauthorized("Không tìm thấy thông tin người dùng.");
+                }
+
+                var draftKey = $"post_draft_{userId}";
+                if (_cache.TryGetValue(draftKey, out DraftPostData draftData))
+                {
+                    return Ok(new
+                    {
+                        hasDraft = true,
+                        formData = draftData.FormData,
+                        currentStep = draftData.CurrentStep,
+                        createdAt = draftData.CreatedAt,
+                        lastModified = draftData.LastModified
+                    });
+                }
+
+                return Ok(new { hasDraft = false });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Lỗi khi lấy tin nháp: {ex.Message}");
+                return StatusCode(500, "Lỗi khi lấy tin nháp");
+            }
+        }
+
+        // Xóa tin nháp
+        [Authorize]
+        [HttpDelete("draft")]
+        public async Task<IActionResult> DeleteDraft()
+        {
+            try
+            {
+                var userId = GetUserId();
+                if (!userId.HasValue)
+                {
+                    return Unauthorized("Không tìm thấy thông tin người dùng.");
+                }
+
+                var draftKey = $"post_draft_{userId}";
+                _cache.Remove(draftKey);
+
+                _logger.LogInformation($"Đã xóa tin nháp cho user {userId}");
+
+                return Ok(new { message = "Đã xóa tin nháp thành công" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Lỗi khi xóa tin nháp: {ex.Message}");
+                return StatusCode(500, "Lỗi khi xóa tin nháp");
+            }
+        }
+
+        // Cập nhật tin nháp
+        [Authorize]
+        [HttpPut("draft")]
+        public async Task<IActionResult> UpdateDraft([FromBody] SaveDraftDto dto)
+        {
+            try
+            {
+                var userId = GetUserId();
+                if (!userId.HasValue)
+                {
+                    return Unauthorized("Không tìm thấy thông tin người dùng.");
+                }
+
+                var draftKey = $"post_draft_{userId}";
+                if (_cache.TryGetValue(draftKey, out DraftPostData existingDraft))
+                {
+                    existingDraft.FormData = dto.FormData;
+                    existingDraft.CurrentStep = dto.CurrentStep;
+                    existingDraft.LastModified = DateTime.Now;
+
+                    var cacheEntryOptions = new MemoryCacheEntryOptions()
+                        .SetSlidingExpiration(TimeSpan.FromDays(7));
+
+                    _cache.Set(draftKey, existingDraft, cacheEntryOptions);
+
+                    _logger.LogInformation($"Đã cập nhật tin nháp cho user {userId}");
+
+                    return Ok(new { 
+                        message = "Đã cập nhật tin nháp thành công",
+                        lastModified = existingDraft.LastModified
+                    });
+                }
+
+                return NotFound("Không tìm thấy tin nháp để cập nhật");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Lỗi khi cập nhật tin nháp: {ex.Message}");
+                return StatusCode(500, "Lỗi khi cập nhật tin nháp");
+            }
+        }
         
 
 

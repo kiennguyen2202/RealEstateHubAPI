@@ -42,6 +42,7 @@ namespace RealEstateHubAPI.DTOs
 
 
         public string TimeAgo { get; set; }
+
     }
     public class CreatePostDto
     {
@@ -79,6 +80,8 @@ namespace RealEstateHubAPI.DTOs
 
         [Required]
         public IFormFile[] Images { get; set; }
+
+        
     }
     public class UpdatePostDto
     {
@@ -117,6 +120,7 @@ namespace RealEstateHubAPI.DTOs
         public int UserId { get; set; }
 
         public IFormFile[]? Images { get; set; } 
+        
        
     }
 }

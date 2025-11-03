@@ -11,13 +11,13 @@ import {
   getDistrictById,
   getCityById,
   getCategoryById,
-
-} from '../../services/agentProfileService'; 
+  
+} from '../../services/agentProfileService';
 
 const { TabPane } = Tabs;
 
 export default function AgentProfilePage() {
-  const { id } = useParams(); 
+  const { id } = useParams(); // Lấy ID của agent profile từ URL (ví dụ: /agent-profile/22)
   const [loading, setLoading] = useState(true);
   const [agent, setAgent] = useState(null);
   const [error, setError] = useState(null);
@@ -25,7 +25,7 @@ export default function AgentProfilePage() {
   const [districtCity, setDistrictCity] = useState(''); // Để chứa thông tin quận/huyện, tỉnh/thành phố
   const [categoryNames, setCategoryNames] = useState([]); // Thay đổi thành array để xử lý nhiều categories
   const [agentPosts, setAgentPosts] = useState([]); // State để lưu các bài đăng của agent
-  const [featuredPosts, setFeaturedPosts] = useState([]); // State cho bài đăng nổi bật (lấy từ API va lọc từ agentPosts)
+  const [featuredPosts, setFeaturedPosts] = useState([]); // State cho bài đăng nổi bật (có thể lấy từ API hoặc lọc từ agentPosts)
   const [customerReviews, setCustomerReviews] = useState([]); // State cho đánh giá
 
   const featuredRef = useRef(null);
@@ -39,7 +39,11 @@ export default function AgentProfilePage() {
       setLoading(true);
       try {
         const agentRes = await getAgentProfileById(id); // Lấy profile chính thức bằng ID
-        
+        console.log('AgentProfilePage - Agent data from backend:', agentRes); // Debug tạm thời
+        console.log('AgentProfilePage - agentRes.areaNames:', agentRes?.areaNames); // Debug tạm thời
+        console.log('AgentProfilePage - agentRes.areaIds:', agentRes?.areaIds); // Debug tạm thời
+        console.log('AgentProfilePage - agentRes.transactionTypes:', agentRes?.transactionTypes); // Debug tạm thời
+        console.log('AgentProfilePage - agentRes.categoryIds:', agentRes?.categoryIds); // Debug tạm thời
         
         // Tạo areaNames từ areaIds để đảm bảo nhất quán với AgentProfileOverviewPage
         if (agentRes?.areaIds?.length > 0) {
@@ -61,7 +65,8 @@ export default function AgentProfilePage() {
           const validAreaNames = fetchedAreaCityPairs.filter(name => name);
           // Luôn ghi đè areaNames từ backend bằng dữ liệu được tạo từ areaIds để đảm bảo nhất quán
           agentRes.areaNames = validAreaNames;
-         
+          console.log('AgentProfilePage - Created areaNames from areaIds:', validAreaNames); // Debug tạm thời
+          console.log('AgentProfilePage - Created areaNames content:', validAreaNames?.map((name, idx) => `${idx}: "${name}"`)); // Debug tạm thời
         }
         
         setAgent(agentRes);
@@ -110,16 +115,12 @@ export default function AgentProfilePage() {
         }
 
         // --- BẮT ĐẦU: LẤY BÀI ĐĂNG CỦA AGENT ---
-        
-       
-       
-        if (agentRes?.id) { 
+       if (agentRes?.id) { // Hoặc agentRes?.userId nếu post liên kết với userId
           try {
-            // Đây là nơi gọi API backend để lấy danh sách bài đăng
-            // Thay thế URL này bằng endpoint thực tế 
-            const postsRes = await axiosPrivate.get(`/api/agent-profile/${agentRes.id}/posts`);
+            
+            const postsRes = await axiosPrivate.get(`/api/agent-profile/${agentRes.id}/posts`); // Ví dụ
             setAgentPosts(postsRes.data);
-            // lọc bài đăng nổi bật 
+            //lọc bài đăng nổi bật
             setFeaturedPosts(postsRes.data.slice(0, 3)); // Lấy 3 bài đầu tiên làm nổi bật
           } catch (postsErr) {
             console.error("Failed to fetch agent posts:", postsErr);
@@ -132,7 +133,7 @@ export default function AgentProfilePage() {
         
         if (agentRes?.id) {
           try {
-            const reviewsRes = await axiosPrivate.get(`/api/agent-profile/${agentRes.id}`); 
+            const reviewsRes = await axiosPrivate.get(`/api/agent-profile/${agentRes.id}`); // Ví dụ
             setCustomerReviews(reviewsRes.data);
           } catch (reviewsErr) {
             console.error("Failed to fetch agent reviews:", reviewsErr);
@@ -181,13 +182,16 @@ export default function AgentProfilePage() {
 
   // Thêm hàm render khu vực hoạt động ưu tiên name
   const renderAreaNames = () => {
-   
+    console.log('renderAreaNames - agent:', agent); // Debug tạm thời
+    console.log('renderAreaNames - agent.areaNames:', agent?.areaNames); // Debug tạm thời
+    console.log('renderAreaNames - agent.areaNames content:', agent?.areaNames?.map((name, idx) => `${idx}: "${name}"`)); // Debug tạm thời
     
     // Ưu tiên sử dụng AreaNames từ backend nếu có
     if (agent && Array.isArray(agent.areaNames) && agent.areaNames.length > 0) {
       // Loại bỏ các khu vực trùng lặp
       const uniqueAreas = [...new Set(agent.areaNames)];
-      
+      console.log('renderAreaNames - uniqueAreas:', uniqueAreas); // Debug tạm thời
+      console.log('renderAreaNames - uniqueAreas content:', uniqueAreas?.map((name, idx) => `${idx}: "${name}"`)); // Debug tạm thời
       return (
         <>
           {uniqueAreas.map((areaName, idx) => (
@@ -248,7 +252,7 @@ export default function AgentProfilePage() {
       {agent.bannerUrl && (
         <div style={{ width: '100%', marginBottom: 24 }}>
           <img
-            src={`http://localhost:5134${agent.bannerUrl}`} 
+            src={`http://localhost:5134${agent.bannerUrl}`} // Đảm bảo đường dẫn ảnh đúng
             alt="Banner"
             style={{
               width: '100%',
@@ -267,7 +271,7 @@ export default function AgentProfilePage() {
             <div style={{ textAlign: 'center', marginBottom: 16 }}>
               <Avatar
                 size={80}
-                src={agent.avatarUrl ? `http://localhost:5134${agent.avatarUrl}` : null} 
+                src={agent.avatarUrl ? `http://localhost:5134${agent.avatarUrl}` : null} // Đảm bảo đường dẫn ảnh đúng
                 icon={<UserOutlined />}
                 style={{ marginBottom: 8 }}
               />

@@ -81,7 +81,7 @@ const AgentPage = () => {
       <div
         className={styles.hero}
         style={{
-          backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1560518883-ce09059ee41f?q=80&w=1974&auto=format&fit=crop')`,
+          backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://s3-cdn.rever.vn/p/v2.48.49/images/bg-agent.jpg')`,
         }}
       >
         <div className={styles.heroContent}>

@@ -25,6 +25,16 @@ export const chatService = {
         }
     },
 
+    // Delete a Stream channel on server
+    deleteChannel: async (type, id, hardDelete = true) => {
+        try {
+            const response = await axiosPrivate.delete(`/api/chat/channels/${encodeURIComponent(type)}/${encodeURIComponent(id)}?hardDelete=${hardDelete}`);
+            return response.data;
+        } catch (error) {
+            throw error.response?.data || error.message;
+        }
+    },
+
 
     
 };

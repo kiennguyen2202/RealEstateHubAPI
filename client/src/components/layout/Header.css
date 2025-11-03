@@ -1,13 +1,21 @@
 .header {
-  background: #191919;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  position: relative;
+  background: transparent;
+  box-shadow: none;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 1000;
   height: 70px;
   min-width: 320px;
+  padding: 0 20px;
+  backdrop-filter: blur(0px);
+}
+
+.header.scrolled {
+  background: rgba(35, 35, 35, 0.95);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
 }
 
 .header-container {
@@ -47,13 +55,15 @@
 .logo-text {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #ff5a5f;
+  color: white;
   letter-spacing: 0.5px;
 }
 
 /* Navigation */
 .main-nav {
   flex-shrink: 0;
+  margin-left: auto;
+  margin-right: 24px;
 }
 
 .main-nav ul {
@@ -61,17 +71,19 @@
   list-style: none;
   margin: 0;
   padding: 0;
-  gap: 32px;
+  gap: 20px;
+  
 }
 
 .main-nav a {
   text-decoration: none;
-  color: #484848;
+  color: white;
   font-weight: 500;
   font-size: 15px;
   transition: color 0.2s;
   padding: 8px 0;
   position: relative;
+  
 }
 
 .main-nav a::after {
@@ -81,12 +93,12 @@
   left: 0;
   width: 0;
   height: 2px;
-  background: #ff5a5f;
+  background: #c52728;
   transition: width 0.2s;
 }
 
 .main-nav a:hover {
-  color: #ff5a5f;
+  color: #c52728;
 }
 
 .main-nav a:hover::after {
@@ -99,7 +111,7 @@
   align-items: center;
   background: #232323;
   border-radius: 32px;
-  padding: 0.5rem 1.5rem;
+  padding: 100px 100px 100px 100px;
   min-width: 320px;
   max-width: 480px;
   flex: 1 1 320px;
@@ -147,7 +159,7 @@
 }
 
 .post-button {
-  background: #ff5a5f;
+  background: #c52728;
   color: white;
   padding: 10px 20px;
   border-radius: 4px;
@@ -158,7 +170,7 @@
 }
 
 .post-button:hover {
-  background: #ff3b40;
+  background: #b52021;
 }
 
 .auth-buttons {
@@ -177,7 +189,7 @@
 }
 
 .login-button {
-  color: #484848;
+  color: white;
 }
 
 .login-button:hover {
@@ -185,13 +197,13 @@
 }
 
 .register-button {
-  color: #ff5a5f;
-  border: 1px solid #ff5a5f;
+  color: white;
+  border: 1px solid white;
 }
 
 .register-button:hover {
-  background: #ff5a5f;
-  color: white;
+  background: white;
+  color: #333;
 }
 
 /* User Menu */
@@ -234,7 +246,7 @@
 }
 
 .user-name {
-  color: #484848;
+  color: white;
   font-size: 14px;
   font-weight: 500;
   transition: color 0.2s ease;

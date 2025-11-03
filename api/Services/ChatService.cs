@@ -119,6 +119,34 @@ namespace RealEstateHubAPI.Services
                 throw new Exception($"Ensure users failed: {(int)resp.StatusCode} {text}");
             }
         }
+        public async Task DeleteChannelAsync(string channelType, string channelId, bool hardDelete = true)
+        {
+            var apiKey = _configuration["StreamChat:ApiKey"];
+            var apiSecret = _configuration["StreamChat:ApiSecret"];
+            if (string.IsNullOrWhiteSpace(apiKey) || string.IsNullOrWhiteSpace(apiSecret))
+                throw new Exception("StreamChat ApiKey/ApiSecret not configured");
+
+            // Server token for Stream admin operations
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(apiSecret));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+            var serverToken = new JwtSecurityToken(signingCredentials: credentials);
+            var auth = new JwtSecurityTokenHandler().WriteToken(serverToken);
+
+            using var http = new HttpClient { BaseAddress = new Uri("https://chat.stream-io-api.com/") };
+            http.DefaultRequestHeaders.Remove("Authorization");
+            http.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", auth);
+            http.DefaultRequestHeaders.Remove("stream-auth-type");
+            http.DefaultRequestHeaders.TryAddWithoutValidation("stream-auth-type", "jwt");
+
+            var body = new { hard_delete = hardDelete };
+            var content = new StringContent(JsonSerializer.Serialize(body), Encoding.UTF8, "application/json");
+            var resp = await http.DeleteAsync($"channels/{channelType}/{channelId}?api_key={apiKey}");
+            if (!resp.IsSuccessStatusCode)
+            {
+                var text = await resp.Content.ReadAsStringAsync();
+                throw new Exception($"Delete channel failed: {(int)resp.StatusCode} {text}");
+            }
+        }
         
     }
 }
