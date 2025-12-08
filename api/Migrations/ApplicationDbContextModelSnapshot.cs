@@ -175,6 +175,12 @@ namespace RealEstateHubAPI.Migrations
                     b.Property<float?>("MatTien")
                         .HasColumnType("real");
 
+                    b.Property<string>("PanoImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PanoramaTourConfig")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("PhapLy")
                         .HasColumnType("nvarchar(max)");
 
@@ -306,6 +312,174 @@ namespace RealEstateHubAPI.Migrations
                     b.HasIndex("DistrictId");
 
                     b.ToTable("Wards");
+                });
+
+            modelBuilder.Entity("RealEstateHubAPI.Models.AgentProfile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("AreaId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("AvatarUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BannerUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ShopName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AgentProfiles");
+                });
+
+            modelBuilder.Entity("RealEstateHubAPI.Models.AgentProfileArea", b =>
+                {
+                    b.Property<int>("AgentProfileId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AreaId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.HasKey("AgentProfileId", "AreaId");
+
+                    b.HasIndex("AreaId");
+
+                    b.ToTable("AgentProfileAreas");
+                });
+
+            modelBuilder.Entity("RealEstateHubAPI.Models.AgentProfileCategory", b =>
+                {
+                    b.Property<int>("AgentProfileId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.HasKey("AgentProfileId", "CategoryId");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("AgentProfileCategories");
+                });
+
+            modelBuilder.Entity("RealEstateHubAPI.Models.AgentProfileTransactionType", b =>
+                {
+                    b.Property<int>("AgentProfileId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TransactionType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.HasKey("AgentProfileId", "TransactionType");
+
+                    b.ToTable("AgentProfileTransactionTypes");
+                });
+
+            modelBuilder.Entity("RealEstateHubAPI.Models.Article", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AuthorName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Category")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Content")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Excerpt")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsFeatured")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsPublished")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("PublishedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("ReadingMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SeoDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SeoTitle")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Tags")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ThumbnailUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Slug")
+                        .IsUnique();
+
+                    b.ToTable("Articles");
                 });
 
             modelBuilder.Entity("RealEstateHubAPI.Models.Category", b =>
@@ -441,6 +615,177 @@ namespace RealEstateHubAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("PaymentConfirmations");
+                });
+
+            modelBuilder.Entity("RealEstateHubAPI.Models.PaymentHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ErrorMessage")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OrderInfo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Plan")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PreviewId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ProcessedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TransactionId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PaymentHistories");
+                });
+
+            modelBuilder.Entity("RealEstateHubAPI.Models.Project", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AreaId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Designer")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Investor")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsFeatured")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LegalStatus")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Location")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("PriceFrom")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("PriceTo")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("PriceUnit")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ProductTypes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ScaleSummary")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ShortDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ThumbnailUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Timeline")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("VideoUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AreaId");
+
+                    b.HasIndex("Slug")
+                        .IsUnique();
+
+                    b.ToTable("Projects");
+                });
+
+            modelBuilder.Entity("RealEstateHubAPI.Models.ProjectImage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Caption")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("ProjectImages");
                 });
 
             modelBuilder.Entity("RealEstateHubAPI.Models.Report", b =>
@@ -595,6 +940,66 @@ namespace RealEstateHubAPI.Migrations
                     b.Navigation("District");
                 });
 
+            modelBuilder.Entity("RealEstateHubAPI.Models.AgentProfile", b =>
+                {
+                    b.HasOne("RealEstateHubAPI.Model.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("RealEstateHubAPI.Models.AgentProfileArea", b =>
+                {
+                    b.HasOne("RealEstateHubAPI.Models.AgentProfile", "AgentProfile")
+                        .WithMany("AgentProfileAreas")
+                        .HasForeignKey("AgentProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RealEstateHubAPI.Model.Area", "Area")
+                        .WithMany()
+                        .HasForeignKey("AreaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AgentProfile");
+
+                    b.Navigation("Area");
+                });
+
+            modelBuilder.Entity("RealEstateHubAPI.Models.AgentProfileCategory", b =>
+                {
+                    b.HasOne("RealEstateHubAPI.Models.AgentProfile", "AgentProfile")
+                        .WithMany("AgentProfileCategories")
+                        .HasForeignKey("AgentProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RealEstateHubAPI.Models.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AgentProfile");
+
+                    b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("RealEstateHubAPI.Models.AgentProfileTransactionType", b =>
+                {
+                    b.HasOne("RealEstateHubAPI.Models.AgentProfile", "AgentProfile")
+                        .WithMany("AgentProfileTransactionTypes")
+                        .HasForeignKey("AgentProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AgentProfile");
+                });
+
             modelBuilder.Entity("RealEstateHubAPI.Models.Favorite", b =>
                 {
                     b.HasOne("RealEstateHubAPI.Model.Post", "Post")
@@ -625,6 +1030,38 @@ namespace RealEstateHubAPI.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("RealEstateHubAPI.Models.PaymentHistory", b =>
+                {
+                    b.HasOne("RealEstateHubAPI.Model.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("RealEstateHubAPI.Models.Project", b =>
+                {
+                    b.HasOne("RealEstateHubAPI.Model.Area", "Area")
+                        .WithMany()
+                        .HasForeignKey("AreaId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Area");
+                });
+
+            modelBuilder.Entity("RealEstateHubAPI.Models.ProjectImage", b =>
+                {
+                    b.HasOne("RealEstateHubAPI.Models.Project", "Project")
+                        .WithMany("Images")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+                });
+
             modelBuilder.Entity("RealEstateHubAPI.Models.Report", b =>
                 {
                     b.HasOne("RealEstateHubAPI.Model.Post", "Post")
@@ -645,6 +1082,20 @@ namespace RealEstateHubAPI.Migrations
                 });
 
             modelBuilder.Entity("RealEstateHubAPI.Model.Post", b =>
+                {
+                    b.Navigation("Images");
+                });
+
+            modelBuilder.Entity("RealEstateHubAPI.Models.AgentProfile", b =>
+                {
+                    b.Navigation("AgentProfileAreas");
+
+                    b.Navigation("AgentProfileCategories");
+
+                    b.Navigation("AgentProfileTransactionTypes");
+                });
+
+            modelBuilder.Entity("RealEstateHubAPI.Models.Project", b =>
                 {
                     b.Navigation("Images");
                 });

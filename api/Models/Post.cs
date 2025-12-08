@@ -46,6 +46,8 @@ namespace RealEstateHubAPI.Model
 
         
         public string? PanoImageUrl { get; set; }
+        
+        public string? PanoramaTourConfig { get; set; }
 
     }
 }

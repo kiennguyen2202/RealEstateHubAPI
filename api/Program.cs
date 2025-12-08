@@ -1,28 +1,28 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using RealEstateHubAPI.Model;
-using RealEstateHubAPI.Repositories;
-using RealEstateHubAPI.Services;
-using System.Text;
-using RealEstateHubAPI.Models;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using RealEstateHubAPI.DTOs;
 using RealEstateHubAPI.Model;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.SignalR;
+using RealEstateHubAPI.Model;
 using RealEstateHubAPI.Models;
+using RealEstateHubAPI.Models;
+using RealEstateHubAPI.Repositories;
+using RealEstateHubAPI.Services;
+using System;
+using System.Linq;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Threading.Tasks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -80,8 +80,25 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
-// Add Controllers
+// Add Controllers with increased file size limit for panorama images
 builder.Services.AddControllers();
+
+// Configure form options for large file uploads (panorama images can be 10-20MB each)
+builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 524288000; // 500 MB total
+    options.ValueLengthLimit = 524288000;
+    options.MultipartHeadersLengthLimit = 524288000;
+});
+
+// Configure Kestrel server limits
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.Limits.MaxRequestBodySize = 524288000; // 500 MB
+    serverOptions.Limits.RequestHeadersTimeout = TimeSpan.FromMinutes(5);
+});
+
+builder.Services.AddHttpClient();
 builder.Services.AddSignalR();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddMemoryCache();
@@ -93,7 +110,7 @@ builder.Services.AddSwaggerGen(c =>
         Version = "v1"
     });
 
-   
+
     c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -101,10 +118,10 @@ builder.Services.AddSwaggerGen(c =>
         Scheme = "Bearer",
         BearerFormat = "JWT",
         In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-        
+
     });
 
-    
+
     c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
     {
         {
@@ -121,6 +138,20 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+// AI text generation service
+builder.Services.AddHttpClient(nameof(OpenAiTextService), client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(120); // Increase timeout for AI
+});
+builder.Services.AddScoped<IAiTextService, OpenAiTextService>();
+
+// OpenStreetMap amenity service - optimized with shorter timeout
+builder.Services.AddHttpClient(nameof(OpenStreetMapAmenityService), client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(15); // Reduce timeout to avoid blocking
+});
+builder.Services.AddScoped<IAmenityLookupService, OpenStreetMapAmenityService>();
+
 
 // Add CORS
 builder.Services.AddCors(options =>
@@ -128,11 +159,11 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend",
         policy =>
         {
-            policy.WithOrigins("http://localhost:5173") 
+            policy.WithOrigins("http://localhost:5173")
                   .AllowAnyHeader()
                   .AllowAnyMethod()
-            .AllowCredentials();
-});
+                  .AllowCredentials();
+        });
 });
 
 builder.Services.AddHostedService<ExpireNotificationService>();
@@ -155,15 +186,25 @@ app.UseHttpsRedirection();
 
 
 
+// Configure static files with CORS support
+var staticFileOptions = new StaticFileOptions
+{
+    OnPrepareResponse = ctx =>
+    {
+        ctx.Context.Response.Headers.Append("Access-Control-Allow-Origin", "http://localhost:5173");
+        ctx.Context.Response.Headers.Append("Access-Control-Allow-Credentials", "true");
+    }
+};
+
+app.UseStaticFiles(staticFileOptions);
+
 app.UseCors("AllowFrontend");
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseStaticFiles();
-
 app.MapControllers();
-app.MapHub<ChatHub>("/chatHub");
+
 app.MapHub<NotificationHub>("/notificationHub");
 
 app.Run();

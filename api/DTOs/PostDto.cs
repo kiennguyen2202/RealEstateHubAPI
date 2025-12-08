@@ -42,6 +42,7 @@ namespace RealEstateHubAPI.DTOs
 
 
         public string TimeAgo { get; set; }
+        public string? PanoramaTourConfig { get; set; }
 
     }
     public class CreatePostDto
@@ -80,6 +81,8 @@ namespace RealEstateHubAPI.DTOs
 
         [Required]
         public IFormFile[] Images { get; set; }
+
+        public string? PanoramaTourConfig { get; set; }
 
         
     }
@@ -120,6 +123,7 @@ namespace RealEstateHubAPI.DTOs
         public int UserId { get; set; }
 
         public IFormFile[]? Images { get; set; } 
+        public string? PanoramaTourConfig { get; set; } 
         
        
     }

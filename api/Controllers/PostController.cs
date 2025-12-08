@@ -265,6 +265,7 @@ namespace RealEstateHubAPI.Controllers
                     MatTien = dto.MatTien,
                     DuongVao = dto.DuongVao,
                     PhapLy = dto.PhapLy,
+                    PanoramaTourConfig = dto.PanoramaTourConfig,
                     
                 };
 
@@ -384,6 +385,10 @@ namespace RealEstateHubAPI.Controllers
             post.MatTien = updateDto.MatTien;
             post.DuongVao = updateDto.DuongVao;
             post.PhapLy = updateDto.PhapLy;
+            if (!string.IsNullOrEmpty(updateDto.PanoramaTourConfig))
+            {
+                post.PanoramaTourConfig = updateDto.PanoramaTourConfig;
+            }
             
 
             // Handle new images

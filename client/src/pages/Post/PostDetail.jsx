@@ -5,7 +5,7 @@ import { useAuth } from "../../auth/AuthContext.jsx";
 import {
   FaHome, FaRuler, FaMapMarkerAlt, FaUser,
   FaPhone, FaEnvelope, FaEdit, FaTrash, FaExclamationTriangle,
-  FaCommentDots, FaCrown, FaBed, FaBath, FaBuilding, FaRoad,FaMoneyBillWave,FaCompass,FaLocationArrow,FaFileAlt,FaWarehouse	
+  FaCommentDots, FaCrown, FaBed, FaBath, FaBuilding, FaRoad, FaMoneyBillWave, FaCompass, FaLocationArrow, FaFileAlt, FaWarehouse
 } from "react-icons/fa";
 import "./PostDetail.css";
 import { PriceUnit, formatPrice } from '../../utils/priceUtils.js';
@@ -20,8 +20,8 @@ import axiosPrivate from "../../api/axiosPrivate.js";
 
 
 const TransactionType = {
-  Sale: 0, 
-  Rent: 1   
+  Sale: 0,
+  Rent: 1
 };
 
 const PostDetail = () => {
@@ -65,7 +65,7 @@ const PostDetail = () => {
     matTien: '',
     duongVao: '',
     phapLy: '',
-    
+
   });
   const [categories, setCategories] = useState([]);
   const [showPanorama, setShowPanorama] = useState(false);
@@ -148,7 +148,7 @@ const PostDetail = () => {
           matTien: response.data.matTien || '',
           duongVao: response.data.duongVao || '',
           phapLy: response.data.phapLy || '',
-          
+
         });
         const addressParts = [];
         if (response.data.area?.ward?.name) addressParts.push(response.data.area.ward.name);
@@ -327,19 +327,19 @@ const PostDetail = () => {
   // Tính đơn giá theo m²
   const getPricePerSquareMeter = () => {
     if (!post?.price || !post?.area_Size) return null;
-  
+
     // Tính giá theo triệu
     let totalPriceInMillions = post.price;
-  
+
     if (post.priceUnit === PriceUnit.Tỷ) {
       totalPriceInMillions = post.price * 1000;
     }
-  
+
     const unitPriceInMillions = totalPriceInMillions / post.area_Size;
-  
+
     return `~${unitPriceInMillions.toFixed(1)} triệu/m²`;
   };
-  
+
 
   return (
     <div className="post-detail">
@@ -371,7 +371,7 @@ const PostDetail = () => {
         <div className="post-grid">
           {/* Left Column - Images and Info */}
           <div className="post-left-column">
-            <div className="post-images" style={{position: 'relative'}}>
+            <div className="post-images" style={{ position: 'relative' }}>
               {/* Pro Badge - only show on Photo tab */}
               {activeMediaTab === 'photo' && isProRole(post?.user?.role) && (
                 <div className="pro-badge">
@@ -380,18 +380,18 @@ const PostDetail = () => {
                 </div>
               )}
               {/* Media Tabs */}
-              <div style={{ 
-                display: 'flex', 
-                gap: 12, 
-                marginBottom: 12, 
+              <div style={{
+                display: 'flex',
+                gap: 12,
+                marginBottom: 12,
                 padding: '12px 16px',
                 background: '#fff',
                 borderRadius: '8px 8px 0 0',
                 borderBottom: '1px solid #e5e7eb'
               }}>
-                <button 
-                  type="button" 
-                  onClick={() => setActiveMediaTab('photo')} 
+                <button
+                  type="button"
+                  onClick={() => setActiveMediaTab('photo')}
                   style={{
                     padding: '8px 16px',
                     border: '1px solid #e5e7eb',
@@ -405,32 +405,34 @@ const PostDetail = () => {
                 >
                   Photo
                 </button>
-                <button 
-                  type="button" 
-                  onClick={() => {
-                    // Kiểm tra có panorama images không
-                    const hasPanorama = (post.images && post.images.length > 0);
-                    if (hasPanorama) {
-                      setShowFullscreen3D(true);
-                    } else {
-                      setActiveMediaTab('3d');
-                    }
-                  }} 
-                  style={{
-                    padding: '8px 16px',
-                    border: '1px solid #e5e7eb',
-                    background: activeMediaTab === '3d' ? '#3b82f6' : '#fff',
-                    color: activeMediaTab === '3d' ? '#fff' : '#374151',
-                    borderRadius: '6px',
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                    fontWeight: '500'
-                  }}
-                >
-                  3D view
-                </button>
-                <button 
-                  type="button" 
+                {(post.panoramaTour || post.panoramaTourConfig) && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      // Kiểm tra có panorama images không
+                      const hasPanorama = (post.panoramaTour || post.panoramaTourConfig);
+                      if (hasPanorama) {
+                        setShowFullscreen3D(true);
+                      } else {
+                        setActiveMediaTab('3d');
+                      }
+                    }}
+                    style={{
+                      padding: '8px 16px',
+                      border: '1px solid #e5e7eb',
+                      background: activeMediaTab === '3d' ? '#3b82f6' : '#fff',
+                      color: activeMediaTab === '3d' ? '#fff' : '#374151',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      fontSize: '14px',
+                      fontWeight: '500'
+                    }}
+                  >
+                    3D view
+                  </button>
+                )}
+                <button
+                  type="button"
                   onClick={() => {
                     // Kiểm tra có địa chỉ không
                     const hasAddress = fullAddressForMap || post?.address || (post?.lat && post?.lng);
@@ -439,7 +441,7 @@ const PostDetail = () => {
                     } else {
                       setActiveMediaTab('street');
                     }
-                  }} 
+                  }}
                   style={{
                     padding: '8px 16px',
                     border: '1px solid #e5e7eb',
@@ -455,81 +457,113 @@ const PostDetail = () => {
                 </button>
               </div>
               {activeMediaTab === 'photo' && (
-              <div className="image-navigation">
-                <button 
-                  className="nav-button prev-button"
-                  onClick={() => setSelectedImage(prev => (prev > 0 ? prev - 1 : post.images.length - 1))}
-                  disabled={!post.images || post.images.length <= 1}
-                >
-                  &#10094;
-                </button>
-                <img
-                  src={
-                    post.images && post.images.length > 0
-                      ? `http://localhost:5134${post.images[selectedImage].url}`
-                      : "https://via.placeholder.com/800x500?text=No+Image"
-                  }
-                  alt={post.title}
-                  className="main-image"
-                />
-                <button 
-                  className="nav-button next-button"
-                  onClick={() => setSelectedImage(prev => (prev < post.images.length - 1 ? prev + 1 : 0))}
-                  disabled={!post.images || post.images.length <= 1}
-                >
-                  &#10095;
-                </button>
-              </div>
+                <div className="image-navigation">
+                  <button
+                    className="nav-button prev-button"
+                    onClick={() => setSelectedImage(prev => (prev > 0 ? prev - 1 : post.images.length - 1))}
+                    disabled={!post.images || post.images.length <= 1}
+                  >
+                    &#10094;
+                  </button>
+                  <img
+                    src={
+                      post.images && post.images.length > 0
+                        ? `http://localhost:5134${post.images[selectedImage].url}`
+                        : "https://via.placeholder.com/800x500?text=No+Image"
+                    }
+                    alt={post.title}
+                    className="main-image"
+                  />
+                  <button
+                    className="nav-button next-button"
+                    onClick={() => setSelectedImage(prev => (prev < post.images.length - 1 ? prev + 1 : 0))}
+                    disabled={!post.images || post.images.length <= 1}
+                  >
+                    &#10095;
+                  </button>
+                </div>
               )}
               {activeMediaTab === '3d' && (
                 <div style={{ height: 520, background: '#000', borderRadius: 8, position: 'relative' }}>
                   {(() => {
-                    // Tạo scenes từ images
-                    const panoramaScenes = [];
-                    
-                    // Thêm các ảnh từ images (giả sử tất cả đều là panorama)
-                    if (post.images && post.images.length > 0) {
-                      post.images.forEach((img, idx) => {
-                        panoramaScenes.push({
-                          id: `scene-${idx}`,
-                          imageUrl: img.url,
-                          title: `${post.title} - Ảnh ${idx + 1}`
-                        });
-                      });
+                    console.log('[[DEBUG]] PostDetail 3D Render. Post Data:', JSON.parse(JSON.stringify(post)));
+                    // Load tour từ backend (nếu có) hoặc fallback về cách cũ
+                    let panoramaScenes = [];
+
+                    // Ưu tiên: Load tour từ PanoramaTourEditor (nếu có)
+                    if (post.panoramaTour || post.panoramaTourConfig) {
+                      const tourConfig = post.panoramaTour || (typeof post.panoramaTourConfig === 'string' ? JSON.parse(post.panoramaTourConfig) : post.panoramaTourConfig);
+                      console.log('[PostDetail 3D View] Tour config:', tourConfig);
+
+                      if (tourConfig && tourConfig.scenes && Array.isArray(tourConfig.scenes)) {
+                        // Map tour config sang format CustomImageTourViewer cần
+                        panoramaScenes = tourConfig.scenes.map((sceneConfig, idx) => {
+                          // Tìm ảnh tương ứng từ post.images (theo imageIndex đã lưu hoặc fallback theo index)
+                          let image = null;
+                          if (typeof sceneConfig.imageIndex === 'number' && post.images && post.images[sceneConfig.imageIndex]) {
+                            image = post.images[sceneConfig.imageIndex];
+                          } else if (post.images && post.images[idx]) {
+                            // Fallback old behavior
+                            image = post.images[idx];
+                          }
+
+                          const imageUrl = image ? `http://localhost:5134${image.url}` : null;
+
+                          return {
+                            id: sceneConfig.id || `scene-${idx}`,
+                            name: sceneConfig.name || `${post.title} - Scene ${idx + 1}`,
+                            description: sceneConfig.description, // Map description
+                            imageUrl: imageUrl,
+                            panoramaUrl: imageUrl,
+                            thumbUrl: imageUrl,
+                            hotspots: (sceneConfig.hotspots || []).map(h => ({
+                              id: h.id || `hotspot-${idx}-${h.yaw}-${h.pitch}`,
+                              yaw: typeof h.yaw === 'number' ? h.yaw : (typeof h.x === 'number' ? h.x : 0),
+                              pitch: typeof h.pitch === 'number' ? h.pitch : (typeof h.y === 'number' ? h.y : 0),
+                              targetSceneId: h.targetSceneId || null,
+                            })),
+                          };
+                        }).filter(s => s.imageUrl); // Chỉ lấy scenes có ảnh
+                        console.log('[PostDetail 3D View] Mapped scenes from tour config:', panoramaScenes);
+                      }
                     }
-                    
-                    // Nếu có nhiều hơn 1 scene, thêm hotspots để điều hướng
-                    if (panoramaScenes.length > 1) {
-                      panoramaScenes.forEach((scene, idx) => {
-                        scene.hotspots = [
-                          // Hotspot bên trái để quay lại ảnh trước
-                          idx > 0 ? {
-                            x: -90, // Bên trái (góc -90 độ)
-                            y: 0,
-                            targetSceneId: panoramaScenes[idx - 1].id,
-                            title: '← Ảnh trước'
-                          } : null,
-                          // Hotspot bên phải để chuyển sang ảnh sau
-                          idx < panoramaScenes.length - 1 ? {
-                            x: 90, // Bên phải (góc 90 độ)
-                            y: 0,
-                            targetSceneId: panoramaScenes[idx + 1].id,
-                            title: 'Ảnh sau →'
-                          } : null
-                        ].filter(Boolean);
-                      });
-                    }
-                    
+
+
+
+                    console.log('[PostDetail 3D View] Post data:', {
+                      hasPanoramaTour: !!post.panoramaTour,
+                      hasPanoramaTourConfig: !!post.panoramaTourConfig,
+                      imagesCount: post.images?.length || 0,
+                    });
+
                     if (panoramaScenes.length > 0) {
+                      const tourData = post.panoramaTour || post.panoramaTourConfig;
+                      const startupIndex = tourData?.startupSceneIndex !== undefined ? tourData.startupSceneIndex : 0;
+                      const initialSceneId = panoramaScenes[startupIndex]?.id || panoramaScenes[0]?.id;
+
+                      console.log('[PostDetail 3D View] Final scenes:', panoramaScenes);
+                      console.log('[PostDetail 3D View] Initial scene ID:', initialSceneId);
+
                       return (
                         <CustomImageTourViewer
                           scenes={panoramaScenes}
-                          initialSceneId={panoramaScenes[0].id}
+                          initialSceneId={initialSceneId}
                           height={520}
                           controls={true}
+                          showThumbs={panoramaScenes.length > 1}
+                          onHotspotClick={(sceneId, hotspotId) => {
+                            console.log('[PostDetail 3D View] Hotspot clicked:', { sceneId, hotspotId });
+                            const scene = panoramaScenes.find(s => s.id === sceneId);
+                            const hotspot = (scene?.hotspots || []).find(h => h.id === hotspotId);
+                            console.log('[PostDetail 3D View] Hotspot data:', { scene, hotspot });
+                            if (hotspot?.targetSceneId) {
+                              console.log('[PostDetail 3D View] Target scene ID:', hotspot.targetSceneId);
+                            }
+                          }}
                         />
                       );
                     } else {
+                      console.log('[PostDetail 3D View] No scenes available');
                       return (
                         <div style={{ height: 520, display: 'grid', placeItems: 'center', color: '#6b7280', background: '#0b0f19', borderRadius: 8 }}>
                           <div style={{ textAlign: 'center' }}>
@@ -551,7 +585,7 @@ const PostDetail = () => {
                   </div>
                 </div>
               )}
-              
+
               {/* Fullscreen Street View Modal */}
               {showFullscreenStreetView && (
                 <div style={{
@@ -588,7 +622,7 @@ const PostDetail = () => {
                   >
                     ✕
                   </button>
-                  
+
                   {/* Fullscreen Street View - nhúng trực tiếp trong modal */}
                   <StreetViewComponent
                     address={fullAddressForMap || post?.address}
@@ -599,47 +633,81 @@ const PostDetail = () => {
                   />
                 </div>
               )}
-              
+
               {/* Fullscreen 3D Tour Modal*/}
               {showFullscreen3D && (() => {
-                // Tạo scenes từ images
-                const panoramaScenes = [];
-                
-                // Thêm các ảnh từ images
-                if (post.images && post.images.length > 0) {
+                // Load tour từ backend (giống như tab 3D view)
+                let panoramaScenes = [];
+
+                // Ưu tiên: Load tour từ PanoramaTourEditor (nếu có)
+                if (post.panoramaTour || post.panoramaTourConfig) {
+                  const tourConfig = post.panoramaTour || (typeof post.panoramaTourConfig === 'string' ? JSON.parse(post.panoramaTourConfig) : post.panoramaTourConfig);
+
+                  if (tourConfig && tourConfig.scenes && Array.isArray(tourConfig.scenes)) {
+                    panoramaScenes = tourConfig.scenes.map((sceneConfig, idx) => {
+                      let image = null;
+                      if (typeof sceneConfig.imageIndex === 'number' && post.images && post.images[sceneConfig.imageIndex]) {
+                        image = post.images[sceneConfig.imageIndex];
+                      } else if (post.images && post.images[idx]) {
+                        image = post.images[idx];
+                      }
+                      const imageUrl = image ? `http://localhost:5134${image.url}` : null;
+
+                      return {
+                        id: sceneConfig.id || `scene-${idx}`,
+                        name: sceneConfig.name || `${post.title} - Scene ${idx + 1}`,
+                        imageUrl: imageUrl,
+                        panoramaUrl: imageUrl,
+                        thumbUrl: imageUrl,
+                        hotspots: (sceneConfig.hotspots || []).map(h => ({
+                          id: h.id || `hotspot-${idx}-${h.yaw}-${h.pitch}`,
+                          yaw: typeof h.yaw === 'number' ? h.yaw : (typeof h.x === 'number' ? h.x : 0),
+                          pitch: typeof h.pitch === 'number' ? h.pitch : (typeof h.y === 'number' ? h.y : 0),
+                          targetSceneId: h.targetSceneId || null,
+                        })),
+                      };
+                    }).filter(s => s.imageUrl);
+                  }
+                }
+
+                // Fallback: Tạo scenes từ images
+                if (panoramaScenes.length === 0 && post.images && post.images.length > 0) {
                   post.images.forEach((img, idx) => {
                     panoramaScenes.push({
                       id: `scene-${idx}`,
-                      imageUrl: img.url,
-                      title: `${post.title} - Ảnh ${idx + 1}`,
-                      thumbUrl: img.url
+                      imageUrl: `http://localhost:5134${img.url}`,
+                      panoramaUrl: `http://localhost:5134${img.url}`,
+                      thumbUrl: `http://localhost:5134${img.url}`,
+                      name: `${post.title} - Ảnh ${idx + 1}`,
+                      hotspots: [],
                     });
                   });
+
+                  if (panoramaScenes.length > 1) {
+                    panoramaScenes.forEach((scene, idx) => {
+                      scene.hotspots = [
+                        idx > 0 ? {
+                          id: `hotspot-prev-${idx}`,
+                          yaw: -90,
+                          pitch: 0,
+                          targetSceneId: panoramaScenes[idx - 1].id,
+                        } : null,
+                        idx < panoramaScenes.length - 1 ? {
+                          id: `hotspot-next-${idx}`,
+                          yaw: 90,
+                          pitch: 0,
+                          targetSceneId: panoramaScenes[idx + 1].id,
+                        } : null
+                      ].filter(Boolean);
+                    });
+                  }
                 }
-                
-                // Nếu có nhiều hơn 1 scene, thêm hotspots để điều hướng
-                if (panoramaScenes.length > 1) {
-                  panoramaScenes.forEach((scene, idx) => {
-                    scene.hotspots = [
-                      // Hotspot bên trái để quay lại ảnh trước
-                      idx > 0 ? {
-                        x: -90,
-                        y: 0,
-                        targetSceneId: panoramaScenes[idx - 1].id,
-                        title: '← Ảnh trước'
-                      } : null,
-                      // Hotspot bên phải để chuyển sang ảnh sau
-                      idx < panoramaScenes.length - 1 ? {
-                        x: 90,
-                        y: 0,
-                        targetSceneId: panoramaScenes[idx + 1].id,
-                        title: 'Ảnh sau →'
-                      } : null
-                    ].filter(Boolean);
-                  });
-                }
-                
+
                 if (panoramaScenes.length > 0) {
+                  const initialSceneId = (post.panoramaTour || post.panoramaTourConfig)?.startupSceneIndex !== undefined
+                    ? panoramaScenes[post.panoramaTour.startupSceneIndex || 0]?.id
+                    : panoramaScenes[0]?.id;
+
                   return (
                     <div style={{
                       position: 'fixed',
@@ -675,21 +743,27 @@ const PostDetail = () => {
                       >
                         ✕
                       </button>
-                      
+
                       {/* Fullscreen 3D Viewer */}
                       <CustomImageTourViewer
                         scenes={panoramaScenes}
-                        initialSceneId={panoramaScenes[0].id}
+                        initialSceneId={initialSceneId}
                         height={window.innerHeight}
                         controls={true}
-                        autoTour={true} // Auto tour - tự động quay camera
-                        autoRotate={true} // Auto rotate camera từ trái sang phải
-                        littlePlanetIntro={true} // Little planet intro effect
+                        autoTour={true}
+                        autoRotate={true}
+                        littlePlanetIntro={true}
                         showThumbs={true}
-                        fov={150} // Bắt đầu với FOV cao cho little planet
+                        fov={150}
                         fovMin={70}
                         fovMax={150}
-                        onClose={() => setShowFullscreen3D(false)}
+                        onHotspotClick={(sceneId, hotspotId) => {
+                          const scene = panoramaScenes.find(s => s.id === sceneId);
+                          const hotspot = (scene?.hotspots || []).find(h => h.id === hotspotId);
+                          if (hotspot?.targetSceneId) {
+                            // CustomImageTourViewer sẽ tự xử lý chuyển scene qua onSceneChange
+                          }
+                        }}
                       />
                     </div>
                   );
@@ -799,7 +873,7 @@ const PostDetail = () => {
           {/* Right Column - Contact */}
           <div className="post-contact">
             <div className="price-tag">
-              {formatPrice(post.price, post.priceUnit)}              
+              {formatPrice(post.price, post.priceUnit)}
             </div>
             <div className="price-per-m2" >
               {getPricePerSquareMeter()}
@@ -813,10 +887,10 @@ const PostDetail = () => {
               <h2 className="section-title">Thông tin liên hệ</h2>
               <div className="contact-info">
                 <div className="contact-item">
-                  <img 
-                    src={post.user?.avatarUrl ? `http://localhost:5134/${post.user.avatarUrl}` : '/default-avatar.png'} 
-                    alt={post.user?.name || 'User'} 
-                    className="user-avatar" 
+                  <img
+                    src={post.user?.avatarUrl ? `http://localhost:5134/${post.user.avatarUrl}` : '/default-avatar.png'}
+                    alt={post.user?.name || 'User'}
+                    className="user-avatar"
                     style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', marginRight: 8 }}
                   />
                   <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -895,7 +969,7 @@ const PostDetail = () => {
             {/* Add Chat Button */}
             {user && user.id !== post.userId && (
               <div className="chat-button-container">
-                <Link 
+                <Link
                   to={`/chat?u=${post.user.id}&postId=${post.id}&postTitle=${encodeURIComponent(post.title)}&avatar=${encodeURIComponent(post.user.avatarUrl || '')}`}
                   className="chat-button"
                 >
@@ -1188,7 +1262,7 @@ const PostDetail = () => {
                   <option value={TransactionType.Rent}>Cho thuê</option>
                 </select>
               </div>
-              
+
               <div className="modal-footer">
                 <button type="button" onClick={() => setIsEditing(false)} className="cancel-button">
                   Hủy
