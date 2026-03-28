@@ -38,7 +38,6 @@ const CustomImageTourViewer = ({
 
   const [currentSceneId, setCurrentSceneId] = useState(() => {
     const id = initialSceneId || (scenes && scenes.length > 0 ? scenes[0].id : null);
-    console.log('[CustomImageTourViewer] Initial currentSceneId:', id, { initialSceneId, scenesCount: scenes?.length });
     return id;
   });
 
@@ -51,7 +50,6 @@ const CustomImageTourViewer = ({
   // Sync currentSceneId when initialSceneId changes
   useEffect(() => {
     if (initialSceneId && initialSceneId !== currentSceneId) {
-      console.log('[CustomImageTourViewer] Syncing currentSceneId from initialSceneId:', initialSceneId);
       setCurrentSceneId(initialSceneId);
     } else if (!currentSceneId && scenes.length > 0) {
       // Fallback: if no current scene, pick first
@@ -170,12 +168,7 @@ const CustomImageTourViewer = ({
       return;
     }
 
-    console.log('[CustomImageTourViewer] loadPanorama called', {
-      hasScene: !!scene,
-      hasCamera: !!camera,
-      currentSceneId,
-      scenesCount: scenesRef.current?.length || 0,
-    });
+    
 
     if (!scene || !camera) {
       console.warn('[CustomImageTourViewer] Scene or camera not ready');
@@ -183,7 +176,6 @@ const CustomImageTourViewer = ({
     }
 
     const currentScene = getCurrentScene();
-    console.log('[CustomImageTourViewer] Current scene from getCurrentScene:', currentScene);
 
     if (!currentScene) {
       console.error('[CustomImageTourViewer] No current scene found');
@@ -194,10 +186,8 @@ const CustomImageTourViewer = ({
 
     // Get image URL (support both imageUrl and panoramaUrl)
     const rawUrl = currentScene.imageUrl || currentScene.panoramaUrl;
-    console.log('[CustomImageTourViewer] Raw URL from scene:', rawUrl);
 
     const imageUrl = getFullUrl(rawUrl);
-    console.log('[CustomImageTourViewer] Processed URL:', imageUrl);
 
     if (!imageUrl) {
       console.error('[CustomImageTourViewer] No image URL available');
@@ -206,7 +196,6 @@ const CustomImageTourViewer = ({
       return;
     }
 
-    console.log('[CustomImageTourViewer] Loading panorama:', imageUrl);
     setLoading(true);
     setError(null);
 
@@ -233,7 +222,6 @@ const CustomImageTourViewer = ({
       loader.load(
         imageUrl,
         (texture) => {
-          console.log('Texture loaded successfully');
 
           // Configure texture cho panorama - chuẩn Three.js
           texture.colorSpace = THREE.SRGBColorSpace;
@@ -304,18 +292,15 @@ const CustomImageTourViewer = ({
       camera.updateProjectionMatrix();
       setCurrentFov(150);
 
-      console.log('Little Planet Intro: Starting with vlookat=90, fov=150');
 
       // Little Planet Intro Animation Sequence
       // Bước 1: Giữ little planet view trong 0.3s để user thấy hiệu ứng (giảm delay)
       addIntroTimer(() => {
-        console.log('Little Planet Intro: Starting rotation animation');
         // Bước 2: Animate hlookat xoay 360 độ (quay một vòng) trong 2s (nhanh hơn)
         animateCameraRotation(360, 2.0, () => {
           // Check if still in intro mode before proceeding
           if (!isLittlePlanetModeRef.current) return;
 
-          console.log('Little Planet Intro: Rotation complete, starting vertical animation');
           // Bước 3: Chờ 0.2s (giảm delay)
           addIntroTimer(() => {
             // Bước 4: Animate vlookat từ 90 về 0 (từ trên xuống về ngang) trong 2s (nhanh hơn)
@@ -324,7 +309,6 @@ const CustomImageTourViewer = ({
             animateFOV(80, 2.0, () => {
               if (!isLittlePlanetModeRef.current) return;
 
-              console.log('Little Planet Intro: Complete, enabling auto rotate');
               // Hoàn thành intro, tắt little planet mode
               setIsLittlePlanetMode(false);
               isLittlePlanetModeRef.current = false; // Cập nhật ref
@@ -516,11 +500,7 @@ const CustomImageTourViewer = ({
     containerRef.current.appendChild(canvas);
     rendererRef.current = renderer;
 
-    console.log('Renderer created:', {
-      width: canvas.width,
-      height: canvas.height,
-      display: canvas.style.display
-    });
+    
 
     // Mouse controls
     const onMouseDown = (e) => {
@@ -576,7 +556,6 @@ const CustomImageTourViewer = ({
         Math.pow(e.clientX - lastMouseRef.current.x, 2) +
         Math.pow(e.clientY - lastMouseRef.current.y, 2)
       );
-      console.log('onMouseUp:', { moveDistance, wasDragging });
     };
 
     const onMouseLeave = () => {
@@ -678,7 +657,6 @@ const CustomImageTourViewer = ({
     resizeObserver.observe(containerRef.current);
 
     // Mark Three.js as ready
-    console.log('[CustomImageTourViewer] Three.js initialized, setting isThreeReady = true');
     setIsThreeReady(true);
     // window.addEventListener('resize', handleResize); // Fallback removed
 
@@ -872,17 +850,11 @@ const CustomImageTourViewer = ({
 
   // Reload panorama when scene changes
   useEffect(() => {
-    console.log('[CustomImageTourViewer] useEffect [currentSceneId, scenes] triggered', {
-      currentSceneId,
-      scenesCount: scenes?.length,
-      hasSceneRef: !!sceneRef.current,
-      hasCameraRef: !!cameraRef.current,
-    });
+    
 
     if (sceneRef.current && cameraRef.current && scenes && scenes.length > 0) {
       // Apply little planet intro chỉ khi là scene đầu tiên và chưa chạy intro
       const isFirstScene = scenes.findIndex(s => s.id === currentSceneId) === 0;
-      console.log('[CustomImageTourViewer] isFirstScene:', isFirstScene);
 
       // Reset little planet done ref if we switch back to first scene? 
       // User requirement: "intro and autotour" when entering. 
@@ -1193,7 +1165,6 @@ const CustomImageTourViewer = ({
                   const handleHotspotInteract = () => {
                     // Ưu tiên chuyển scene nếu có target
                     if (h.targetSceneId) {
-                      console.log('[CustomImageTourViewer] Switching to target scene:', h.targetSceneId);
                       setCurrentSceneId(h.targetSceneId);
                     }
 

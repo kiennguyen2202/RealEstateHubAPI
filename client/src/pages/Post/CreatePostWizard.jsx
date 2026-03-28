@@ -163,10 +163,7 @@ const CreatePostWizard = () => {
     setAiLoading(true);
     try {
       const data = buildAiSourceData();
-      console.log(
-        "🤖 Calling AI API with data:",
-        JSON.stringify(data, null, 2),
-      );
+      
 
       // Try backend AI first
       try {
@@ -190,7 +187,6 @@ const CreatePostWizard = () => {
           userPhone: user?.phone || null,
         });
 
-        console.log("✅ API Response:", JSON.stringify(res?.data, null, 2));
 
         if (res?.data) {
           setAiTitle(res.data.title || "");
@@ -219,7 +215,6 @@ const CreatePostWizard = () => {
           errorMsg = e.response.data.message;
         }
 
-        console.log("📝 Error message to show:", errorMsg);
         message.error(`Không thể tạo nội dung AI: ${errorMsg}`);
         return;
       }
@@ -296,7 +291,6 @@ const CreatePostWizard = () => {
 
     const fetchData = async () => {
       try {
-        console.log("Fetching categories and provinces...");
         // Lấy categories từ backend, địa chỉ từ API công khai
         const [categoriesRes, provincesData] = await Promise.all([
           axiosPrivate.get("/api/categories"),
@@ -353,7 +347,6 @@ const CreatePostWizard = () => {
           `draftData_${user.id}`,
           JSON.stringify(draftData),
         );
-        console.log("Draft data saved to session for popup:", draftData);
       }
       return response.data.hasDraft;
     } catch (error) {
@@ -371,8 +364,6 @@ const CreatePostWizard = () => {
       if (response.data.hasDraft) {
         const { formData, currentStep } = response.data;
 
-        console.log("Loading draft formData:", formData);
-        console.log("Images data:", formData.images);
 
         // Lưu dữ liệu draft vào session storage để hiển thị
         const draftData = { ...formData, currentStep };
@@ -400,10 +391,7 @@ const CreatePostWizard = () => {
         // Load hình ảnh nếu có
         let draftFileList = [];
         if (formData.images && formData.images.fileList) {
-          console.log(
-            "Loading images from fileList:",
-            formData.images.fileList,
-          );
+          
           draftFileList = formData.images.fileList;
         } else if (Array.isArray(formData.images)) {
           draftFileList = formData.images;
@@ -452,7 +440,6 @@ const CreatePostWizard = () => {
             .map((f) => f.thumbUrl)
             .filter(Boolean);
           setImagePreviews(previews);
-          console.log("Set imagePreviews:", previews);
 
           // bind lại vào form theo đúng schema của Upload
           form.setFieldsValue({ images: normalizedFileList });
@@ -463,10 +450,8 @@ const CreatePostWizard = () => {
         }
 
         // Set form values sau khi đã có dữ liệu areas
-        setTimeout(() => {
-          form.setFieldsValue(formData);
-          setCurrent(currentStep || 0);
-        }, 200);
+        form.setFieldsValue(formData);
+setCurrent(currentStep || 0);
 
         setShowDraftPopup(false);
         showMessage.success("Đã tải tin nháp thành công!");
@@ -506,11 +491,9 @@ const CreatePostWizard = () => {
       const draftData = sessionStorage.getItem(`draftData_${user.id}`);
       if (draftData) {
         const parsed = JSON.parse(draftData);
-        console.log("Getting draft title from:", parsed);
         return parsed.title || "Chưa có tiêu đề";
       }
     } catch (e) {
-      console.log("Error getting draft title:", e);
       return "---";
     }
     return "---";
@@ -587,7 +570,6 @@ const CreatePostWizard = () => {
       const draftData = sessionStorage.getItem(`draftData_${user.id}`);
       if (draftData) {
         const parsed = JSON.parse(draftData);
-        console.log("Getting draft images from:", parsed);
 
         // Ưu tiên imagesBase64 nếu có (bền qua reload)
         if (
@@ -606,7 +588,6 @@ const CreatePostWizard = () => {
           parsed.images.fileList &&
           parsed.images.fileList.length > 0
         ) {
-          console.log("Found fileList:", parsed.images.fileList);
           return parsed.images.fileList.map((file, index) => ({
             thumbUrl: file.thumbUrl || file.url || file.preview,
             uid: file.uid || `draft-image-${index}`,
@@ -615,7 +596,6 @@ const CreatePostWizard = () => {
 
         // Thử lấy từ imagePreviews nếu không có fileList
         if (imagePreviews && imagePreviews.length > 0) {
-          console.log("Using imagePreviews:", imagePreviews);
           return imagePreviews.map((url, index) => ({
             thumbUrl: url,
             uid: `draft-image-${index}`,
@@ -624,7 +604,6 @@ const CreatePostWizard = () => {
 
         // Thử lấy từ parsed.images trực tiếp
         if (parsed.images && Array.isArray(parsed.images)) {
-          console.log("Using parsed.images array:", parsed.images);
           return parsed.images.map((img, index) => {
             const url =
               typeof img === "string"
@@ -640,7 +619,6 @@ const CreatePostWizard = () => {
         // No images
       }
     } catch (e) {
-      console.log("Error getting draft images:", e);
       return [];
     }
     return [];
@@ -814,7 +792,6 @@ const CreatePostWizard = () => {
           if (coords) {
             setLatitude(coords.lat);
             setLongitude(coords.lng);
-            console.log(`📍 Tọa độ ${cityObj.name}:`, coords.lat, coords.lng);
           }
         }
       } catch (err) {
@@ -848,7 +825,6 @@ const CreatePostWizard = () => {
           if (coords) {
             setLatitude(coords.lat);
             setLongitude(coords.lng);
-            console.log(`📍 Tọa độ ${districtObj.name}:`, coords.lat, coords.lng);
           }
         }
       } catch (err) {
@@ -891,7 +867,6 @@ const CreatePostWizard = () => {
               const lon = parseFloat(data[0].lon);
               setLatitude(lat);
               setLongitude(lon);
-              console.log(`📍 Tọa độ tìm thấy cho "${searchAddress}":`, lat, lon);
               found = true;
             }
           } catch (error) {
@@ -912,7 +887,6 @@ const CreatePostWizard = () => {
           if (fallback) {
             setLatitude(fallback.lat);
             setLongitude(fallback.lon);
-            console.log(`📍 Dùng tọa độ mặc định cho ${cityObj.name}:`, fallback.lat, fallback.lon);
           }
         }
       }
@@ -1039,9 +1013,7 @@ const CreatePostWizard = () => {
   // Thêm hàm log giá trị form
   const handleLogCurrentFormValues = () => {
     const values = form.getFieldsValue(true);
-    console.log("Giá trị form hiện tại:", values);
     Object.entries(values).forEach(([k, v]) => {
-      console.log(`${k}:`, v, typeof v);
     });
   };
 
@@ -1182,11 +1154,9 @@ const CreatePostWizard = () => {
                   setLatitude(lat);
                   setLongitude(lng);
                   setFullAddress(addr);
-                  console.log('📍 Vị trí mới được chọn:', lat, lng, addr);
                 }}
                 onAddressFromMap={(parsedAddr) => {
                   // Khi user chọn vị trí trên map, lưu địa chỉ đầy đủ
-                  console.log('📍 Địa chỉ từ map:', parsedAddr);
                   if (parsedAddr.fullAddress) {
                     setFullAddress(parsedAddr.fullAddress);
                     setMapAddress(parsedAddr.fullAddress);
@@ -1640,9 +1610,7 @@ const CreatePostWizard = () => {
     setError(null);
     try {
       // Log toàn bộ values và kiểu dữ liệu
-      console.log("values on submit:", values);
       Object.entries(values).forEach(([k, v]) => {
-        console.log(`${k}:`, v, typeof v);
       });
 
       // Validate: Phải có ít nhất 1 trong 2 (ảnh thông thường hoặc panorama)
@@ -1719,7 +1687,6 @@ const CreatePostWizard = () => {
           }
         }
         
-        console.log('📍 Sử dụng địa chỉ từ map:', { cityName, districtName, wardName, streetNameFinal, fullAddress: addressFromMap.fullAddress });
         
         // Nếu vẫn thiếu thông tin quan trọng, báo lỗi
         if (!cityName) {
@@ -1739,7 +1706,6 @@ const CreatePostWizard = () => {
         districtName = districtObj.name;
         wardName = wardObj.name;
         streetNameFinal = values.street_Name;
-        console.log('📍 Sử dụng địa chỉ từ dropdown:', { cityName, districtName, wardName, streetNameFinal });
       }
 
       const postData = new FormData();
@@ -1822,31 +1788,23 @@ const CreatePostWizard = () => {
 
 
       // Add regular images first
-      console.log(
-        "Total regular images to upload:",
-        filesToUpload.length,
-        filesToUpload.map((f) => f.name),
-      );
+      
       filesToUpload.forEach((f) => postData.append("Images", f));
 
       // Add panorama tour data if available
       if (panoTourData && panoTourData.scenes.length > 0) {
-        console.log("Adding panorama tour data with", panoTourData.scenes.length, "scenes");
 
         // Calculate total size
         let totalSize = 0;
         panoTourData.scenes.forEach((scene) => {
           if (scene.file && scene.file.size) {
             totalSize += scene.file.size;
-            console.log(`Scene "${scene.name}": ${(scene.file.size / 1024 / 1024).toFixed(2)} MB`);
           }
         });
-        console.log(`Total panorama size: ${(totalSize / 1024 / 1024).toFixed(2)} MB`);
 
         // Upload panorama images
         panoTourData.scenes.forEach((scene, idx) => {
           postData.append("PanoramaImages", scene.file);
-          console.log(`Adding panorama image ${idx + 1}:`, scene.name);
         });
 
         // Add tour configuration as JSON
@@ -1869,7 +1827,6 @@ const CreatePostWizard = () => {
 
         // If no regular images, use panorama images as main images (backend requires Images field)
         if (filesToUpload.length === 0) {
-          console.log("No regular images, using panorama images as main Images for backend");
           panoTourData.scenes.forEach((scene) => {
             postData.append("Images", scene.file);
           });
@@ -1878,16 +1835,13 @@ const CreatePostWizard = () => {
 
       // Log FormData contents
       for (let pair of postData.entries()) {
-        console.log(pair[0] + ":", pair[1]);
       }
 
-      console.log("Sending request to create post...");
 
       // Increase timeout for large panorama files (up to 2 minutes)
       const hasPanoramaData = panoTourData && panoTourData.scenes.length > 0;
       const requestTimeout = hasPanoramaData ? 120000 : 20000; // 2 minutes for panorama, 20s for regular
 
-      console.log(`Request timeout: ${requestTimeout / 1000}s`);
 
       const response = await axiosPrivate.post("/api/posts?role=0", postData, {
         headers: {
@@ -1896,17 +1850,13 @@ const CreatePostWizard = () => {
         timeout: requestTimeout,
         onUploadProgress: (progressEvent) => {
           const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-          console.log(`Upload progress: ${percentCompleted}%`);
         },
       });
 
-      console.log("Response received:", response.data);
 
       if (response.data) {
         showMessage.success("Bài đăng đã được tạo thành công!");
-        setTimeout(() => {
-          navigate(`/chi-tiet/${response.data.id}`);
-        }, 1500);
+        navigate();
       } else {
         throw new Error("Không nhận được dữ liệu từ server");
       }

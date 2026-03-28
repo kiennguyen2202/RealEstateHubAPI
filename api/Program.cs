@@ -26,6 +26,11 @@ using System.Threading.Tasks;
 
 var builder = WebApplication.CreateBuilder(args);
 
+if (string.IsNullOrWhiteSpace(builder.Environment.WebRootPath))
+{
+    builder.Environment.WebRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+}
+
 // Fix PostgreSQL DateTime issue (Cannot write DateTime with Kind=Local to timestamp with time zone)
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
