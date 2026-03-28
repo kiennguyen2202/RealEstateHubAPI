@@ -509,6 +509,9 @@ const PostDetail = () => {
                     }
                     alt={post.title}
                     className="main-image"
+                    onError={(e) => {
+                      e.target.src = 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
+                    }}
                   />
                   <button
                     className="nav-button next-button"
@@ -820,6 +823,9 @@ const PostDetail = () => {
                       <img
                         src={`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5134'}${image.url}`}
                         alt={`${post.title} - ${index + 1}`}
+                        onError={(e) => {
+                          e.target.src = 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
+                        }}
                       />
                     </div>
                   ))}
@@ -1493,6 +1499,9 @@ const PostDetail = () => {
                         width: '100%',
                         height: '100%',
                         objectFit: 'cover'
+                      }}
+                      onError={(e) => {
+                        e.target.src = 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
                       }}
                     />
                     {/* Thời gian đăng */}
