@@ -17,6 +17,72 @@ namespace api.Controllers
             _context = context;
         }
 
+        [HttpPost("init-data")]
+        public async Task<ActionResult> InitData()
+        {
+            try 
+            {
+                // 1. Seed Admin
+                if (!await _context.Users.AnyAsync(u => u.Email == "admin@gmail.com"))
+                {
+                    _context.Users.Add(new User
+                    {
+                        Name = "Admin Quản Trị",
+                        Phone = "0987654321",
+                        Email = "admin@gmail.com",
+                        Password = "admin", 
+                        Role = "Admin",
+                        IsLocked = false
+                    });
+                }
+
+                // 2. Seed Categories
+                var categories = new[]
+                {
+                    new Category { Name = "Căn hộ chung cư", Description = "Căn hộ", Icon = "home", IsActive = true },
+                    new Category { Name = "Nhà riêng", Description = "Nhà riêng", Icon = "home", IsActive = true },
+                    new Category { Name = "Nhà biệt thự, liền kề", Description = "Biệt thự", Icon = "home", IsActive = true },
+                    new Category { Name = "Nhà mặt phố", Description = "Nhà mặt phố", Icon = "home", IsActive = true },
+                    new Category { Name = "Đất nền dự án", Description = "Đất nền", Icon = "home", IsActive = true },
+                    new Category { Name = "Bán đất", Description = "Đất", Icon = "home", IsActive = true }
+                };
+
+                foreach (var cat in categories)
+                {
+                    if (!await _context.Categories.AnyAsync(c => c.Name == cat.Name))
+                    {
+                        _context.Categories.Add(cat);
+                    }
+                }
+
+                // 3. Seed 1 Basic Area for Create Wizard
+                if (!await _context.Cities.AnyAsync())
+                {
+                    var city = new City { Name = "Hồ Chí Minh" };
+                    _context.Cities.Add(city);
+                    await _context.SaveChangesAsync(); // save to get ID
+                    
+                    var district = new District { Name = "Quận 1", CityId = city.Id };
+                    _context.Districts.Add(district);
+                    await _context.SaveChangesAsync(); 
+
+                    var ward = new Ward { Name = "Phường Bến Nghé", DistrictId = district.Id };
+                    _context.Wards.Add(ward);
+                    await _context.SaveChangesAsync(); 
+
+                    _context.Areas.Add(new Area { CityId = city.Id, DistrictId = district.Id, WardId = ward.Id, Longitude = 106.7009f, Latitude = 10.7769f });
+                }
+
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "Khởi tạo dữ liệu Admin (admin@gmail.com/admin), Loại BĐS, và Khu Vực mẫu thành công!" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Lỗi: {ex.Message} - {ex.InnerException?.Message}");
+            }
+        }
+
         [HttpPost("generate-posts")]
         public async Task<ActionResult> GeneratePosts([FromQuery] int count = 60)
         {
