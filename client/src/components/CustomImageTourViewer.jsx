@@ -2,8 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 
 const CustomImageTourViewer = ({
-  scenes = [],           // [{ id, imageUrl, panoramaUrl, title?, thumbUrl?, hotspots: [...] }]
-  scenesForLookup,       // Optional: for looking up target names when 'scenes' only contains the current one
+  scenes = [],           // [id, imageUrl, panoramaUrl, title?, thumbUrl?, hotspots]
   initialSceneId = null,
   height = 520,
   controls = true,
@@ -19,8 +18,8 @@ const CustomImageTourViewer = ({
   onHotspotClick = null,               // (sceneId, hotspotId) => void
   enableHotspotEdit = false,           // cho phép drag hotspot
   onHotspotPositionChange = null,      // (sceneId, hotspotId, yaw, pitch) => void
-  onSceneNameChange = null,       // New: Callback to edit name
-  onSceneDescriptionChange = null, // New: Callback to edit description
+  onSceneNameChange = null,       // Callback to edit name
+  onSceneDescriptionChange = null, // Callback to edit description
 }) => {
   const containerRef = useRef(null); //Dùng để lấy kích thước, append canvas
   const sceneRef = useRef(null); //Lưu scene để dùng trong các function khác
@@ -140,7 +139,7 @@ const CustomImageTourViewer = ({
 
     // Handle relative paths - convert to localhost URL
     const encodedPath = encodeURI(url);
-    return `http://localhost:5134${encodedPath}`;
+    return `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5134'}${encodedPath}`;
   };
 
   // Get current scene (không update state trong đây để tránh re-render loop)
@@ -637,7 +636,7 @@ const CustomImageTourViewer = ({
       if (!camera) return;
 
       // Dùng camera.fov thay vì currentFov để tránh stale closure
-      // Giảm zoomDelta từ 5 xuống 2 để zoom mượt hơn (nhiều bước hơn)
+      
       const zoomDelta = e.deltaY > 0 ? 2 : -2;
       const newFov = Math.max(fovMin, Math.min(fovMax, camera.fov + zoomDelta));
       camera.fov = newFov;

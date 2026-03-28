@@ -12,6 +12,8 @@ import { PriceUnit, formatPrice } from '../../utils/priceUtils.js';
 import { isProRole } from '../../utils/roleUtils.js';
 import ReportPost from "../ReportPost.jsx";
 import MapComponent from "../../components/MapComponent.jsx";
+import PriceChart from "../../components/PriceChart/PriceChart.jsx";
+import MortgageCalculator from "../../components/MortgageCalculator/MortgageCalculator.jsx";
 
 
 import CustomImageTourViewer from "../../components/CustomImageTourViewer.jsx";
@@ -42,6 +44,7 @@ const PostDetail = () => {
   const [uniqueCities, setUniqueCities] = useState([]);
   const [filteredDistricts, setFilteredDistricts] = useState([]);
   const [filteredWards, setFilteredWards] = useState([]);
+  const [relatedPosts, setRelatedPosts] = useState([]);
   const [editForm, setEditForm] = useState({
     title: "",
     description: "",
@@ -151,12 +154,38 @@ const PostDetail = () => {
 
         });
         const addressParts = [];
-        if (response.data.area?.ward?.name) addressParts.push(response.data.area.ward.name);
-        if (response.data.area?.district?.name) addressParts.push(response.data.area.district.name);
-        if (response.data.area?.city?.name) addressParts.push(response.data.area.city.name);
+        // Ưu tiên địa chỉ mới
+        if (response.data.wardName) addressParts.push(response.data.wardName);
+        else if (response.data.area?.ward?.name) addressParts.push(response.data.area.ward.name);
+        
+        if (response.data.districtName) addressParts.push(response.data.districtName);
+        else if (response.data.area?.district?.name) addressParts.push(response.data.area.district.name);
+        
+        if (response.data.cityName) addressParts.push(response.data.cityName);
+        else if (response.data.area?.city?.name) addressParts.push(response.data.area.city.name);
+        
         setFullAddressForMap(addressParts.join(', '));
         const newMapModalZoom = getMapZoomForDetail(response.data);
         setMapModalZoomLevel(newMapModalZoom);
+        
+        // Fetch related posts (cùng category hoặc cùng khu vực)
+        try {
+          const relatedRes = await axiosClient.get('/api/posts', {
+            params: { isApproved: true }
+          });
+          const allPosts = relatedRes.data || [];
+          // Lọc bài liên quan: cùng category hoặc cùng thành phố, loại trừ bài hiện tại
+          const related = allPosts.filter(p => {
+            if (p.id === parseInt(id)) return false;
+            const sameCategory = p.categoryId === response.data.categoryId;
+            const sameCity = (p.cityName && response.data.cityName && p.cityName === response.data.cityName) ||
+                            (p.area?.city?.name && response.data.area?.city?.name && p.area.city.name === response.data.area.city.name);
+            return sameCategory || sameCity;
+          }).slice(0, 6); // Lấy tối đa 6 bài
+          setRelatedPosts(related);
+        } catch (relatedErr) {
+          console.error('Error fetching related posts:', relatedErr);
+        }
       } catch (err) {
         setError("Không thể tải thông tin bài viết");
         console.error('Error fetching post:', err);
@@ -351,7 +380,14 @@ const PostDetail = () => {
             <div className="post-meta-item clickable-address" onClick={handleAddressClick}>
               <FaMapMarkerAlt />
               <span>
-                {post.street_Name}, {post.area?.ward?.name && `${post.area.ward.name}, `}{post.area?.district?.name && `${post.area.district.name}, `}{post.area?.city?.name && post.area.city.name}
+                {post.street_Name}
+                {post.wardName && `, ${post.wardName}`}
+                {post.districtName && `, ${post.districtName}`}
+                {post.cityName && `, ${post.cityName}`}
+                {/* Fallback cho dữ liệu cũ */}
+                {!post.wardName && post.area?.ward?.name && `, ${post.area.ward.name}`}
+                {!post.districtName && post.area?.district?.name && `, ${post.area.district.name}`}
+                {!post.cityName && post.area?.city?.name && `, ${post.area.city.name}`}
               </span>
             </div>
             <div className="post-meta-item">
@@ -468,7 +504,7 @@ const PostDetail = () => {
                   <img
                     src={
                       post.images && post.images.length > 0
-                        ? `http://localhost:5134${post.images[selectedImage].url}`
+                        ? `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5134'}${post.images[selectedImage].url}`
                         : "https://via.placeholder.com/800x500?text=No+Image"
                     }
                     alt={post.title}
@@ -507,7 +543,7 @@ const PostDetail = () => {
                             image = post.images[idx];
                           }
 
-                          const imageUrl = image ? `http://localhost:5134${image.url}` : null;
+                          const imageUrl = image ? `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5134'}${image.url}` : null;
 
                           return {
                             id: sceneConfig.id || `scene-${idx}`,
@@ -651,7 +687,7 @@ const PostDetail = () => {
                       } else if (post.images && post.images[idx]) {
                         image = post.images[idx];
                       }
-                      const imageUrl = image ? `http://localhost:5134${image.url}` : null;
+                      const imageUrl = image ? `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5134'}${image.url}` : null;
 
                       return {
                         id: sceneConfig.id || `scene-${idx}`,
@@ -675,9 +711,9 @@ const PostDetail = () => {
                   post.images.forEach((img, idx) => {
                     panoramaScenes.push({
                       id: `scene-${idx}`,
-                      imageUrl: `http://localhost:5134${img.url}`,
-                      panoramaUrl: `http://localhost:5134${img.url}`,
-                      thumbUrl: `http://localhost:5134${img.url}`,
+                      imageUrl: `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5134'}${img.url}`,
+                      panoramaUrl: `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5134'}${img.url}`,
+                      thumbUrl: `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5134'}${img.url}`,
                       name: `${post.title} - Ảnh ${idx + 1}`,
                       hotspots: [],
                     });
@@ -782,7 +818,7 @@ const PostDetail = () => {
                       onMouseEnter={() => setSelectedImage(index)}
                     >
                       <img
-                        src={`http://localhost:5134${image.url}`}
+                        src={`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5134'}${image.url}`}
                         alt={`${post.title} - ${index + 1}`}
                       />
                     </div>
@@ -794,7 +830,7 @@ const PostDetail = () => {
             {/* Info Section */}
             <div className="post-info-section">
               <div className="info-section">
-                <h3>Thông tin chi tiết</h3>
+                <h1>Thông tin chi tiết</h1>
                 <div className="info-grid">
                   <div className="info-item">
                     <FaHome />
@@ -864,9 +900,27 @@ const PostDetail = () => {
               </div>
 
               <div className="description">
-                <h3>Mô tả</h3>
+                <h1>Mô tả</h1>
                 <p>{post.description}</p>
               </div>
+
+              {/* Price Chart - Lịch sử giá thị trường */}
+              <PriceChart
+                cityId={post.area?.cityId}
+                districtId={post.area?.districtId}
+                categoryId={post.categoryId}
+                transactionType={typeof post.transactionType === 'number' ? post.transactionType : (post.transactionType === 'Sale' ? 0 : 1)}
+                currentPrice={post.priceUnit === PriceUnit.Tỷ || post.priceUnit === 0 ? post.price * 1000 : post.price}
+                areaSize={post.area_Size}
+                title={`Lịch sử giá ${post.transactionType === 0 || post.transactionType === 'Sale' ? 'bán' : 'thuê'} ${post.category?.name || 'BĐS'} tại ${post.cityName || post.area?.city?.name || 'khu vực này'}`}
+              />
+
+              {/* Mortgage Calculator - Chỉ hiện cho bài bán */}
+              {(post.transactionType === 0 || post.transactionType === 'Sale' || post.transactionType === TransactionType.Sale) && (
+                <MortgageCalculator 
+                  propertyPrice={post.priceUnit === PriceUnit.Tỷ || post.priceUnit === 0 ? post.price * 1000000000 : post.price * 1000000}
+                />
+              )}
             </div>
           </div>
 
@@ -886,22 +940,47 @@ const PostDetail = () => {
             <div className="contact-section">
               <h2 className="section-title">Thông tin liên hệ</h2>
               <div className="contact-info">
-                <div className="contact-item">
+                <Link 
+                  to={`/user/${post.userId}/posts`} 
+                  className="contact-item"
+                  style={{ textDecoration: 'none', color: 'inherit', cursor: 'pointer' }}
+                >
                   <img
-                    src={post.user?.avatarUrl ? `http://localhost:5134/${post.user.avatarUrl}` : '/default-avatar.png'}
+                    src={post.user?.avatarUrl ? `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5134'}/${post.user.avatarUrl}` : '/default-avatar.png'}
                     alt={post.user?.name || 'User'}
-                    className="user-avatar"
-                    style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', marginRight: 8 }}
+                    style={{ 
+                      width: 36, 
+                      height: 36, 
+                      borderRadius: '50%', 
+                      objectFit: 'cover', 
+                      marginRight: 8,
+                      transition: 'transform 0.2s, box-shadow 0.2s'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'scale(1.1)';
+                      e.currentTarget.style.boxShadow = '0 0 0 2px #f97316';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'scale(1)';
+                      e.currentTarget.style.boxShadow = 'none';
+                    }}
                   />
                   <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    {post.user?.name}
+                    <span style={{ 
+                      transition: 'color 0.2s',
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.color = '#f97316'}
+                    onMouseLeave={(e) => e.currentTarget.style.color = 'inherit'}
+                    >
+                      {post.user?.name}
+                    </span>
                     {isProRole(post.user?.role) && (
                       <span className="pro-badge" style={{ position: 'static', marginLeft: 6, padding: '4px 10px', fontSize: '0.95em', height: 28 }}>
                         <FaCrown className="pro-crown-icon" /> Pro
                       </span>
                     )}
                   </span>
-                </div>
+                </Link>
                 {/* Phone Button / Tooltip */}
                 <div className="contact-item" style={{ position: 'relative' }}>
                   {user ? (
@@ -1001,18 +1080,92 @@ const PostDetail = () => {
         </div>
       </div>
 
-      {/* Map Modal */}
-      {showMapModal && (post.area?.ward?.name || post.street_Name) && (
-        <div className="map-modal-overlay">
-          <div className="map-modal-content">
-            <div className="map-modal-header">
-              <h2 className="map-modal-title">Bản đồ</h2>
-              <button className="map-modal-close-button" onClick={handleCloseMapModal}>&times;</button>
-            </div>
-            <div className="map-modal-body">
-              <MapComponent address={fullAddressForMap} zoom={17} radius={200} mapHeight="500px" />
-            </div>
+      {/* Map Modal - Full Screen */}
+      {showMapModal && (post.wardName || post.area?.ward?.name || post.street_Name) && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0,0,0,0.9)',
+          zIndex: 9999,
+          display: 'flex',
+          flexDirection: 'column'
+        }}>
+          {/* Header */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: '12px 20px',
+            background: '#f97316',
+            color: 'white'
+          }}>
+            <h2 style={{ margin: 0, fontSize: 18, fontWeight: 600 }}>Bản đồ</h2>
+            <button 
+              onClick={handleCloseMapModal}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: 'white',
+                fontSize: 28,
+                cursor: 'pointer',
+                lineHeight: 1
+              }}
+            >
+              ×
+            </button>
           </div>
+          
+          {/* Map Container - Full Height */}
+          <div style={{ flex: 1, position: 'relative' }}>
+            <MapComponent 
+              address={fullAddressForMap} 
+              latitude={post.latitude}
+              longitude={post.longitude}
+              zoom={17} 
+              radius={200} 
+              mapHeight="100%" 
+            />
+          </div>
+          
+          {/* Footer với tọa độ và link Google Maps */}
+          {(post.latitude && post.longitude) && (
+            <div style={{ 
+              padding: '12px 20px', 
+              backgroundColor: '#fff', 
+              borderTop: '1px solid #e5e7eb',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: 12
+            }}>
+              <div>
+                <strong>📍 Tọa độ:</strong> {post.latitude.toFixed(6)}, {post.longitude.toFixed(6)}
+              </div>
+              <a 
+                href={`https://www.google.com/maps?q=${post.latitude},${post.longitude}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  padding: '8px 16px',
+                  backgroundColor: '#4285f4',
+                  color: 'white',
+                  borderRadius: 6,
+                  textDecoration: 'none',
+                  fontWeight: 500,
+                  fontSize: 14
+                }}
+              >
+                🗺️ Mở Google Maps
+              </a>
+            </div>
+          )}
         </div>
       )}
 
@@ -1278,9 +1431,158 @@ const PostDetail = () => {
 
       {showPanorama && post.images && post.images.length > 0 && (
         <PanoramaViewer
-          src={`http://localhost:5134${post.images[selectedImage].url}`}
+          src={`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5134'}${post.images[selectedImage].url}`}
           onClose={() => setShowPanorama(false)}
         />
+      )}
+
+      {/* Tin đăng tương tự */}
+      {relatedPosts.length > 0 && (
+        <div style={{
+          maxWidth: 1200,
+          margin: '40px auto',
+          padding: '20px',
+          background: '#03030aff',
+          borderRadius: 12
+        }}>
+          <h2 style={{
+            fontSize: 18,
+            fontWeight: 600,
+            marginBottom: 20,
+            color: '#fff'
+          }}>
+            Tin đăng tương tự
+          </h2>
+          <div style={{
+            display: 'flex',
+            gap: 16,
+            overflowX: 'auto',
+            paddingBottom: 8
+          }}>
+            {relatedPosts.map((relatedPost) => (
+              <Link 
+                key={relatedPost.id} 
+                to={`/chi-tiet/${relatedPost.id}`}
+                style={{
+                  flex: '0 0 200px',
+                  textDecoration: 'none',
+                  color: 'inherit'
+                }}
+              >
+                <div style={{
+                  background: '#ffffffff',
+                  borderRadius: 8,
+                  overflow: 'hidden',
+                  transition: 'transform 0.2s'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
+                onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                >
+                  {/* Ảnh vuông */}
+                  <div style={{ position: 'relative', paddingTop: '100%' }}>
+                    <img
+                      src={relatedPost.images?.[0]?.url 
+                        ? `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5134'}${relatedPost.images[0].url}`
+                        : 'https://via.placeholder.com/200x200?text=No+Image'
+                      }
+                      alt={relatedPost.title}
+                      style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover'
+                      }}
+                    />
+                    {/* Thời gian đăng */}
+                    <div style={{
+                      position: 'absolute',
+                      bottom: 8,
+                      left: 8,
+                      background: 'rgba(0,0,0,0.7)',
+                      color: '#fff',
+                      padding: '2px 6px',
+                      borderRadius: 4,
+                      fontSize: 10
+                    }}>
+                      {relatedPost.created ? new Date(relatedPost.created).toLocaleDateString('vi-VN') : ''}
+                    </div>
+                    {/* Số ảnh */}
+                    <div style={{
+                      position: 'absolute',
+                      bottom: 8,
+                      right: 8,
+                      background: 'rgba(0,0,0,0.7)',
+                      color: '#fff',
+                      padding: '2px 6px',
+                      borderRadius: 4,
+                      fontSize: 10,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 4
+                    }}>
+                      📷 {relatedPost.images?.length || 0}
+                    </div>
+                  </div>
+                  
+                  {/* Thông tin */}
+                  <div style={{ padding: 10 }}>
+                    <h3 style={{
+                      fontSize: 13,
+                      fontWeight: 500,
+                      marginBottom: 6,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: 'vertical',
+                      lineHeight: 1.3,
+                      height: 34,
+                      color: '#fff'
+                    }}>
+                      {relatedPost.title}
+                    </h3>
+                    
+                    {/* Diện tích */}
+                    <div style={{ fontSize: 11, color: '#9ca3af', marginBottom: 4 }}>
+                      Diện tích: {relatedPost.area_Size} m²
+                    </div>
+                    
+                    {/* Giá */}
+                    <div style={{ 
+                      color: '#f97316', 
+                      fontWeight: 700, 
+                      fontSize: 14,
+                      marginBottom: 4
+                    }}>
+                      {formatPrice(relatedPost.price, relatedPost.priceUnit)}
+                      
+                    </div>
+                    
+                    {/* Địa chỉ */}
+                    <div style={{ 
+                      fontSize: 11, 
+                      color: '#9ca3af',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 4
+                    }}>
+                      <FaMapMarkerAlt size={10} />
+                      <span style={{
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap'
+                      }}>
+                        {relatedPost.wardName || relatedPost.area?.ward?.name || ''}{relatedPost.wardName || relatedPost.area?.ward?.name ? ', ' : ''}{relatedPost.districtName || relatedPost.area?.district?.name || ''}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
       )}
     </div>
   );

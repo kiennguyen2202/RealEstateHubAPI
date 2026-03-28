@@ -11,6 +11,7 @@ const { TextArea } = Input;
 
 export default function RegisterAgentPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -161,9 +162,11 @@ export default function RegisterAgentPage() {
 
   const handleAvatarChange = (info) => {
     const file = info.file.originFileObj || (info.fileList[0] && info.fileList[0].originFileObj);
+    console.log('Avatar change:', file);
     if (file) {
       setAvatarFile(file);
       const previewUrl = URL.createObjectURL(file);
+      console.log('Avatar preview URL:', previewUrl);
       setAvatarPreview(previewUrl);
       savePreviewToSession('Avatar', previewUrl);
     } else {
@@ -177,9 +180,11 @@ export default function RegisterAgentPage() {
 
   const handleBannerChange = (info) => {
     const file = info.file.originFileObj || (info.fileList[0] && info.fileList[0].originFileObj);
+    console.log('Banner change:', file);
     if (file) {
       setBannerFile(file);
       const previewUrl = URL.createObjectURL(file);
+      console.log('Banner preview URL:', previewUrl);
       setBannerPreview(previewUrl);
       savePreviewToSession('Banner', previewUrl);
     } else {
@@ -225,10 +230,23 @@ export default function RegisterAgentPage() {
       postData.append('Slug', values.slug);
       postData.append('PhoneNumber', values.phoneNumber);
       
-      selectedAreas.forEach(area => postData.append('AreaIds', area.id));
+      // Gửi AreaIds và AreaNames
+      selectedAreas.forEach(area => {
+        // Convert area.id to integer for backend
+        const areaId = parseInt(area.id, 10) || area.id;
+        postData.append('AreaIds', areaId);
+        // Tạo areaName format "DistrictName, CityName"
+        const areaName = `${area.name || area.districtName}, ${area.city?.name || area.cityName || ''}`;
+        postData.append('AreaNames', areaName);
+      });
       
       values.categoryTransactionTypes.forEach(item => {
         postData.append('CategoryIds', item.categoryId);
+        // Tìm category name từ categories list
+        const category = categories.find(c => c.id === item.categoryId);
+        if (category) {
+          postData.append('CategoryNames', category.name);
+        }
         (Array.isArray(item.transactionTypes) ? item.transactionTypes : [item.transactionTypes]).forEach(type => postData.append('TransactionTypes', type));
       });
       
@@ -311,7 +329,9 @@ export default function RegisterAgentPage() {
       <div style={{ 
         position: 'relative', 
         height: '300px', 
-        backgroundImage: bannerPreview ? `url(${bannerPreview.startsWith('http') ? bannerPreview : `http://localhost:5134${bannerPreview}`})` : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        backgroundImage: bannerPreview 
+          ? `url(${bannerPreview.startsWith('http') || bannerPreview.startsWith('blob:') ? bannerPreview : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5134'}${bannerPreview.startsWith('/') ? '' : '/'}${bannerPreview}`})` 
+          : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         display: 'flex',
@@ -363,7 +383,9 @@ export default function RegisterAgentPage() {
               height: '120px',
               borderRadius: '50%',
               border: '4px solid #fff',
-              backgroundImage: avatarPreview ? `url(${avatarPreview.startsWith('http') ? avatarPreview : `http://localhost:5134${avatarPreview}`})` : 'none',
+              backgroundImage: avatarPreview 
+                ? `url(${avatarPreview.startsWith('http') || avatarPreview.startsWith('blob:') ? avatarPreview : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5134'}${avatarPreview.startsWith('/') ? '' : '/'}${avatarPreview}`})` 
+                : 'none',
               backgroundColor: avatarPreview ? 'transparent' : '#e1e5e9',
               backgroundSize: 'cover',
               backgroundPosition: 'center',
@@ -520,7 +542,7 @@ export default function RegisterAgentPage() {
                       ) : (
                         selectedAreas.map(area => (
                           <Tag key={area.id} color="blue" style={{ marginBottom: 8, marginRight: 8, padding: '6px 12px', fontSize: '14px' }}>
-                            {area.name} ({area.city?.name})
+                            {area.name}, {area.city?.name || area.cityName || ''}
                           </Tag>
                         ))
                       )}

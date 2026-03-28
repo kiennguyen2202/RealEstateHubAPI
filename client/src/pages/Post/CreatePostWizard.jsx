@@ -23,7 +23,9 @@ import { useAuth } from "../../auth/AuthContext.jsx";
 import MessageProvider from "../../components/MessageProvider.jsx";
 import { userService } from "../../api/userService.js";
 import MapComponent from "../../components/MapComponent.jsx";
+import MapPicker from "../../components/MapPicker.jsx";
 import PanoramaTourEditor from "../../components/PanoramaTourEditor.jsx";
+import { getProvinces, getDistrictsByProvince, getWardsByDistrict } from "../../api/vietnamAddressService.js";
 
 const { Step } = Steps;
 const { Option } = Select;
@@ -109,6 +111,12 @@ const CreatePostWizard = () => {
   };
 
   const getAddressText = () => {
+    // Ưu tiên địa chỉ từ map nếu có
+    if (addressFromMap?.fullAddress) {
+      return addressFromMap.fullAddress;
+    }
+    
+    // Fallback: dùng dropdown
     const parts = [];
     if (streetName) parts.push(streetName);
     const wardObj = filteredWards.find((w) => String(w.id) === String(ward));
@@ -200,17 +208,15 @@ const CreatePostWizard = () => {
         console.error("Error status:", e.response?.status);
         console.error("Error message:", e.message);
 
-        // Show error message to user
-        let errorMsg = "Lỗi không xác định";
+        // Show user-friendly error message
+        let errorMsg = "Dịch vụ AI tạm thời không khả dụng";
 
-        if (e.response?.data) {
-          if (typeof e.response.data === "object") {
-            errorMsg = JSON.stringify(e.response.data);
-          } else {
-            errorMsg = String(e.response.data);
-          }
-        } else if (e.message) {
-          errorMsg = e.message;
+        if (e.response?.data?.detail?.includes("User not found")) {
+          errorMsg = "Cấu hình AI chưa được thiết lập đúng. Vui lòng liên hệ quản trị viên.";
+        } else if (e.response?.data?.detail?.includes("401")) {
+          errorMsg = "Khóa API AI không hợp lệ. Vui lòng liên hệ quản trị viên.";
+        } else if (e.response?.data?.message) {
+          errorMsg = e.response.data.message;
         }
 
         console.log("📝 Error message to show:", errorMsg);
@@ -241,9 +247,17 @@ const CreatePostWizard = () => {
     "",
     user?.id,
   );
+  const [mapAddress, setMapAddress] = useFormSession(
+    "MapAddress", 
+    "", 
+    user?.id,
+  ); // Địa chỉ chỉ đến cấp phường/xã cho map
   const [zoomLevel, setZoomLevel] = useFormSession("ZoomLevel", 5, user?.id);
-
-
+  const [latitude, setLatitude] = useFormSession("Latitude", null, user?.id);
+  const [longitude, setLongitude] = useFormSession("Longitude", null, user?.id);
+  
+  // Địa chỉ từ map (khi user chọn vị trí trên bản đồ)
+  const [addressFromMap, setAddressFromMap] = useFormSession("AddressFromMap", null, user?.id);
 
   // Sử dụng session storage cho địa chỉ với userId
   const [city, setCity] = useFormSession("City", "", user?.id);
@@ -282,18 +296,20 @@ const CreatePostWizard = () => {
 
     const fetchData = async () => {
       try {
-        console.log("Fetching categories and areas...");
-        const [categoriesRes, citiesRes, districtsRes, wardsRes] =
-          await Promise.all([
-            axiosPrivate.get("/api/categories"),
-            axiosPrivate.get("/api/areas/cities"),
-            axiosPrivate.get("/api/areas/districts"),
-            axiosPrivate.get("/api/areas/wards"),
-          ]);
+        console.log("Fetching categories and provinces...");
+        // Lấy categories từ backend, địa chỉ từ API công khai
+        const [categoriesRes, provincesData] = await Promise.all([
+          axiosPrivate.get("/api/categories"),
+          getProvinces(),
+        ]);
 
         setCategories(categoriesRes.data);
-        setUniqueCities(citiesRes.data);
-        setAllAreas([...districtsRes.data, ...wardsRes.data]);
+        // Map provinces sang format tương thích
+        setUniqueCities(provincesData.map(p => ({
+          id: p.code,
+          code: p.code,
+          name: p.name,
+        })));
 
         // Load địa chỉ từ session storage và fetch districts/wards nếu cần
         if (city) {
@@ -665,7 +681,10 @@ const CreatePostWizard = () => {
         sessionStorage.removeItem(`draftData_${user.id}`);
         sessionStorage.removeItem(`createPostWizard_${user.id}_ImagePreviews`);
         sessionStorage.removeItem(`createPostWizard_${user.id}_FullAddress`);
+        sessionStorage.removeItem(`createPostWizard_${user.id}_MapAddress`);
         sessionStorage.removeItem(`createPostWizard_${user.id}_ZoomLevel`);
+        sessionStorage.removeItem(`createPostWizard_${user.id}_Latitude`);
+        sessionStorage.removeItem(`createPostWizard_${user.id}_Longitude`);
         sessionStorage.removeItem(`createPostWizard_${user.id}_City`);
         sessionStorage.removeItem(`createPostWizard_${user.id}_District`);
         sessionStorage.removeItem(`createPostWizard_${user.id}_Ward`);
@@ -681,7 +700,10 @@ const CreatePostWizard = () => {
         setImagePreviews([]);
         setFiles([]);
         setFullAddress("");
+        setMapAddress("");
         setZoomLevel(5);
+        setLatitude(null);
+        setLongitude(null);
 
         // Clear file upload component
         const fileInput = document.querySelector('input[type="file"]');
@@ -698,29 +720,45 @@ const CreatePostWizard = () => {
   };
 
   useEffect(() => {
-    let addressParts = [];
-    // Luôn thêm tên đường nếu có
+    // Địa chỉ đầy đủ (có tên đường) cho form
+    let fullAddressParts = [];
     if (streetName) {
-      addressParts.push(streetName);
+      fullAddressParts.push(streetName);
     }
-    // Thêm phường/xã
     if (ward && String(ward) !== "") {
-      const wardObj = filteredWards.find((w) => String(w.id) === String(ward));
-      if (wardObj) addressParts.push(wardObj.name);
+      const wardObj = filteredWards.find((w) => String(w.id) === String(ward) || String(w.code) === String(ward));
+      if (wardObj) fullAddressParts.push(wardObj.name);
     }
-    // Thêm quận/huyện
     if (district && String(district) !== "") {
       const districtObj = filteredDistricts.find(
-        (d) => String(d.id) === String(district),
+        (d) => String(d.id) === String(district) || String(d.code) === String(district),
       );
-      if (districtObj) addressParts.push(districtObj.name);
+      if (districtObj) fullAddressParts.push(districtObj.name);
     }
-    // Thêm thành phố
     if (city && String(city) !== "") {
-      const cityObj = uniqueCities.find((c) => String(c.id) === String(city));
-      if (cityObj) addressParts.push(cityObj.name);
+      const cityObj = uniqueCities.find((c) => String(c.id) === String(city) || String(c.code) === String(city));
+      if (cityObj) fullAddressParts.push(cityObj.name);
     }
-    setFullAddress(addressParts.filter(Boolean).join(", "));
+    setFullAddress(fullAddressParts.filter(Boolean).join(", "));
+
+    // Địa chỉ cho map (chỉ đến cấp phường/xã, không có tên đường)
+    let mapAddressParts = [];
+    if (ward && String(ward) !== "") {
+      const wardObj = filteredWards.find((w) => String(w.id) === String(ward) || String(w.code) === String(ward));
+      if (wardObj) mapAddressParts.push(wardObj.name);
+    }
+    if (district && String(district) !== "") {
+      const districtObj = filteredDistricts.find(
+        (d) => String(d.id) === String(district) || String(d.code) === String(district),
+      );
+      if (districtObj) mapAddressParts.push(districtObj.name);
+    }
+    if (city && String(city) !== "") {
+      const cityObj = uniqueCities.find((c) => String(c.id) === String(city) || String(c.code) === String(city));
+      if (cityObj) mapAddressParts.push(cityObj.name);
+    }
+    setMapAddress(mapAddressParts.filter(Boolean).join(", "));
+
     const newZoomLevel = getMapZoom(city, district, ward);
     setZoomLevel(newZoomLevel);
   }, [
@@ -733,45 +771,155 @@ const CreatePostWizard = () => {
     uniqueCities,
   ]);
 
-  // Handler khi chọn thành phố
-  const handleCityChange = async (cityId) => {
-    setCity(cityId);
+  // Helper function để fetch tọa độ từ địa chỉ
+  const fetchCoordinates = async (searchAddress) => {
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(searchAddress)}&format=json&limit=1`,
+        { headers: { 'User-Agent': 'RealEstateHub/1.0' } }
+      );
+      const data = await response.json();
+      if (data && data.length > 0) {
+        return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+      }
+    } catch (error) {
+      console.error('Lỗi khi lấy tọa độ:', error);
+    }
+    return null;
+  };
+
+  // Handler khi chọn thành phố - sử dụng API công khai
+  const handleCityChange = async (provinceCode) => {
+    setCity(provinceCode);
     setDistrict("");
     setWard("");
     setStreetName("");
     setFilteredWards([]);
     setFilteredDistricts([]);
-    if (cityId) {
+    setAddressFromMap(null); // Reset địa chỉ từ map
+    
+    if (provinceCode) {
       try {
-        const response = await axiosPrivate.get(
-          `/api/areas/cities/${cityId}/districts`,
-        );
-        setFilteredDistricts(response.data);
+        const districts = await getDistrictsByProvince(provinceCode);
+        setFilteredDistricts(districts.map(d => ({
+          id: d.code,
+          code: d.code,
+          name: d.name,
+        })));
+        
+        // Fetch tọa độ cho thành phố
+        const cityObj = uniqueCities.find(c => String(c.code) === String(provinceCode));
+        if (cityObj?.name) {
+          const coords = await fetchCoordinates(`${cityObj.name}, Vietnam`);
+          if (coords) {
+            setLatitude(coords.lat);
+            setLongitude(coords.lng);
+            console.log(`📍 Tọa độ ${cityObj.name}:`, coords.lat, coords.lng);
+          }
+        }
       } catch (err) {
+        console.error("Error fetching districts:", err);
         setFilteredDistricts([]);
       }
     }
   };
 
-  // Handler khi chọn quận/huyện
-  const handleDistrictChange = async (districtId) => {
-    setDistrict(districtId);
+  // Handler khi chọn quận/huyện - sử dụng API công khai
+  const handleDistrictChange = async (districtCode) => {
+    setDistrict(districtCode);
     setWard("");
     setFilteredWards([]);
-    if (districtId) {
+    setAddressFromMap(null); // Reset địa chỉ từ map
+    
+    if (districtCode) {
       try {
-        const response = await axiosPrivate.get(
-          `/api/areas/districts/${districtId}/wards`,
-        );
-        setFilteredWards(response.data);
+        const wards = await getWardsByDistrict(districtCode);
+        setFilteredWards(wards.map(w => ({
+          id: w.code,
+          code: w.code,
+          name: w.name,
+        })));
+        
+        // Fetch tọa độ cho quận/huyện
+        const districtObj = filteredDistricts.find(d => String(d.code) === String(districtCode));
+        const cityObj = uniqueCities.find(c => String(c.code) === String(city));
+        if (districtObj?.name && cityObj?.name) {
+          const coords = await fetchCoordinates(`${districtObj.name}, ${cityObj.name}, Vietnam`);
+          if (coords) {
+            setLatitude(coords.lat);
+            setLongitude(coords.lng);
+            console.log(`📍 Tọa độ ${districtObj.name}:`, coords.lat, coords.lng);
+          }
+        }
       } catch (err) {
+        console.error("Error fetching wards:", err);
         setFilteredWards([]);
       }
     }
   };
 
-  const handleWardChange = (wardId) => {
-    setWard(wardId);
+  const handleWardChange = async (wardCode) => {
+    setWard(wardCode);
+    
+    // Lấy tọa độ từ ward (chỉ đến cấp phường/xã, không bao gồm tên đường)
+    if (wardCode) {
+      const wardObj = filteredWards.find((w) => String(w.id) === String(wardCode) || String(w.code) === String(wardCode));
+      if (wardObj?.name) {
+        const districtObj = filteredDistricts.find(
+          (d) => String(d.id) === String(district) || String(d.code) === String(district),
+        );
+        const cityObj = uniqueCities.find((c) => String(c.id) === String(city) || String(c.code) === String(city));
+        
+        // Thử nhiều cách tìm kiếm khác nhau
+        const searchQueries = [
+          `${wardObj.name}, ${districtObj?.name || ''}, ${cityObj?.name || ''}, Vietnam`,
+          `${districtObj?.name || ''}, ${cityObj?.name || ''}, Vietnam`,
+          `${cityObj?.name || ''}, Vietnam`,
+        ];
+        
+        let found = false;
+        for (const searchAddress of searchQueries) {
+          if (found) break;
+          try {
+            const response = await fetch(
+              `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(searchAddress)}&format=json&limit=1`,
+              { headers: { 'User-Agent': 'RealEstateHub/1.0' } }
+            );
+            const data = await response.json();
+            if (data && data.length > 0) {
+              const lat = parseFloat(data[0].lat);
+              const lon = parseFloat(data[0].lon);
+              setLatitude(lat);
+              setLongitude(lon);
+              console.log(`📍 Tọa độ tìm thấy cho "${searchAddress}":`, lat, lon);
+              found = true;
+            }
+          } catch (error) {
+            console.error('Lỗi khi lấy tọa độ:', error);
+          }
+        }
+        
+        // Fallback: nếu không tìm được, dùng tọa độ mặc định của một số thành phố lớn
+        if (!found && cityObj?.name) {
+          const defaultCoords = {
+            'Thành phố Hà Nội': { lat: 21.0285, lon: 105.8542 },
+            'Thành phố Hồ Chí Minh': { lat: 10.8231, lon: 106.6297 },
+            'Thành phố Đà Nẵng': { lat: 16.0544, lon: 108.2022 },
+            'Thành phố Hải Phòng': { lat: 20.8449, lon: 106.6881 },
+            'Thành phố Cần Thơ': { lat: 10.0452, lon: 105.7469 },
+          };
+          const fallback = defaultCoords[cityObj.name];
+          if (fallback) {
+            setLatitude(fallback.lat);
+            setLongitude(fallback.lon);
+            console.log(`📍 Dùng tọa độ mặc định cho ${cityObj.name}:`, fallback.lat, fallback.lon);
+          }
+        }
+      }
+    } else {
+      setLatitude(null);
+      setLongitude(null);
+    }
   };
   const handleStreetChange = (e) => {
     setStreetName(e.target.value);
@@ -917,69 +1065,91 @@ const CreatePostWizard = () => {
       title: "Địa chỉ",
       content: (
         <>
-          <Form.Item
-            name="city"
-            label="Thành phố"
-            rules={[{ required: true, message: "Vui lòng chọn thành phố!" }]}
-          >
-            <Select
-              placeholder="Chọn thành phố"
-              showSearch
-              value={city}
-              onChange={handleCityChange}
+          {/* Dropdown địa chỉ */}
+          <div style={{ opacity: addressFromMap?.fullAddress ? 0.5 : 1 }}>
+            <Form.Item
+              name="city"
+              label="Tỉnh/Thành phố"
+              rules={[{ required: !addressFromMap?.fullAddress, message: "Vui lòng chọn tỉnh/thành phố hoặc chọn vị trí trên bản đồ!" }]}
             >
-              {uniqueCities.map((city) => (
-                <Option key={city.id} value={city.id}>
-                  {city.name}
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
-          <Form.Item
-            name="district"
-            label="Quận/Huyện"
-            rules={[{ required: true, message: "Vui lòng chọn quận/huyện!" }]}
-          >
-            <Select
-              placeholder="Chọn quận/huyện"
-              showSearch
-              value={district}
-              disabled={!city}
-              onChange={handleDistrictChange}
+              <Select
+                placeholder="Chọn tỉnh/thành phố"
+                showSearch
+                value={city}
+                onChange={(val) => {
+                  handleCityChange(val);
+                  // Xóa địa chỉ từ map khi user chọn dropdown
+                  if (addressFromMap) setAddressFromMap(null);
+                }}
+                filterOption={(input, option) =>
+                  option?.children?.toLowerCase().includes(input.toLowerCase())
+                }
+              >
+                {uniqueCities.map((c) => (
+                  <Option key={c.code || c.id} value={c.code || c.id}>
+                    {c.name}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+            <Form.Item
+              name="district"
+              label="Quận/Huyện"
+              rules={[{ required: !addressFromMap?.fullAddress, message: "Vui lòng chọn quận/huyện hoặc chọn vị trí trên bản đồ!" }]}
             >
-              {filteredDistricts.map((district) => (
-                <Option key={district.id} value={district.id}>
-                  {district.name}
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
-          <Form.Item
-            name="ward"
-            label="Phường/Xã"
-            rules={[{ required: true, message: "Vui lòng chọn phường/xã!" }]}
-          >
-            <Select
-              placeholder="Chọn phường/xã"
-              showSearch
-              value={ward}
-              disabled={!district}
-              onChange={handleWardChange}
+              <Select
+                placeholder="Chọn quận/huyện"
+                showSearch
+                value={district}
+                disabled={!city}
+                onChange={(val) => {
+                  handleDistrictChange(val);
+                  if (addressFromMap) setAddressFromMap(null);
+                }}
+                filterOption={(input, option) =>
+                  option?.children?.toLowerCase().includes(input.toLowerCase())
+                }
+              >
+                {filteredDistricts.map((d) => (
+                  <Option key={d.code || d.id} value={d.code || d.id}>
+                    {d.name}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+            <Form.Item
+              name="ward"
+              label="Phường/Xã"
+              rules={[{ required: !addressFromMap?.fullAddress, message: "Vui lòng chọn phường/xã hoặc chọn vị trí trên bản đồ!" }]}
             >
-              {filteredWards.map((ward) => (
-                <Option key={ward.id} value={ward.id}>
-                  {ward.name}
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
+              <Select
+                placeholder="Chọn phường/xã"
+                showSearch
+                value={ward}
+                disabled={!district}
+                onChange={(val) => {
+                  handleWardChange(val);
+                  if (addressFromMap) setAddressFromMap(null);
+                }}
+                filterOption={(input, option) =>
+                  option?.children?.toLowerCase().includes(input.toLowerCase())
+                }
+              >
+                {filteredWards.map((w) => (
+                  <Option key={w.code || w.id} value={w.code || w.id}>
+                    {w.name}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </div>
           <Form.Item
             name="street_Name"
             label="Tên đường"
-            rules={[{ required: true, message: "Vui lòng nhập tên đường!" }]}
+            rules={[{ required: !addressFromMap?.fullAddress, message: "Vui lòng nhập tên đường hoặc chọn vị trí trên bản đồ!" }]}
           >
             <Input
-              placeholder="Nhập tên đường"
+              placeholder={addressFromMap?.fullAddress ? "Không bắt buộc (đã có địa chỉ từ bản đồ)" : "Nhập tên đường"}
               value={streetName}
               onChange={handleStreetChange}
             />
@@ -988,8 +1158,12 @@ const CreatePostWizard = () => {
             <label
               style={{ fontWeight: 500, marginBottom: 8, display: "block" }}
             >
-              Bản đồ khu vực:
+              📍 Chọn vị trí chính xác trên bản đồ:
             </label>
+            <p style={{ color: '#666', fontSize: 13, marginBottom: 12 }}>
+              Bấm nút "Chấm điểm" rồi click vào bản đồ để chọn vị trí chính xác của bất động sản, 
+              hoặc bấm "Vị trí của tôi" để lấy vị trí hiện tại.
+            </p>
             <div
               style={{
                 border: "1px solid #eee",
@@ -997,13 +1171,65 @@ const CreatePostWizard = () => {
                 overflow: "hidden",
               }}
             >
-              <MapComponent
-                address={fullAddress}
+              <MapPicker
+                address={mapAddress}
+                latitude={latitude}
+                longitude={longitude}
                 zoom={zoomLevel}
-                key={zoomLevel + "-" + fullAddress}
+                mapHeight="450px"
+                editable={true}
+                onLocationChange={(lat, lng, addr) => {
+                  setLatitude(lat);
+                  setLongitude(lng);
+                  setFullAddress(addr);
+                  console.log('📍 Vị trí mới được chọn:', lat, lng, addr);
+                }}
+                onAddressFromMap={(parsedAddr) => {
+                  // Khi user chọn vị trí trên map, lưu địa chỉ đầy đủ
+                  console.log('📍 Địa chỉ từ map:', parsedAddr);
+                  if (parsedAddr.fullAddress) {
+                    setFullAddress(parsedAddr.fullAddress);
+                    setMapAddress(parsedAddr.fullAddress);
+                    // Lưu địa chỉ parsed để dùng khi submit
+                    setAddressFromMap(parsedAddr);
+                  }
+                }}
+                key={`${zoomLevel}-${latitude}-${longitude}-${mapAddress}`}
               />
             </div>
           </div>
+          
+          {/* Hiển thị địa chỉ từ map nếu đã chọn - ở dưới cùng */}
+          {addressFromMap?.fullAddress && (
+            <div style={{ 
+              marginTop: 16, 
+              padding: '12px 16px', 
+              backgroundColor: '#f6ffed', 
+              border: '1px solid #b7eb8f',
+              borderRadius: 8 
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                <span style={{ fontSize: 18 }}>✅</span>
+                <strong>Địa chỉ từ bản đồ (sẽ được sử dụng)</strong>
+              </div>
+              <div style={{ color: '#333', wordBreak: 'break-word' }}>
+                {addressFromMap.fullAddress}
+              </div>
+              <Button 
+                type="link" 
+                danger 
+                size="small" 
+                style={{ padding: 0, marginTop: 8 }}
+                onClick={() => {
+                  setAddressFromMap(null);
+                  setLatitude(null);
+                  setLongitude(null);
+                }}
+              >
+                Xóa và chọn lại từ dropdown
+              </Button>
+            </div>
+          )}
         </>
       ),
     },
@@ -1027,21 +1253,30 @@ const CreatePostWizard = () => {
               <Option value="Không có">Không có</Option>
             </Select>
           </Form.Item> */}
-          <Row gutter={16}>
-            <Col span={8}>
-              <Form.Item name="soPhongNgu" label="Số phòng ngủ">
-                <CustomNumberInput />
-              </Form.Item>
+          <Row gutter={[24, 16]} justify="space-between">
+            <Col xs={24} sm={8}>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                <div style={{ marginBottom: 8 }}>Số phòng ngủ</div>
+                <Form.Item name="soPhongNgu" style={{ marginBottom: 0 }}>
+                  <CustomNumberInput />
+                </Form.Item>
+              </div>
             </Col>
-            <Col span={8}>
-              <Form.Item name="soPhongTam" label="Số phòng tắm/WC">
-                <CustomNumberInput />
-              </Form.Item>
+            <Col xs={24} sm={8}>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                <div style={{ marginBottom: 8 }}>Số phòng tắm/WC</div>
+                <Form.Item name="soPhongTam" style={{ marginBottom: 0 }}>
+                  <CustomNumberInput />
+                </Form.Item>
+              </div>
             </Col>
-            <Col span={8}>
-              <Form.Item name="soTang" label="Số tầng">
-                <CustomNumberInput />
-              </Form.Item>
+            <Col xs={24} sm={8}>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                <div style={{ marginBottom: 8 }}>Số tầng</div>
+                <Form.Item name="soTang" style={{ marginBottom: 0 }}>
+                  <CustomNumberInput />
+                </Form.Item>
+              </div>
             </Col>
           </Row>
           <Row gutter={16}>
@@ -1420,8 +1655,6 @@ const CreatePostWizard = () => {
         return;
       }
 
-      // Lấy AreaId từ ward (id phường)
-      const areaId = values.ward ? parseInt(values.ward) : undefined;
       // Lấy các trường số, ép kiểu an toàn
       const price = Number(values.price);
       const areaSize = Number(values.area_Size);
@@ -1429,18 +1662,23 @@ const CreatePostWizard = () => {
       const priceUnit = Number(values.priceUnit);
 
       // Validate required fields
+      const hasAddressFromMap = addressFromMap?.fullAddress;
       if (
         !values.title ||
         !values.description ||
         !price ||
         !areaSize ||
-        !values.street_Name ||
+        (!values.street_Name && !hasAddressFromMap) ||
         !categoryId ||
-        !areaId ||
         !user?.id ||
         !values.transactionType
       ) {
         throw new Error("Vui lòng điền đầy đủ thông tin bắt buộc");
+      }
+      
+      // Validate địa chỉ: phải có từ map hoặc từ dropdown
+      if (!hasAddressFromMap && (!values.city || !values.district || !values.ward)) {
+        throw new Error("Vui lòng chọn địa chỉ từ dropdown hoặc chọn vị trí trên bản đồ");
       }
       if (isNaN(price) || price <= 0) {
         throw new Error("Mức giá không hợp lệ");
@@ -1451,14 +1689,57 @@ const CreatePostWizard = () => {
       if (isNaN(categoryId) || categoryId <= 0) {
         throw new Error("Vui lòng chọn loại bất động sản");
       }
-      if (isNaN(areaId) || areaId <= 0) {
-        throw new Error("Vui lòng chọn khu vực");
-      }
       if (isNaN(priceUnit) || (priceUnit !== 0 && priceUnit !== 1)) {
         throw new Error("Đơn vị giá không hợp lệ");
       }
       if (!user?.id) {
         throw new Error("Vui lòng đăng nhập để đăng bài");
+      }
+
+      // Xử lý địa chỉ: ưu tiên địa chỉ từ map, nếu không có thì dùng dropdown
+      let cityName, districtName, wardName, streetNameFinal;
+      
+      // Kiểm tra địa chỉ từ map có đầy đủ không (cần có ít nhất city)
+      const hasValidMapAddress = addressFromMap?.fullAddress && addressFromMap?.city;
+      
+      if (hasValidMapAddress) {
+        // Dùng địa chỉ từ map - parse từ fullAddress nếu thiếu thông tin
+        cityName = addressFromMap.city || '';
+        districtName = addressFromMap.district || '';
+        wardName = addressFromMap.ward || '';
+        streetNameFinal = addressFromMap.road || addressFromMap.houseNumber || values.street_Name || '';
+        
+        // Nếu thiếu district hoặc ward, thử parse từ fullAddress
+        if (!districtName || !wardName) {
+          const parts = addressFromMap.fullAddress.split(',').map(p => p.trim());
+          // Nominatim thường trả về: số nhà, đường, phường, quận, thành phố, quốc gia
+          if (parts.length >= 4) {
+            if (!wardName) wardName = parts[parts.length - 4] || parts[0] || '';
+            if (!districtName) districtName = parts[parts.length - 3] || parts[1] || '';
+          }
+        }
+        
+        console.log('📍 Sử dụng địa chỉ từ map:', { cityName, districtName, wardName, streetNameFinal, fullAddress: addressFromMap.fullAddress });
+        
+        // Nếu vẫn thiếu thông tin quan trọng, báo lỗi
+        if (!cityName) {
+          throw new Error("Không thể xác định địa chỉ từ vị trí đã chọn. Vui lòng chọn lại hoặc sử dụng dropdown.");
+        }
+      } else {
+        // Dùng địa chỉ từ dropdown
+        const cityObj = uniqueCities.find((c) => String(c.id) === String(values.city) || String(c.code) === String(values.city));
+        const districtObj = filteredDistricts.find((d) => String(d.id) === String(values.district) || String(d.code) === String(values.district));
+        const wardObj = filteredWards.find((w) => String(w.id) === String(values.ward) || String(w.code) === String(values.ward));
+
+        if (!cityObj?.name || !districtObj?.name || !wardObj?.name) {
+          throw new Error("Vui lòng chọn đầy đủ địa chỉ (Tỉnh/Thành phố, Quận/Huyện, Phường/Xã) hoặc chọn vị trí trên bản đồ");
+        }
+        
+        cityName = cityObj.name;
+        districtName = districtObj.name;
+        wardName = wardObj.name;
+        streetNameFinal = values.street_Name;
+        console.log('📍 Sử dụng địa chỉ từ dropdown:', { cityName, districtName, wardName, streetNameFinal });
       }
 
       const postData = new FormData();
@@ -1467,12 +1748,22 @@ const CreatePostWizard = () => {
       postData.append("Price", price);
       postData.append("PriceUnit", priceUnit);
       postData.append("Status", "dang ban");
-      postData.append("Street_Name", values.street_Name);
+      postData.append("Street_Name", streetNameFinal || '');
       postData.append("Area_Size", areaSize);
       postData.append("CategoryId", categoryId);
-      postData.append("AreaId", areaId);
       postData.append("UserId", user.id);
       postData.append("TransactionType", values.transactionType);
+      
+      // Gửi tên địa chỉ trực tiếp thay vì AreaId
+      // Đảm bảo không gửi giá trị trống cho các trường bắt buộc
+      postData.append("CityName", cityName || "Không xác định");
+      postData.append("DistrictName", districtName || "Không xác định");
+      postData.append("WardName", wardName || "Không xác định");
+      
+      // Gửi địa chỉ đầy đủ từ map nếu có
+      if (addressFromMap?.fullAddress) {
+        postData.append("FullAddressFromMap", addressFromMap.fullAddress);
+      }
       postData.append("SoPhongNgu", values.soPhongNgu || "");
       postData.append("SoPhongTam", values.soPhongTam || "");
       postData.append("SoTang", values.soTang || "");
@@ -1481,6 +1772,14 @@ const CreatePostWizard = () => {
       postData.append("MatTien", values.matTien || "");
       postData.append("DuongVao", values.duongVao || "");
       postData.append("PhapLy", values.phapLy || "");
+      
+      // Thêm tọa độ GPS nếu có
+      if (latitude != null && !isNaN(latitude)) {
+        postData.append("Latitude", latitude);
+      }
+      if (longitude != null && !isNaN(longitude)) {
+        postData.append("Longitude", longitude);
+      }
 
       // Chuẩn hóa danh sách ảnh từ form (hỗ trợ cả mảng trực tiếp và {fileList})
       const imageItems = Array.isArray(values.images)
@@ -1972,34 +2271,40 @@ const CreatePostWizard = () => {
 };
 
 const CustomNumberInput = ({ value = 0, onChange }) => (
-  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
     <Button
       shape="circle"
-      size="large"
+      size="middle"
       onClick={() => onChange(Math.max(0, value - 1))}
       style={{
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: "bold",
         background: "#232428",
         color: "#fff",
         border: "2px solid #444",
+        width: 36,
+        height: 36,
+        minWidth: 36,
       }}
     >
       -
     </Button>
-    <span style={{ minWidth: 24, textAlign: "center", fontSize: 18 }}>
+    <span style={{ minWidth: 28, textAlign: "center", fontSize: 16, fontWeight: 500 }}>
       {value}
     </span>
     <Button
       shape="circle"
-      size="large"
+      size="middle"
       onClick={() => onChange(value + 1)}
       style={{
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: "bold",
         background: "#232428",
         color: "#fff",
         border: "2px solid #444",
+        width: 36,
+        height: 36,
+        minWidth: 36,
       }}
     >
       +

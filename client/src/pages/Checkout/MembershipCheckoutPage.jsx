@@ -74,6 +74,13 @@ const MembershipCheckoutPage = () => {
   // Payment methods
   const paymentMethods = [
     {
+      id: 'payos',
+      name: 'PayOS',
+      description: 'Thanh toán QR Code nhanh chóng',
+      icon: <img src="https://payos.vn/docs/img/logo.svg" alt="PayOS" style={{ width: '24px', height: '24px' }} />,
+      popular: false
+    },
+    {
       id: 'vnpay',
       name: 'VNPAY',
       description: 'Thanh toán online an toàn',
@@ -86,17 +93,10 @@ const MembershipCheckoutPage = () => {
       description: 'Chuyển khoản trực tiếp',
       icon: <BankOutlined />,
       popular: false
-    },
-    {
-      id: 'momo',
-      name: 'Ví MoMo',
-      description: 'Thanh toán qua ví điện tử',
-      icon: <img src="https://developers.momo.vn/v3/img/logo.svg" alt="MoMo" style={{ width: '24px', height: '24px' }} />,
-      popular: false
     }
   ];
 
-  const [selectedMethod, setSelectedMethod] = useState('vnpay');
+  const [selectedMethod, setSelectedMethod] = useState('payos');
 
   useEffect(() => {
     if (!user) {
@@ -115,35 +115,27 @@ const MembershipCheckoutPage = () => {
     try {
       setLoading(true);
       
-      if (selectedMethod === 'vnpay') {
-        const payload = {
-          name: user?.name || "User",
-          orderDescription: `userId=${userId};plan=${currentPlan.key};type=membership`,
-          amount: currentPlan.price,
-          orderType: 'membership',
-          userId: userId,
-        };
-        
+      const payload = {
+        name: user?.name || "User",
+        orderDescription: `userId=${userId};plan=${currentPlan.key};type=membership;amount=${currentPlan.price}`,
+        amount: currentPlan.price,
+        orderType: 'membership',
+        userId: userId,
+      };
+
+      if (selectedMethod === 'payos') {
+        const res = await axiosPrivate.post('/api/payment/payos/create', payload);
+        if (res.data?.url) {
+          window.location.href = res.data.url;
+        } else {
+          message.error('Không tạo được liên kết thanh toán PayOS');
+        }
+      } else if (selectedMethod === 'vnpay') {
         const res = await axiosPrivate.post('/api/payment/vnpay/create', payload);
         if (res.data?.url) {
           window.location.href = res.data.url;
         } else {
           message.error('Không tạo được liên kết thanh toán');
-        }
-      } else if (selectedMethod === 'momo') {
-        const payload = {
-          name: user?.name || "User",
-          orderDescription: `userId=${userId};plan=${currentPlan.key};type=membership`,
-          amount: currentPlan.price,
-          orderType: 'membership',
-          userId: userId,
-        };
-        
-        const res = await axiosPrivate.post('/api/payment/momo/create', payload);
-        if (res.data?.url) {
-          window.location.href = res.data.url;
-        } else {
-          message.error('Không tạo được liên kết thanh toán MoMo');
         }
       } else {
         message.info('Tính năng này sẽ được cập nhật sớm');

@@ -50,10 +50,10 @@ const Membership = () => {
       key: 'receiptUrl',
       render: url => url ? (
         <img
-          src={`http://localhost:5134${url}`}
+          src={`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5134'}${url}`}
           alt="receipt"
           style={{ width: 60, height: 60, objectFit: 'cover', cursor: 'pointer', borderRadius: 6, border: '1px solid #eee' }}
-          onClick={() => setPreviewImg(`http://localhost:5134${url}`)}
+          onClick={() => setPreviewImg(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5134'}${url}`)}
         />
       ) : 'Không có'
     },

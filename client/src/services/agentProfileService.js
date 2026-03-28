@@ -1,4 +1,5 @@
 import axiosPrivate from '../api/axiosPrivate';
+import axiosClient from '../api/axiosClient';
 
 export const getAgentProfileById = async (id) => {
   try {
@@ -12,7 +13,7 @@ export const getAgentProfileById = async (id) => {
 
 export const getWardById = async (wardId) => {
   try {
-    const response = await axiosPrivate.get(`/api/areas/wards/${wardId}`);
+    const response = await axiosClient.get(`/api/areas/wards/${wardId}`);
     return response.data;
   } catch (error) {
     console.error(`Error fetching ward with ID ${wardId}:`, error);
@@ -22,7 +23,7 @@ export const getWardById = async (wardId) => {
 
 export const getDistrictById = async (districtId) => {
   try {
-    const response = await axiosPrivate.get(`/api/areas/districts/${districtId}`);
+    const response = await axiosClient.get(`/api/areas/districts/${districtId}`);
     return response.data;
   } catch (error) {
     console.error(`Error fetching district with ID ${districtId}:`, error);
@@ -32,7 +33,7 @@ export const getDistrictById = async (districtId) => {
 
 export const getCityById = async (cityId) => {
   try {
-    const response = await axiosPrivate.get(`/api/areas/cities/${cityId}`);
+    const response = await axiosClient.get(`/api/areas/cities/${cityId}`);
     return response.data;
   } catch (error) {
     console.error(`Error fetching city with ID ${cityId}:`, error);
@@ -42,7 +43,9 @@ export const getCityById = async (cityId) => {
 
 export const getCategoryById = async (categoryId) => {
   try {
-    const response = await axiosPrivate.get(`/api/categories/${categoryId}`);
+    console.log(`Fetching category with ID: ${categoryId}`);
+    const response = await axiosClient.get(`/api/categories/${categoryId}`);
+    console.log(`Category response:`, response.data);
     return response.data;
   } catch (error) {
     console.error(`Error fetching category with ID ${categoryId}:`, error);

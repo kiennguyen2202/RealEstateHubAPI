@@ -219,7 +219,7 @@
 
 .description {
   color: #666;
-  line-height: 1.6;
+  line-height: 1.8;
 }
 
 .description h3 {
@@ -227,6 +227,11 @@
   font-weight: 600;
   color: #333;
   margin-bottom: 15px;
+}
+
+.description p {
+  white-space: pre-line;
+  word-wrap: break-word;
 }
 
 /* Right Column - Contact */
@@ -698,3 +703,435 @@ select.form-input {
   border-color: #2563eb;
 }
 
+
+
+/* ===== ENHANCED ANIMATIONS FOR POST DETAIL ===== */
+
+/* Page Load Animation */
+.post-detail {
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Image Gallery Animations */
+.post-images {
+  animation: slideUp 0.6s ease-out;
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0; 
+    transform: translateY(30px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+.main-image {
+  transition: transform 0.5s ease, opacity 0.3s ease;
+}
+
+.main-image:hover {
+  transform: scale(1.02);
+}
+
+/* Image Change Animation */
+.main-image.changing {
+  animation: imageSwitch 0.4s ease;
+}
+
+@keyframes imageSwitch {
+  0% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.98); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* Thumbnail Animations */
+.thumbnail {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.thumbnail::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(197, 39, 40, 0.3), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+}
+
+.thumbnail:hover::before {
+  opacity: 1;
+}
+
+.thumbnail:hover {
+  transform: scale(1.08);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.thumbnail.selected {
+  transform: scale(1.05);
+  box-shadow: 0 0 0 3px #c52728, 0 8px 20px rgba(197, 39, 40, 0.3);
+}
+
+/* Navigation Buttons */
+.nav-button {
+  transition: all 0.3s ease;
+  backdrop-filter: blur(4px);
+}
+
+.nav-button:hover {
+  transform: translateY(-50%) scale(1.1);
+  background: rgba(197, 39, 40, 0.8);
+  box-shadow: 0 4px 15px rgba(197, 39, 40, 0.4);
+}
+
+/* Info Section Animations */
+.post-info-section {
+  animation: fadeInUp 0.6s ease-out 0.2s both;
+}
+
+@keyframes fadeInUp {
+  from { 
+    opacity: 0; 
+    transform: translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+.info-section {
+  opacity: 0;
+  animation: fadeInUp 0.5s ease forwards;
+}
+
+.info-section:nth-child(1) { animation-delay: 0.1s; }
+.info-section:nth-child(2) { animation-delay: 0.2s; }
+.info-section:nth-child(3) { animation-delay: 0.3s; }
+.info-section:nth-child(4) { animation-delay: 0.4s; }
+
+/* Info Grid Items */
+.info-item {
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.info-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #c52728, #ff6b6b);
+  transition: width 0.3s ease;
+}
+
+.info-item:hover::before {
+  width: 100%;
+}
+
+.info-item:hover {
+  transform: translateX(5px);
+  color: #c52728;
+}
+
+/* Contact Card Animation */
+.post-contact {
+  animation: slideInRight 0.6s ease-out 0.3s both;
+}
+
+@keyframes slideInRight {
+  from { 
+    opacity: 0; 
+    transform: translateX(30px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+
+/* Contact Buttons */
+.contact-btn, .phone-btn, .message-btn {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.contact-btn::before, .phone-btn::before, .message-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.contact-btn:hover::before, .phone-btn:hover::before, .message-btn:hover::before {
+  left: 100%;
+}
+
+.contact-btn:hover, .phone-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(197, 39, 40, 0.3);
+}
+
+.message-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Price Animation */
+.post-price, .price-value {
+  position: relative;
+  display: inline-block;
+}
+
+.post-price::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, #c52728, #ff6b6b, #c52728);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Map Section Animation */
+.map-section, .map-container {
+  animation: scaleIn 0.5s ease-out 0.4s both;
+}
+
+@keyframes scaleIn {
+  from { 
+    opacity: 0; 
+    transform: scale(0.95); 
+  }
+  to { 
+    opacity: 1; 
+    transform: scale(1); 
+  }
+}
+
+/* Related Posts Animation */
+.related-posts {
+  animation: fadeInUp 0.6s ease-out 0.5s both;
+}
+
+.related-post-card {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.related-post-card:hover {
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.related-post-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 2px solid transparent;
+  border-radius: inherit;
+  transition: border-color 0.3s ease;
+}
+
+.related-post-card:hover::after {
+  border-color: #c52728;
+}
+
+/* Media Tab Buttons */
+.media-tab-btn {
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.media-tab-btn::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 3px;
+  background: #c52728;
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+
+.media-tab-btn:hover::after,
+.media-tab-btn.active::after {
+  width: 100%;
+}
+
+.media-tab-btn:hover {
+  color: #c52728;
+}
+
+/* Panorama/3D View Animation */
+.panorama-container, .street-view-container {
+  animation: zoomIn 0.5s ease-out;
+}
+
+@keyframes zoomIn {
+  from { 
+    opacity: 0; 
+    transform: scale(0.9); 
+  }
+  to { 
+    opacity: 1; 
+    transform: scale(1); 
+  }
+}
+
+/* Report Button */
+.report-btn {
+  transition: all 0.3s ease;
+}
+
+.report-btn:hover {
+  transform: scale(1.05);
+  color: #c52728;
+}
+
+/* Mortgage Calculator Animation */
+.mortgage-calculator {
+  animation: fadeInUp 0.6s ease-out 0.6s both;
+}
+
+/* Price Chart Animation */
+.price-chart-container {
+  animation: fadeInUp 0.6s ease-out 0.7s both;
+}
+
+/* Floating Action Buttons */
+.floating-actions {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 100;
+}
+
+.floating-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #c52728;
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  box-shadow: 0 4px 15px rgba(197, 39, 40, 0.4);
+  transition: all 0.3s ease;
+  animation: bounceIn 0.5s ease;
+}
+
+@keyframes bounceIn {
+  0% { transform: scale(0); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.floating-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(197, 39, 40, 0.5);
+}
+
+/* Skeleton Loading */
+.skeleton-loading {
+  background: linear-gradient(90deg, #1f1f1f 25%, #2a2a2a 50%, #1f1f1f 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+/* Pulse Effect for Important Elements */
+.pulse-highlight {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(197, 39, 40, 0.4); }
+  50% { box-shadow: 0 0 0 10px rgba(197, 39, 40, 0); }
+}
+
+/* Smooth Scroll Behavior */
+.post-detail {
+  scroll-behavior: smooth;
+}
+
+/* Responsive Animations */
+@media (max-width: 768px) {
+  .post-contact {
+    animation: slideUp 0.6s ease-out 0.3s both;
+  }
+  
+  .floating-actions {
+    bottom: 20px;
+    right: 20px;
+  }
+  
+  .floating-btn {
+    width: 45px;
+    height: 45px;
+  }
+}
+
+/* Hover Card Effect */
+.hover-card {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Gradient Border Animation */
+.gradient-border {
+  position: relative;
+}
+
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(45deg, #c52728, #ff6b6b, #c52728, #ff6b6b);
+  background-size: 400% 400%;
+  border-radius: inherit;
+  z-index: -1;
+  animation: gradientRotate 3s ease infinite;
+}
+
+@keyframes gradientRotate {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}

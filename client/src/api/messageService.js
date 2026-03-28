@@ -8,14 +8,42 @@ export const messageService = {
             return response.data;
         } catch (error) {
             if (error.response?.data) {
-                // If the server returns a specific error message
                 throw new Error(error.response.data);
             } else if (error.response?.data?.message) {
-                // If the server returns an object with a message property
                 throw new Error(error.response.data.message);
             } else {
                 throw new Error('Không thể gửi tin nhắn. Vui lòng thử lại sau.');
             }
+        }
+    },
+
+    // Lấy quick replies từ BE
+    getQuickReplies: async () => {
+        try {
+            const response = await axiosClient.get('/api/messages/quick-replies');
+            return response.data;
+        } catch (error) {
+            throw error.response?.data || error.message;
+        }
+    },
+
+    // Lấy tất cả tin nhắn của một người dùng (for backward compatibility)
+    getUserMessages: async (userId) => {
+        try {
+            const response = await axiosClient.get(`/api/messages/user/${userId}`);
+            return response.data;
+        } catch (error) {
+            throw error.response?.data || error.message;
+        }
+    },
+
+    // Lấy danh sách hội thoại
+    getConversations: async (userId) => {
+        try {
+            const response = await axiosClient.get(`/api/messages/conversations/${userId}`);
+            return response.data;
+        } catch (error) {
+            throw error.response?.data || error.message;
         }
     },
 
@@ -29,36 +57,36 @@ export const messageService = {
         }
     },
 
-    // Lấy tất cả tin nhắn của một người dùng
-    getUserMessages: async (userId) => {
+    // Gửi typing indicator
+    sendTypingIndicator: async (typingData) => {
         try {
-            const response = await axiosClient.get(`/api/messages/user/${userId}`);
+            const response = await axiosClient.post('/api/messages/typing', typingData);
             return response.data;
         } catch (error) {
             throw error.response?.data || error.message;
         }
     },
 
-    // Lấy tất cả tin nhắn của một bài đăng
-    getPostMessages: async (postId) => {
+    // Đánh dấu tin nhắn đã đọc
+    markAsRead: async (readData) => {
         try {
-            const response = await axiosClient.get(`/api/messages/post/${postId}`);
+            const response = await axiosClient.post('/api/messages/read', readData);
             return response.data;
         } catch (error) {
             throw error.response?.data || error.message;
         }
     },
+
+    // Xóa hội thoại
     deleteConversation: async (user1Id, user2Id, postId) => {
-    try {
-        const response = await axiosClient.delete(
-            `/api/messages/conversation`,
-            { params: { user1Id, user2Id, postId } }
-        );
-        return response.data;
-    } catch (error) {
-        throw error.response?.data?.message || 'Xóa hội thoại thất bại';
-    }
-},
-
-    
+        try {
+            const response = await axiosClient.delete(
+                `/api/messages/conversation`,
+                { params: { user1Id, user2Id, postId } }
+            );
+            return response.data;
+        } catch (error) {
+            throw error.response?.data?.message || 'Xóa hội thoại thất bại';
+        }
+    },
 }; 

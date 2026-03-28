@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using RealEstateHubAPI.Model;
 using System.ComponentModel.DataAnnotations;
-using RealEstateHubAPI.Migrations;
 using RealEstateHubAPI.Models;
 
 namespace RealEstateHubAPI.DTOs
@@ -44,6 +43,14 @@ namespace RealEstateHubAPI.DTOs
         public string TimeAgo { get; set; }
         public string? PanoramaTourConfig { get; set; }
 
+        // Tọa độ GPS
+        public float? Latitude { get; set; }
+        public float? Longitude { get; set; }
+
+        // Địa chỉ mới
+        public string? CityName { get; set; }
+        public string? DistrictName { get; set; }
+        public string? WardName { get; set; }
     }
     public class CreatePostDto
     {
@@ -75,8 +82,7 @@ namespace RealEstateHubAPI.DTOs
 
         [Required]
         public int CategoryId { get; set; }
-        [Required]
-        public int AreaId { get; set; }
+        public int? AreaId { get; set; } // Deprecated
         public int UserId { get; set; }
 
         [Required]
@@ -84,7 +90,17 @@ namespace RealEstateHubAPI.DTOs
 
         public string? PanoramaTourConfig { get; set; }
 
-        
+        // Tọa độ GPS
+        public float? Latitude { get; set; }
+        public float? Longitude { get; set; }
+
+        // Địa chỉ mới - lưu trực tiếp tên
+        [Required]
+        public string CityName { get; set; }
+        [Required]
+        public string DistrictName { get; set; }
+        [Required]
+        public string WardName { get; set; }
     }
     public class UpdatePostDto
     {
@@ -118,13 +134,19 @@ namespace RealEstateHubAPI.DTOs
 
         [Required]
         public int CategoryId { get; set; }
-        [Required]
-        public int AreaId { get; set; }
+        public int? AreaId { get; set; } // Deprecated
         public int UserId { get; set; }
 
         public IFormFile[]? Images { get; set; } 
         public string? PanoramaTourConfig { get; set; } 
         
-       
+        // Tọa độ GPS
+        public float? Latitude { get; set; }
+        public float? Longitude { get; set; }
+
+        // Địa chỉ mới
+        public string? CityName { get; set; }
+        public string? DistrictName { get; set; }
+        public string? WardName { get; set; }
     }
 }

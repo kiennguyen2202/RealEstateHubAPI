@@ -35,7 +35,7 @@ const Profile = () => {
           phone: data.phone || '', 
           avatar: data.avatarUrl || '' 
         });
-        setAvatarPreview("http://localhost:5134" + (data.avatarUrl || ''));
+        setAvatarPreview((import.meta.env.VITE_API_BASE_URL || "http://localhost:5134") + (data.avatarUrl || ''));
       } catch (err) {
         console.error('Error fetching user profile:', err);
         setMessage('Không thể tải thông tin người dùng');

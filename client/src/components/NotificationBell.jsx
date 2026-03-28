@@ -1,10 +1,24 @@
 import { Badge, Dropdown, List, message } from 'antd';
 import { BellOutlined, CloseOutlined } from '@ant-design/icons';
-import React, { useEffect, useState, useContext } from 'react';
-import axiosPrivate from '../api/axiosPrivate'; 
+import { useEffect, useState, useContext, useCallback } from 'react';
+import axiosPrivate from '../api/axiosPrivate';
 import { AuthContext } from '../auth/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import * as signalR from '@microsoft/signalr';
+
+const MAX_NOTIFICATIONS = 10; // Giới hạn hiển thị
+
+// Use window object to persist across HMR reloads
+if (!window.__notificationBellState) {
+  window.__notificationBellState = {
+    signalRConnection: null,
+    signalRConnecting: false,
+    receivedNotificationIds: new Set(),
+    notificationHandlers: new Set()
+  };
+}
+
+const bellState = window.__notificationBellState;
 
 const NotificationBell = () => {
   const [notifications, setNotifications] = useState([]);
@@ -13,164 +27,243 @@ const NotificationBell = () => {
   const navigate = useNavigate();
   const [shake, setShake] = useState(false);
 
-  useEffect(() => {
-    fetchNotifications();
-    const interval = setInterval(fetchNotifications, 10000); 
-    return () => clearInterval(interval);
-  }, [user]);
-
-  useEffect(() => {
-    if (!user) return;
-    const connection = new signalR.HubConnectionBuilder()
-      .withUrl('http://localhost:5134/notificationHub')
-      .build();
-    connection.on('ReceiveNotification', (notification) => {
-      console.log('Nhận notification real-time:', notification); // Debug
-      setNotifications(prev => [notification, ...prev]);
-      setUnreadCount(prev => prev + 1);
-      setShake(true);
-      setTimeout(() => setShake(false), 1000);
-    });
-    connection.start();
-    return () => { connection.stop(); };
-  }, [user]);
-
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
     if (!user) return;
     try {
       const res = await axiosPrivate.get(`api/notifications?userId=${user.id}`);
-      setNotifications(res.data);
+      setNotifications(res.data.slice(0, MAX_NOTIFICATIONS));
       setUnreadCount(res.data.filter(n => !n.isRead).length);
     } catch (error) {
       console.error('Lỗi khi lấy thông báo:', error);
     }
-  };
+  }, [user]);
 
-  const handleClick = async (id, postId, type, senderId) => {
-    await axiosPrivate.put(`api/notifications/${id}/mark-read`);
-    fetchNotifications();
-    if (type === 'message' && senderId && postId) {
-      navigate(`/messages?userId=${senderId}&postId=${postId}`);
-    } else if ((type === 'expire' || type === 'expired') && postId) {
-      navigate(`/chi-tiet/${postId}`);
-    } else if (postId) {
-      navigate(`/chi-tiet/${postId}`);
+  // Setup SignalR - only once globally
+  useEffect(() => {
+    if (!user) return;
+    
+    // Create handler for this component instance
+    const handleNotification = (notification) => {
+      // Prevent duplicate notifications
+      if (bellState.receivedNotificationIds.has(notification.id)) return;
+      bellState.receivedNotificationIds.add(notification.id);
+      
+      // Cleanup old IDs
+      if (bellState.receivedNotificationIds.size > 100) {
+        const arr = Array.from(bellState.receivedNotificationIds);
+        arr.slice(0, 50).forEach(id => bellState.receivedNotificationIds.delete(id));
+      }
+      
+      console.log('🔔 Real-time notification:', notification);
+      setNotifications(prev => {
+        if (prev.some(n => n.id === notification.id)) return prev;
+        return [notification, ...prev].slice(0, MAX_NOTIFICATIONS);
+      });
+      setUnreadCount(prev => prev + 1);
+      setShake(true);
+      setTimeout(() => setShake(false), 1000);
+    };
+
+    // If already connected, just join group
+    if (bellState.signalRConnection?.state === signalR.HubConnectionState.Connected) {
+      bellState.signalRConnection.invoke('JoinUserGroup', user.id.toString()).catch(() => {});
+      return;
     }
+    
+    // If already connecting, wait
+    if (bellState.signalRConnecting) return;
+
+    bellState.signalRConnecting = true;
+
+    const connection = new signalR.HubConnectionBuilder()
+      .withUrl(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5134'}/notificationHub`, {
+        skipNegotiation: true,
+        transport: signalR.HttpTransportType.WebSockets
+      })
+      .withAutomaticReconnect()
+      .build();
+
+    connection.on('ReceiveNotification', handleNotification);
+
+    connection.start()
+      .then(() => {
+        console.log('✅ SignalR Connected');
+        bellState.signalRConnection = connection;
+        return connection.invoke('JoinUserGroup', user.id.toString());
+      })
+      .then(() => console.log('✅ Joined group for user:', user.id))
+      .catch(err => console.error('❌ SignalR Error:', err))
+      .finally(() => { bellState.signalRConnecting = false; });
+
+    return () => {
+      // Don't disconnect - keep connection alive
+    };
+  }, [user?.id]);
+
+  useEffect(() => {
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 30000);
+    return () => clearInterval(interval);
+  }, [fetchNotifications]);
+
+  useEffect(() => {
+    const handleRefresh = () => fetchNotifications();
+    window.addEventListener('refreshNotifications', handleRefresh);
+    return () => window.removeEventListener('refreshNotifications', handleRefresh);
+  }, [fetchNotifications]);
+
+  const handleClick = async (item) => {
+    await axiosPrivate.put(`api/notifications/${item.id}/mark-read`);
+    fetchNotifications();
+
+    const { postId, type, senderId } = item;
+    // Message notification - navigate to chat with sender
+    if (type === 'message' && senderId) {
+      const chatUrl = postId ? `/chat?u=${senderId}&postId=${postId}` : `/chat?u=${senderId}`;
+      navigate(chatUrl);
+    }
+    else if (type === 'expire' || type === 'expired') postId && navigate(`/chi-tiet/${postId}`);
+    else if (type === 'membership_upgrade') navigate('/dashboard');
+    else if (type === 'agent_profile_created') navigate('/agent-profile');
+    else if (type === 'approved' && postId) navigate(`/chi-tiet/${postId}`);
+    else if (postId) navigate(`/chi-tiet/${postId}`);
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (e, id) => {
+    e.stopPropagation();
     try {
       await axiosPrivate.delete(`api/notifications/${id}`);
       fetchNotifications();
       message.success('Đã xóa thông báo!');
-    } catch (error) {
+    } catch {
       message.error('Xóa thông báo thất bại!');
     }
   };
 
-  // Icon theo loại thông báo
-  const getNotificationIcon = (type) => {
-    switch (type) {
-      case 'message': return <span role="img" aria-label="message">💬</span>;
-      case 'expire': return <span role="img" aria-label="expire">⏰</span>;
-      case 'expired': return <span role="img" aria-label="expired">❌</span>;
-      case 'report': return <span role="img" aria-label="report">👮</span>;
-      case 'approved': return <span role="img" aria-label="approved">✅</span>;
-      default: return <BellOutlined />;
-    }
+  const getIcon = (type) => {
+    const icons = {
+      message: '💬', expire: '⏰', expired: '❌', report: '👮',
+      approved: '✅', payment_success: '💳', membership_upgrade: '👑', agent_profile_created: '🏠'
+    };
+    return icons[type] ? <span>{icons[type]}</span> : <BellOutlined />;
   };
 
-  const notificationList = (
-    <div
-      style={{
-        minWidth: 340,
-        maxWidth: 400,
-        padding: 0,
-        borderRadius: 12,
-        boxShadow: '0 4px 24px rgba(0,0,0,0.18)',
-        background: '#fff',
-        border: '1px solid #f0f0f0',
-        overflow: 'hidden',
-      }}
-    >
-      <List
-        dataSource={notifications}
-        locale={{ emptyText: <div style={{ padding: 24, color: '#888' }}>Không có thông báo nào</div> }}
-        renderItem={item => (
-          <List.Item
-            style={{
-              backgroundColor: item.isRead ? '#fafafa' : '#e6f7ff',
-              cursor: 'pointer',
-              whiteSpace: 'normal',
-              wordBreak: 'break-word',
-              padding: '14px 18px',
-              borderBottom: '1px solid #f0f0f0',
-              transition: 'background 0.2s',
-              borderLeft: item.isRead ? '4px solid transparent' : '4px solid #1890ff',
-            }}
-            actions={[
-              <CloseOutlined
-                key="delete"
-                onClick={e => {
-                  e.stopPropagation(); // Không trigger click vào notification
-                  handleDelete(item.id);
-                }}
-                style={{ color: '#ff4d4f', fontSize: 16, cursor: 'pointer' }}
-                title="Xóa thông báo"
-              />
-            ]}
-            onClick={() => handleClick(item.id, item.postId, item.type, item.senderId)}
-          >
-            <List.Item.Meta
-              avatar={getNotificationIcon(item.type)}
-              title={
-                <span style={{
-                  fontWeight: 700,
-                  color: item.isRead ? '#555' : '#1890ff',
-                  fontSize: 15,
-                  letterSpacing: 0.2,
+  const dropdownContent = (
+    <div style={{
+      width: 360,
+      maxHeight: 400,
+      borderRadius: 12,
+      boxShadow: '0 4px 24px rgba(0,0,0,0.15)',
+      background: '#fff',
+      border: '1px solid #e8e8e8',
+      overflow: 'hidden',
+    }}>
+      <div style={{
+        padding: '12px 16px',
+        borderBottom: '1px solid #f0f0f0',
+        fontWeight: 600,
+        fontSize: 16,
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+      }}>
+        <span>Thông báo</span>
+        {unreadCount > 0 && (
+          <span style={{ 
+            background: '#ff4d4f', 
+            color: '#fff', 
+            padding: '2px 8px', 
+            borderRadius: 10, 
+            fontSize: 12 
+          }}>
+            {unreadCount} mới
+          </span>
+        )}
+      </div>
+      <div style={{ maxHeight: 340, overflowY: 'auto' }}>
+        <List
+          dataSource={notifications}
+          locale={{ emptyText: <div style={{ padding: 40, color: '#999', textAlign: 'center' }}>Không có thông báo</div> }}
+          renderItem={item => (
+            <div
+              onClick={() => handleClick(item)}
+              style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                padding: '12px 16px',
+                cursor: 'pointer',
+                background: item.isRead ? '#fff' : '#f0f7ff',
+                borderBottom: '1px solid #f5f5f5',
+                borderLeft: item.isRead ? '3px solid transparent' : '3px solid #1890ff',
+                transition: 'background 0.2s',
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = '#fafafa'}
+              onMouseLeave={e => e.currentTarget.style.background = item.isRead ? '#fff' : '#f0f7ff'}
+            >
+              <div style={{ fontSize: 20, marginRight: 12, marginTop: 2 }}>
+                {getIcon(item.type)}
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ 
+                  fontWeight: item.isRead ? 500 : 600, 
+                  color: item.isRead ? '#666' : '#1890ff',
+                  fontSize: 14,
+                  marginBottom: 4
                 }}>
                   {item.title}
-                </span>
-              }
-              description={
-                <span style={{
-                  whiteSpace: 'pre-line',
-                  wordBreak: 'break-word',
-                  color: '#333',
-                  fontSize: 14,
-                  marginTop: 4,
-                  display: 'block',
+                </div>
+                <div style={{ 
+                  color: '#666', 
+                  fontSize: 13, 
+                  lineHeight: 1.4,
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  display: '-webkit-box',
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: 'vertical'
                 }}>
                   {item.message}
-                </span>
-              }
-            />
-          </List.Item>
-        )}
-      />
+                </div>
+              </div>
+              <CloseOutlined
+                onClick={(e) => handleDelete(e, item.id)}
+                style={{ 
+                  color: '#999', 
+                  fontSize: 12, 
+                  padding: 4,
+                  marginLeft: 8,
+                  cursor: 'pointer'
+                }}
+                onMouseEnter={e => e.currentTarget.style.color = '#ff4d4f'}
+                onMouseLeave={e => e.currentTarget.style.color = '#999'}
+              />
+            </div>
+          )}
+        />
+      </div>
     </div>
   );
 
   return (
     <>
-      <style>
-        {`
+      <style>{`
         @keyframes shake {
-          0% { transform: rotate(0deg);}
-          20% { transform: rotate(-15deg);}
-          40% { transform: 10deg);}
-          60% { transform: -10deg);}
-          80% { transform: 5deg);}
-          100% { transform: rotate(0deg);}
+          0%, 100% { transform: rotate(0deg); }
+          20% { transform: rotate(-15deg); }
+          40% { transform: rotate(10deg); }
+          60% { transform: rotate(-10deg); }
+          80% { transform: rotate(5deg); }
         }
-        `}
-      </style>
-      <Dropdown overlay={notificationList} trigger={['click']} placement="bottomRight">
-        <Badge count={unreadCount} size="small">
+      `}</style>
+      <Dropdown 
+        dropdownRender={() => dropdownContent} 
+        trigger={['click']} 
+        placement="bottomRight"
+      >
+        <Badge count={unreadCount} size="small" offset={[-2, 2]}>
           <BellOutlined
             style={{
-              fontSize: '24px',
+              fontSize: 22,
               color: '#555',
               cursor: 'pointer',
               animation: shake ? 'shake 0.5s' : 'none'

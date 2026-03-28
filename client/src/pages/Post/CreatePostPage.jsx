@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axiosPrivate from '../../api/axiosPrivate.js';
 import { useAuth } from '../../auth/AuthContext.jsx';
 import MessageProvider from '../../components/MessageProvider.jsx';
+import { userService } from '../../api/userService.js';
 import MapComponent from '../../components/MapComponent.jsx';
 import './CreatePostPage.css';
 
@@ -12,11 +13,41 @@ const PriceUnit = {
     Triệu: 1
 };
 
+// Hook custom để quản lý session storage
+const useFormSession = (key, initialValue) => {
+  const [value, setValue] = useState(() => {
+    const saved = sessionStorage.getItem(key);
+    return saved ? JSON.parse(saved) : initialValue;
+  });
+
+  const setValueWithStorage = (newValue) => {
+    setValue(newValue);
+    sessionStorage.setItem(key, JSON.stringify(newValue));
+  };
+
+  const clearStorage = () => {
+    sessionStorage.removeItem(key);
+    setValue(initialValue);
+  };
+
+  return [value, setValueWithStorage, clearStorage];
+};
+
 const CreatePostPage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { showMessage, contextHolder } = MessageProvider();
-  const [formData, setFormData] = useState({
+  const getLimitInfo = (roleName) => {
+    switch (roleName) {
+      case 'Pro_1': return { limit: 100, days: 30 };
+      case 'Pro_3': return { limit: 300, days: 90 };
+      case 'Pro_12': return { limit: 1200, days: 365 };
+      default: return { limit: 5, days: 7 };
+    }
+  };
+  
+  // Sử dụng session storage cho form data
+  const [formData, setFormData, clearFormData] = useFormSession('createPostForm', {
     Title: '',
     Description: '',
     Price: '',
@@ -40,7 +71,15 @@ const CreatePostPage = () => {
     DuongVao: '',
     PhapLy: '',
   });
-  const [fullAddress, setFullAddress] = useState('');
+
+  // Sử dụng session storage cho các state khác
+  const [fullAddress, setFullAddress] = useFormSession('createPostFullAddress', '');
+  const [selectedStreetName, setSelectedStreetName] = useFormSession('createPostStreetName', '');
+  const [selectedCityName, setSelectedCityName] = useFormSession('createPostCityName', '');
+  const [selectedDistrictName, setSelectedDistrictName] = useFormSession('createPostDistrictName', '');
+  const [selectedWardName, setSelectedWardName] = useFormSession('createPostWardName', '');
+  const [imagePreviews, setImagePreviews] = useFormSession('createPostImagePreviews', []);
+
   const [zoomLevel, setZoomLevel] = useState(5); // Default zoom level
   const [mapZoom,setMapZoom] = useState('');
   const [categories, setCategories] = useState([]);
@@ -50,13 +89,6 @@ const CreatePostPage = () => {
   const [filteredWards, setFilteredWards] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [imagePreviews, setImagePreviews] = useState([]);
-
-  // New states for selected area names
-  const [selectedStreetName, setSelectedStreetName] = useState('');
-  const [selectedCityName, setSelectedCityName] = useState('');
-  const [selectedDistrictName, setSelectedDistrictName] = useState('');
-  const [selectedWardName, setSelectedWardName] = useState('');
 
   const getMapZoom = () => {    
     let zoomLevel = (() => {
@@ -286,7 +318,27 @@ const CreatePostPage = () => {
     setLoading(true);
     setError(null);
     
-
+    // Pre-check quota based on role before submitting
+    try {
+      const roleName = (user?.role || user?.Role || 'User');
+      const { limit, days } = getLimitInfo(roleName);
+      const cutoff = new Date();
+      cutoff.setDate(cutoff.getDate() - days);
+      const postsRes = await axiosPrivate.get(`/api/posts/user/${user.id}`);
+      const posts = Array.isArray(postsRes.data) ? postsRes.data : [];
+      const countInWindow = posts.filter(p => {
+        const createdAt = p?.created || p?.Created;
+        const dt = createdAt ? new Date(createdAt) : null;
+        return dt && dt >= cutoff;
+      }).length;
+      if (countInWindow >= limit) {
+        showMessage.error(`Bạn đã đạt giới hạn ${limit} bài viết trong ${days} ngày. Nâng cấp gói Pro để đăng nhiều hơn (Pro_1: 100/30 ngày, Pro_3: 300/90 ngày, Pro_12: 1200/365 ngày). Vào trang Membership để nâng cấp.`);
+        setLoading(false);
+        return;
+      }
+    } catch (_) {
+      // Nếu pre-check lỗi, tiếp tục để BE kiểm tra
+    }
 
     try {
       // Log form data before validation
@@ -389,7 +441,25 @@ const CreatePostPage = () => {
 
       if (response.data) {
         console.log('Post created successfully, navigating to:', `/chi-tiet/${response.data.id}`);
-        showMessage.success('Bài đăng đã được tạo thành công!');
+        try {
+          const quotaInfo = await userService.getPostQuota();
+          if (quotaInfo && typeof quotaInfo.remainingPosts === 'number') {
+            showMessage.success(`Đăng thành công! Bạn còn ${quotaInfo.remainingPosts}/${quotaInfo.limit} lượt đăng tin trong ${quotaInfo.windowDays} ngày.`);
+          } else {
+            showMessage.success('Bài đăng đã được tạo thành công!');
+          }
+        } catch (_) {
+          showMessage.success('Bài đăng đã được tạo thành công!');
+        }
+        
+        // Clear session storage khi đăng tin thành công
+        clearFormData();
+        sessionStorage.removeItem('createPostFullAddress');
+        sessionStorage.removeItem('createPostStreetName');
+        sessionStorage.removeItem('createPostCityName');
+        sessionStorage.removeItem('createPostDistrictName');
+        sessionStorage.removeItem('createPostWardName');
+        sessionStorage.removeItem('createPostImagePreviews');
         
         setTimeout(() => {
           navigate(`/chi-tiet/${response.data.id}`);
@@ -403,7 +473,16 @@ const CreatePostPage = () => {
         console.error('Error response data:', err.response.data);
         console.error('Error response status:', err.response.status);
         console.error('Error response headers:', err.response.headers);
-        showMessage.error(err.response.data || 'Đã xảy ra lỗi khi tạo bài đăng.');
+        if (err.response.status === 400) {
+          const { limit, days } = getLimitInfo(user?.role || user?.Role);
+          const localMsg = `Bạn đã đạt giới hạn ${limit} bài viết trong ${days} ngày. Nâng cấp gói Pro để đăng nhiều hơn (Pro_1: 100/30 ngày, Pro_3: 300/90 ngày, Pro_12: 1200/365 ngày). Vào trang Membership để nâng cấp.`;
+          showMessage.error(localMsg);
+        } else if (typeof err.response.data === 'string') {
+          const msg = err.response.data;
+          showMessage.error(msg);
+        } else {
+          showMessage.error('Đã xảy ra lỗi khi tạo bài đăng.');
+        }
       } else if (err.request) {
         console.error('Error request:', err.request);
         showMessage.error('Không thể kết nối đến máy chủ. Vui lòng thử lại sau.');

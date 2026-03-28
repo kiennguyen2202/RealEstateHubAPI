@@ -39,40 +39,19 @@ export default function AgentProfilePage() {
       setLoading(true);
       try {
         const agentRes = await getAgentProfileById(id); // Lấy profile chính thức bằng ID
-        console.log('AgentProfilePage - Agent data from backend:', agentRes); // Debug tạm thời
-        console.log('AgentProfilePage - agentRes.areaNames:', agentRes?.areaNames); // Debug tạm thời
-        console.log('AgentProfilePage - agentRes.areaIds:', agentRes?.areaIds); // Debug tạm thời
-        console.log('AgentProfilePage - agentRes.transactionTypes:', agentRes?.transactionTypes); // Debug tạm thời
-        console.log('AgentProfilePage - agentRes.categoryIds:', agentRes?.categoryIds); // Debug tạm thời
+        console.log('AgentProfilePage - Agent data from backend:', agentRes);
+        console.log('AgentProfilePage - agentRes.areaNames:', agentRes?.areaNames);
         
-        // Tạo areaNames từ areaIds để đảm bảo nhất quán với AgentProfileOverviewPage
-        if (agentRes?.areaIds?.length > 0) {
-          const fetchedAreaCityPairs = await Promise.all(
-            agentRes.areaIds.map(async (areaId) => {
-              try {
-                const area = await axiosPrivate.get(`/api/areas/districts/${areaId}`);
-                if (area?.data?.cityId) {
-                  const city = await getCityById(area.data.cityId);
-                  return `${area.data.name}, ${city?.name || 'Unknown City'}`;
-                }
-                return area?.data?.name || null;
-              } catch (err) {
-                console.log(`Failed to fetch area with ID ${areaId}:`, err);
-                return null;
-              }
-            })
-          );
-          const validAreaNames = fetchedAreaCityPairs.filter(name => name);
-          // Luôn ghi đè areaNames từ backend bằng dữ liệu được tạo từ areaIds để đảm bảo nhất quán
-          agentRes.areaNames = validAreaNames;
-          console.log('AgentProfilePage - Created areaNames from areaIds:', validAreaNames); // Debug tạm thời
-          console.log('AgentProfilePage - Created areaNames content:', validAreaNames?.map((name, idx) => `${idx}: "${name}"`)); // Debug tạm thời
-        }
-        
+        // Backend đã trả về areaNames từ AreaNamesJson, không cần fetch thêm
         setAgent(agentRes);
 
-        // Fetch category names cho nhiều categories
-        if (agentRes?.categoryIds?.length > 0) {
+        // Ưu tiên sử dụng categoryNames từ backend nếu có
+        if (agentRes?.categoryNames?.length > 0) {
+          setCategoryNames(agentRes.categoryNames);
+          console.log('Using categoryNames from backend:', agentRes.categoryNames);
+        }
+        // Fallback: Fetch category names cho nhiều categories
+        else if (agentRes?.categoryIds?.length > 0) {
           const fetchedCategoryNames = await Promise.all(
             agentRes.categoryIds.map(async (categoryId) => {
               try {
@@ -180,25 +159,45 @@ export default function AgentProfilePage() {
     return <Card style={{ maxWidth: 600, margin: '48px auto', textAlign: 'center' }}>Không tìm thấy chuyên trang.</Card>;
   }
 
+  // Hàm xử lý gộp các district cùng city từ areaNames backend
+  const processAreaNames = (areaNamesList) => {
+    if (!areaNamesList || areaNamesList.length === 0) return [];
+    
+    // Parse "District, City" format và gộp theo city
+    const cityGroups = {};
+    areaNamesList.forEach(name => {
+      const parts = name.split(', ');
+      if (parts.length >= 2) {
+        const district = parts[0];
+        const city = parts.slice(1).join(', ');
+        if (!cityGroups[city]) {
+          cityGroups[city] = [];
+        }
+        cityGroups[city].push(district);
+      }
+    });
+    
+    // Tạo chuỗi "District1, District2 (City)"
+    return Object.entries(cityGroups).map(([city, districts]) => {
+      const uniqueDistricts = [...new Set(districts)];
+      return `${uniqueDistricts.join(', ')} (${city})`;
+    });
+  };
+
   // Thêm hàm render khu vực hoạt động ưu tiên name
   const renderAreaNames = () => {
-    console.log('renderAreaNames - agent:', agent); // Debug tạm thời
-    console.log('renderAreaNames - agent.areaNames:', agent?.areaNames); // Debug tạm thời
-    console.log('renderAreaNames - agent.areaNames content:', agent?.areaNames?.map((name, idx) => `${idx}: "${name}"`)); // Debug tạm thời
-    
     // Ưu tiên sử dụng AreaNames từ backend nếu có
     if (agent && Array.isArray(agent.areaNames) && agent.areaNames.length > 0) {
-      // Loại bỏ các khu vực trùng lặp
-      const uniqueAreas = [...new Set(agent.areaNames)];
-      console.log('renderAreaNames - uniqueAreas:', uniqueAreas); // Debug tạm thời
-      console.log('renderAreaNames - uniqueAreas content:', uniqueAreas?.map((name, idx) => `${idx}: "${name}"`)); // Debug tạm thời
-      return (
-        <>
-          {uniqueAreas.map((areaName, idx) => (
-            <div key={idx} style={{ marginBottom: 4 }}>{areaName}</div>
-          ))}
-        </>
-      );
+      const processedAreas = processAreaNames(agent.areaNames);
+      if (processedAreas.length > 0) {
+        return (
+          <>
+            {processedAreas.map((areaName, idx) => (
+              <div key={idx} style={{ marginBottom: 4 }}>{areaName}</div>
+            ))}
+          </>
+        );
+      }
     }
     // Fallback: sử dụng logic cũ
     if (agent && Array.isArray(agent.areas) && agent.areas.length > 0 && agent.areas[0].name) {
@@ -216,9 +215,8 @@ export default function AgentProfilePage() {
 
   // Thêm hàm render loại hình môi giới mới
   const renderCategoryTransactionTypes = () => {
-    
     // Nếu có TransactionTypes và CategoryIds từ backend
-    if (agent && Array.isArray(agent.transactionTypes) && Array.isArray(agent.categoryIds) && agent.transactionTypes.length > 0) {
+    if (agent && Array.isArray(agent.transactionTypes) && agent.transactionTypes.length > 0) {
       return (
         <ul style={{ paddingLeft: 18, margin: 0 }}>
           {agent.transactionTypes.map((type, idx) => {
@@ -230,9 +228,11 @@ export default function AgentProfilePage() {
             } else {
               label = type;
             }
+            // Lấy category name từ state hoặc hiển thị fallback
+            const catName = categoryNames[idx] || (agent.categoryIds?.[idx] ? `Category ID: ${agent.categoryIds[idx]}` : 'Chưa xác định');
             return (
               <li key={idx} style={{ marginBottom: 4 }}>
-                <span>{label} - {categoryNames[idx] || 'Loại hình BĐS'}</span>
+                <span>{label} - {catName}</span>
               </li>
             );
           })}
@@ -242,7 +242,7 @@ export default function AgentProfilePage() {
     // Fallback: logic cũ
     return (
       <div>
-        {agent.transactionType === 0 ? 'Mua bán' : 'Cho thuê'} - {categoryNames[0] || '---'}
+        {agent?.transactionType === 0 ? 'Mua bán' : 'Cho thuê'} - {categoryNames[0] || '---'}
       </div>
     );
   };
@@ -252,7 +252,7 @@ export default function AgentProfilePage() {
       {agent.bannerUrl && (
         <div style={{ width: '100%', marginBottom: 24 }}>
           <img
-            src={`http://localhost:5134${agent.bannerUrl}`} // Đảm bảo đường dẫn ảnh đúng
+            src={`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5134'}${agent.bannerUrl}`} // Đảm bảo đường dẫn ảnh đúng
             alt="Banner"
             style={{
               width: '100%',
@@ -271,7 +271,7 @@ export default function AgentProfilePage() {
             <div style={{ textAlign: 'center', marginBottom: 16 }}>
               <Avatar
                 size={80}
-                src={agent.avatarUrl ? `http://localhost:5134${agent.avatarUrl}` : null} // Đảm bảo đường dẫn ảnh đúng
+                src={agent.avatarUrl ? `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5134'}${agent.avatarUrl}` : null} // Đảm bảo đường dẫn ảnh đúng
                 icon={<UserOutlined />}
                 style={{ marginBottom: 8 }}
               />
@@ -332,7 +332,7 @@ export default function AgentProfilePage() {
                   avatar={
                     <Link to={`/chi-tiet/${item.id}`} style={{ color: '#fff', fontWeight: 600 }}>
                       <img
-                        src={item.imageUrls && item.imageUrls.length > 0 ? `http://localhost:5134${item.imageUrls[0].url}` : ''}
+                        src={item.imageUrls && item.imageUrls.length > 0 ? `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5134'}${item.imageUrls[0].url}` : ''}
                         alt={item.title}
                         style={{ width: 110, height: 80, objectFit: 'cover', borderRadius: 8, marginRight: 16, background: '#222' }}
                       />
@@ -351,7 +351,9 @@ export default function AgentProfilePage() {
                         <span style={{ color: 'white' }}>{item.area_Size} m²</span>
                       </div>
                       <div style={{ color: '#aaa', fontSize: 12 }}>{item.timeAgo}</div>
-                      <span style={{ color: '#aaa', fontSize: 12 }}>{item.areaName}</span>
+                      <span style={{ color: '#aaa', fontSize: 12 }}>
+                        {[item.districtName || item.area?.district?.name, item.cityName || item.area?.city?.name].filter(Boolean).join(', ') || ''}
+                      </span>
                     </div>
                   }
                 />
@@ -373,7 +375,7 @@ export default function AgentProfilePage() {
                     avatar={
                       <Link to={`/chi-tiet/${item.id}`} style={{ color: '#fff', fontWeight: 600 }}>
                       <img
-                        src={item.imageUrls && item.imageUrls.length > 0 ? `http://localhost:5134${item.imageUrls[0].url}` : ''}
+                        src={item.imageUrls && item.imageUrls.length > 0 ? `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5134'}${item.imageUrls[0].url}` : ''}
                         alt={item.title}
                         style={{
                           width: 110,
@@ -396,11 +398,12 @@ export default function AgentProfilePage() {
                           <span style={{ color: 'white' }}>{item.area_Size} m²</span>
                         </div>
                         <div style={{ color: '#aaa', fontSize: 12 }}>{item.timeAgo}</div>
-                        <span style={{ color: '#aaa', fontSize: 12 }}>{item.areaName}</span>
+                        <span style={{ color: '#aaa', fontSize: 12 }}>
+                          {[item.districtName || item.area?.district?.name, item.cityName || item.area?.city?.name].filter(Boolean).join(', ') || ''}
+                        </span>
                       </div>
                     }
                   />
-                  {/* <Button shape="circle" icon={<span style={{ color: '#fff' }}>&hearts;</span>} style={{ background: 'transparent', border: 'none' }} /> */}
                 </List.Item>
               )}
             />

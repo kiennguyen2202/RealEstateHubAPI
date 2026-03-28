@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const axiosPrivate = axios.create({
-    baseURL: 'http://localhost:5134',
+    baseURL: `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5134'}`,
     headers: {
         'Content-Type': 'application/json'
     }
@@ -28,7 +28,7 @@ axiosPrivate.interceptors.response.use(
     },
     async (error) => {
         if (error.response?.status === 401) {
-            // Handle unauthorized error (e.g., redirect to login)
+            
             localStorage.removeItem('token');
             window.location.href = '/login';
         }

@@ -1,10 +1,9 @@
-import React, { useContext, useState, useEffect, useRef } from 'react';
+import { useContext, useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../auth/AuthContext';
 import axiosPrivate from '../../api/axiosPrivate';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import './Header.css';
-import { FaCrown } from 'react-icons/fa';
 import NotificationBell from '../NotificationBell';
 
 const Header = () => {
@@ -281,21 +280,19 @@ const Header = () => {
           {user ? (
             <div className="user-menu">
               <button className="user-menu-button">
-                <img src={`http://localhost:5134/${user?.avatarUrl || 'default-avatar.png'}`} alt="Avatar" className="user-avatar" />
+                <img src={`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5134'}/${user?.avatarUrl || 'default-avatar.png'}`} alt="Avatar" className="user-avatar" />
                 <span>{user.name}</span>
               </button>
               
               <div className="user-dropdown">
-                <Link to="/profile">Tài khoản của tôi</Link>
+                <Link to="/dashboard">Quản lý tin</Link>
                 <Link to="/chat">Tin nhắn</Link>
                 {/* Sử dụng agentProfile state local */}
                 {agentProfile ? (
                   <Link to={`/agent-profile/${agentProfile.id}`}>
-                    
                     Chuyên trang môi giới
                   </Link>
                 ) : null}
-                <Link to="/favorites">Tin đã thích</Link>
                 {user.role?.toLowerCase() === 'admin' && <Link to="/admin">Quản trị</Link>}
                 <button onClick={handleLogout}>Đăng xuất</button>
               </div>
@@ -334,7 +331,7 @@ const Header = () => {
           <div className="mobile-actions">
             {user ? (
               <>
-                <Link to="/profile" className="btn btn-outline-primary w-100 mb-2">Tài khoản</Link>
+                <Link to="/dashboard" className="btn btn-outline-primary w-100 mb-2">Quản lý tin</Link>
                 <button onClick={handleLogout} className="btn btn-primary w-100">Đăng xuất</button>
               </>
             ) : (

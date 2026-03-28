@@ -25,7 +25,7 @@ const PropertyCard = ({ property, showFavorite = true }) => {
     if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
       return imageUrl;
     }
-    return `http://localhost:5134${imageUrl}`;
+    return `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5134'}${imageUrl}`;
   };
 
   // Helper function để hiển thị transaction type
@@ -131,10 +131,10 @@ const PropertyCard = ({ property, showFavorite = true }) => {
             {/* Hàng 1: Khu vực & Loại BĐS */}
             <div className="property-detail-row">
               <div className="property-detail">
-                {property.area?.city?.name && (
+                {(property.cityName || property.area?.city?.name) && (
                   <>
                     <i className="fas fa-map-marker-alt"></i>
-                    <span>{property.area.city.name}</span>
+                    <span>{property.cityName || property.area?.city?.name}</span>
                   </>
                 )}
               </div>

@@ -56,11 +56,18 @@ const AgentProfileCheckoutPage = () => {
   // Payment methods
   const paymentMethods = [
     {
+      id: 'payos',
+      name: 'PayOS',
+      description: 'Thanh toán QR Code nhanh chóng',
+      icon: <img src="https://payos.vn/docs/img/logo.svg" alt="PayOS" style={{ width: '24px', height: '24px' }} />,
+      popular: true
+    },
+    {
       id: 'vnpay',
       name: 'VNPAY',
       description: 'Thanh toán online an toàn',
       icon: <img src="https://vinadesign.vn/uploads/images/2023/05/vnpay-logo-vinadesign-25-12-57-55.jpg" alt="VNPAY" style={{ width: '24px', height: '24px' }} />,
-      popular: true
+      popular: false
     },
     {
       id: 'bank_transfer',
@@ -78,7 +85,7 @@ const AgentProfileCheckoutPage = () => {
     }
   ];
 
-  const [selectedMethod, setSelectedMethod] = useState('vnpay');
+  const [selectedMethod, setSelectedMethod] = useState('payos');
 
   useEffect(() => {
     if (!user) {
@@ -97,16 +104,23 @@ const AgentProfileCheckoutPage = () => {
     try {
       setLoading(true);
       
-      if (selectedMethod === 'vnpay') {
-        const payload = {
-          name: user?.name || "User",
-          orderDescription: `userId=${userId};plan=${currentPlan.key};previewId=${previewId || ""};type=agent_profile`,
-          amount: currentPlan.price,
-          orderType: 'agent_profile',
-          userId: userId,
-          previewId: previewId || null,
-        };
-        
+      const payload = {
+        name: user?.name || "User",
+        orderDescription: `userId=${userId};plan=${currentPlan.key};previewId=${previewId || ""};type=agent_profile;amount=${currentPlan.price}`,
+        amount: currentPlan.price,
+        orderType: 'agent_profile',
+        userId: userId,
+        previewId: previewId || null,
+      };
+
+      if (selectedMethod === 'payos') {
+        const res = await axiosPrivate.post('/api/payment/payos/create', payload);
+        if (res.data?.url) {
+          window.location.href = res.data.url;
+        } else {
+          message.error('Không tạo được liên kết thanh toán PayOS');
+        }
+      } else if (selectedMethod === 'vnpay') {
         const res = await axiosPrivate.post('/api/payment/vnpay/create', payload);
         if (res.data?.url) {
           window.location.href = res.data.url;
@@ -114,15 +128,6 @@ const AgentProfileCheckoutPage = () => {
           message.error('Không tạo được liên kết thanh toán');
         }
       } else if (selectedMethod === 'momo') {
-        const payload = {
-          name: user?.name || "User",
-          orderDescription: `userId=${userId};plan=${currentPlan.key};previewId=${previewId || ""};type=agent_profile`,
-          amount: currentPlan.price,
-          orderType: 'agent_profile',
-          userId: userId,
-          previewId: previewId || null,
-        };
-        
         const res = await axiosPrivate.post('/api/payment/momo/create', payload);
         if (res.data?.url) {
           window.location.href = res.data.url;
@@ -203,7 +208,7 @@ const AgentProfileCheckoutPage = () => {
             </div>
           </Card>
 
-          {previewId && (
+          {/* {previewId && (
             <Card className={styles.previewCard}>
               <div className={styles.previewInfo}>
                 <SafetyOutlined style={{ color: '#52c41a', fontSize: '20px' }} />
@@ -217,7 +222,7 @@ const AgentProfileCheckoutPage = () => {
                 </div>
               </div>
             </Card>
-          )}
+          )} */}
 
           <Card className={styles.benefitsCard}>
             <Title level={4} style={{ marginBottom: 16, color: '#fff', textAlign: 'center' }}>

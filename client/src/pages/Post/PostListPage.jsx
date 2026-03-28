@@ -18,6 +18,9 @@ const PostListPage = () => {
   // Lấy params từ URL
   const categoryType = searchParams.get('category') || searchParams.get('type') || '';
   const cityId = searchParams.get('cityId') || '';
+  const cityName = searchParams.get('cityName') || '';
+  const districtName = searchParams.get('districtName') || '';
+  const wardName = searchParams.get('wardName') || '';
   const priceRange = searchParams.get('priceRange') || '';
   const isSale = window.location.pathname.includes('/Sale');
   const isRent = window.location.pathname.includes('/Rent');
@@ -29,7 +32,7 @@ const PostListPage = () => {
 
   useEffect(() => {
     applyClientFilters();
-  }, [properties, cityId, priceRange]);
+  }, [properties, cityId, cityName, districtName, wardName, priceRange]);
 
   const fetchProperties = async () => {
     try {
@@ -96,11 +99,38 @@ const PostListPage = () => {
 
   const applyClientFilters = () => {
     let data = [...properties];
-    // City filter
+    
+    // City filter - hỗ trợ cả cityId (cũ) và cityName (mới)
     if (cityId) {
       const cid = parseInt(cityId);
       data = data.filter(p => p.area?.cityId === cid);
+    } else if (cityName) {
+      // Filter theo tên thành phố (trong cityName hoặc area.city.name)
+      data = data.filter(p => {
+        const postCityName = p.cityName || p.area?.city?.name || '';
+        return postCityName.toLowerCase().includes(cityName.toLowerCase()) ||
+               cityName.toLowerCase().includes(postCityName.toLowerCase());
+      });
     }
+    
+    // District filter - filter theo tên quận/huyện
+    if (districtName) {
+      data = data.filter(p => {
+        const postDistrictName = p.districtName || p.area?.district?.name || '';
+        return postDistrictName.toLowerCase().includes(districtName.toLowerCase()) ||
+               districtName.toLowerCase().includes(postDistrictName.toLowerCase());
+      });
+    }
+    
+    // Ward filter - filter theo tên phường/xã
+    if (wardName) {
+      data = data.filter(p => {
+        const postWardName = p.wardName || p.area?.ward?.name || '';
+        return postWardName.toLowerCase().includes(wardName.toLowerCase()) ||
+               wardName.toLowerCase().includes(postWardName.toLowerCase());
+      });
+    }
+    
     // Price filter (triệu) - convert using priceUnit
     if (priceRange) {
       const { min, max } = parsePriceRange(priceRange);
@@ -131,6 +161,15 @@ const PostListPage = () => {
       if (category) {
         title += ` - ${category.name}`;
       }
+    }
+    
+    // Thêm địa chỉ vào title
+    const locationParts = [];
+    if (wardName) locationParts.push(wardName);
+    if (districtName) locationParts.push(districtName);
+    if (cityName) locationParts.push(cityName);
+    if (locationParts.length > 0) {
+      title += ` tại ${locationParts.join(', ')}`;
     }
 
     return title;

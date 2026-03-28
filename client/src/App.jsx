@@ -11,15 +11,13 @@ import Login from "./auth/Login";
 import Register from "./auth/Register";
 
 import PostDetail from "./pages/Post/PostDetail";
-import Profile from "./pages/Profile";
 import AdminDashboard from "./pages/Admin/AdminDashboard";
 
 import StreamChatPage from './pages/Chat/StreamChatPage';
 
 import PostHistory from './pages/Post/PostHistory';
 import ReportPost from "./pages/ReportPost";
-import Favorites from "./pages/Favorites";
-import { AuthProvider } from "./auth/AuthContext";
+import { AuthProvider, useAuth } from "./auth/AuthContext";
 import PrivateRoute from "./auth/PrivateRoute";
 import AdminRoute from "./auth/AdminRoute";
 import UsersPage from './pages/Admin/UsersPage';
@@ -42,26 +40,51 @@ import AgentListPage from "./pages/Agent/AgentListPage";
 // import EditAgentProfilePage from "./pages/Agent/EditAgentProfilePage";
 import AgentProfileOverviewPage from './pages/Agent/AgentProfileOverviewPage';
 import AgentProfileCheckoutPage from './pages/Checkout/AgentProfileCheckoutPage';
+import PaymentCallbackPayOS from './pages/Checkout/PaymentCallbackPayOS';
+import { useMessageNotifications } from './hooks/useMessageNotifications';
 import "./App.css";
 
+import ProjectsList from "./pages/Projects/ProjectsList";
+import ProjectDetail from "./pages/Projects/ProjectDetail";
+import NewsList from "./pages/News/NewsList";
+import ArticleDetail from "./pages/News/ArticleDetail";
+import ProjectsAdminPage from "./pages/Admin/ProjectsAdminPage";
+import ArticlesAdminPage from "./pages/Admin/ArticlesAdminPage";
+import UserPostsPage from "./pages/User/UserPostsPage";
+import UserDashboard from "./pages/UserDashboard/UserDashboard";
+
+// Component để khởi tạo message notifications
+const MessageNotificationProvider = ({ children }) => {
+  const { user } = useAuth();
+  useMessageNotifications(user);
+  return children;
+};
 
 const App = () => {
   return (
     <AuthProvider>
       <Router>
-        <ScrollToTop />
-        <div className="app">
-          <Header />
-          <main className="main-content">
-            <Routes>
+        <MessageNotificationProvider>
+          <ScrollToTop />
+          <div className="app">
+            <Header />
+            <main className="main-content">
+              <Routes>
               {/* Trang chủ mới */}
               <Route path="/" element={<HomePage />} />
               
               {/* Trang danh sách bài viết */}
+              <Route path="/posts" element={<PostListPage />} />
               <Route path="/Sale" element={<PostListPage />} />
               <Route path="/Rent" element={<PostListPage />} />
+              {/* Projects & News */}
+              <Route path="/du-an" element={<ProjectsList />} />
+              <Route path="/du-an/:slug" element={<ProjectDetail />} />
+              <Route path="/tin-tuc" element={<NewsList />} />
+              <Route path="/tin-tuc/:slug" element={<ArticleDetail />} />
               
               <Route path="/chi-tiet/:id" element={<PostDetail />} />
+              <Route path="/user/:userId/posts" element={<UserPostsPage />} />
               {/* Các routes cũ */}
               <Route path="/home" element={<Home />} />
               <Route path="/login" element={<Login />} />
@@ -80,12 +103,13 @@ const App = () => {
                 <Route path="/agent" element={<AgentPage />} />
                 
               
-                <Route path="/profile" element={<Profile />} />
+                <Route path="/dashboard" element={<UserDashboard />} />
                 <Route path="/post-history" element={<PostHistory />} />
-                <Route path="/favorites" element={<Favorites />} />
                 <Route path="/membership-checkout" element={<MembershipCheckoutPage />} />
                 <Route path="/agent-checkout" element={<AgentProfileCheckoutPage />} />
                 <Route path="/Checkout/PaymentCallbackVnpay" element={<PaymentCallbackVnpay />} />
+                <Route path="/checkout/payos-return" element={<PaymentCallbackPayOS />} />
+                <Route path="/checkout/payos-cancel" element={<PaymentCallbackPayOS />} />
               </Route>
 
               {/* Admin Routes */}
@@ -97,6 +121,8 @@ const App = () => {
                 <Route path="/admin/areas" element={<AreaPage/>}/>
                 <Route path="/admin/categories" element={<CategoriesPage />} />
                 <Route path="/admin/membership" element={<Membership />} />
+                <Route path="/admin/projects" element={<ProjectsAdminPage />} />
+                <Route path="/admin/articles" element={<ArticlesAdminPage />} />
               </Route>
 
               {/* Agent Profile Routes */}
@@ -121,6 +147,7 @@ const App = () => {
             pauseOnHover
           />
         </div>
+        </MessageNotificationProvider>
       </Router>
     </AuthProvider>
   );

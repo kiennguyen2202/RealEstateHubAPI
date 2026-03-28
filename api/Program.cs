@@ -28,7 +28,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Add repositories & services
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -46,6 +46,10 @@ builder.Services.AddScoped<IPaymentProcessingService, PaymentProcessingService>(
 //Add Momo service
 builder.Services.Configure<MomoOptionModel>(builder.Configuration.GetSection("MomoAPI"));
 builder.Services.AddScoped<IMomoService, MomoService>();
+
+//Add PayOS service
+builder.Services.Configure<PayOSSettings>(builder.Configuration.GetSection("PayOS"));
+builder.Services.AddHttpClient<IPayOSService, PayOSService>();
 
 //Add Chat service
 builder.Services.AddScoped<IChatService, ChatService>();
@@ -159,7 +163,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend",
         policy =>
         {
-            policy.WithOrigins("http://localhost:5173")
+            policy.SetIsOriginAllowed(origin => true) // Allow any deployed domain
                   .AllowAnyHeader()
                   .AllowAnyMethod()
                   .AllowCredentials();
@@ -191,7 +195,8 @@ var staticFileOptions = new StaticFileOptions
 {
     OnPrepareResponse = ctx =>
     {
-        ctx.Context.Response.Headers.Append("Access-Control-Allow-Origin", "http://localhost:5173");
+        var origin = ctx.Context.Request.Headers["Origin"].FirstOrDefault() ?? "*";
+        ctx.Context.Response.Headers.Append("Access-Control-Allow-Origin", origin);
         ctx.Context.Response.Headers.Append("Access-Control-Allow-Credentials", "true");
     }
 };

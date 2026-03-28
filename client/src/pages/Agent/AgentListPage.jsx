@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, Avatar, Rate, Tag, Input, Select, Row, Col, Button, Spin, message } from 'antd';
-import { SearchOutlined, UserOutlined, TrophyOutlined, StarOutlined, EnvironmentOutlined } from '@ant-design/icons';
+import { SearchOutlined, UserOutlined, TrophyOutlined, EnvironmentOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import axiosPrivate from '../../api/axiosPrivate';
+import axiosClient from '../../api/axiosClient';
+import { getProvinces } from '../../api/vietnamAddressService';
 
 const { Search } = Input;
 const { Option } = Select;
@@ -15,7 +17,6 @@ const AgentListPage = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [areas, setAreas] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [agentsWithAreaNames, setAgentsWithAreaNames] = useState([]);
 
   useEffect(() => {
     fetchAgents();
@@ -23,110 +24,29 @@ const AgentListPage = () => {
     fetchCategories();
   }, []);
 
-  // Xử lý areaNames cho tất cả agents giống như trong AgentProfilePage
-  useEffect(() => {
-    const processAgents = async () => {
-      const processedAgents = await Promise.all(
-        agents.map(async (agent) => {
-          let areaNames = [];
-          
-          // Logic giống hệt AgentProfilePage
-          if (agent.areaIds && agent.areaIds.length > 0) {
-            const areaCityPairs = await Promise.all(
-              agent.areaIds.map(async (areaId) => {
-                try {
-                  const area = await axiosPrivate.get(`/api/areas/districts/${areaId}`);
-                  if (area?.data?.cityId) {
-                    const city = await axiosPrivate.get(`/api/areas/cities/${area.data.cityId}`);
-                    return {
-                      district: area.data.name,
-                      city: city?.data?.name || 'Unknown City',
-                      cityId: area.data.cityId
-                    };
-                  }
-                  return null;
-                } catch (err) {
-                  console.log(`Failed to fetch area with ID ${areaId}:`, err);
-                  return null;
-                }
-              })
-            );
-            
-            // Lọc bỏ các kết quả null
-            const validAreaCityPairs = areaCityPairs.filter(pair => pair);
-            
-            // Gộp các district cùng city
-            const cityGroups = {};
-            validAreaCityPairs.forEach(pair => {
-              if (!cityGroups[pair.cityId]) {
-                cityGroups[pair.cityId] = {
-                  districts: [],
-                  city: pair.city
-                };
-              }
-              cityGroups[pair.cityId].districts.push(pair.district);
-            });
-            
-            // Tạo chuỗi areaNames theo format mới
-            areaNames = Object.values(cityGroups).map(group => {
-              const uniqueDistricts = [...new Set(group.districts)];
-              return `${uniqueDistricts.join(', ')} (${group.city})`;
-            });
-          } else if (agent.areaNames && agent.areaNames.length > 0) {
-            // Nếu có sẵn areaNames từ backend, cũng cần xử lý gộp
-            const areaCityPairs = agent.areaNames.map(name => {
-              const parts = name.split(', ');
-              if (parts.length >= 2) {
-                const district = parts[0];
-                const city = parts.slice(1).join(', ');
-                return { district, city };
-              }
-              return null;
-            }).filter(pair => pair);
-            
-            // Gộp các district cùng city
-            const cityGroups = {};
-            areaCityPairs.forEach(pair => {
-              if (!cityGroups[pair.city]) {
-                cityGroups[pair.city] = {
-                  districts: []
-                };
-              }
-              cityGroups[pair.city].districts.push(pair.district);
-            });
-            
-            // Tạo chuỗi areaNames theo format mới
-            areaNames = Object.entries(cityGroups).map(([city, group]) => {
-              const uniqueDistricts = [...new Set(group.districts)];
-              return `${uniqueDistricts.join(', ')} (${city})`;
-            });
-          }
-          
-          return { ...agent, processedAreaNames: areaNames };
-        })
-      );
-      setAgentsWithAreaNames(processedAgents);
-    };
+  // Hàm xử lý gộp các district cùng city từ areaNames backend
+  const processAreaNames = (areaNames) => {
+    if (!areaNames || areaNames.length === 0) return [];
     
-    if (agents.length > 0) {
-      processAgents();
-    }
-  }, [agents]);
-
-  // Tạo chuỗi khu vực: "Quận A, Quận B (Thành phố X)"
-  const buildAreaText = (names) => {
-    if (!Array.isArray(names) || names.length === 0) return '';
-    const districts = new Set();
-    const cities = new Set();
-    names.forEach((n) => {
-      if (typeof n !== 'string') return;
-      const [districtPart, cityPart] = n.split(',').map(s => s && s.trim());
-      if (districtPart) districts.add(districtPart);
-      if (cityPart) cities.add(cityPart);
+    // Parse "District, City" format và gộp theo city
+    const cityGroups = {};
+    areaNames.forEach(name => {
+      const parts = name.split(', ');
+      if (parts.length >= 2) {
+        const district = parts[0];
+        const city = parts.slice(1).join(', ');
+        if (!cityGroups[city]) {
+          cityGroups[city] = [];
+        }
+        cityGroups[city].push(district);
+      }
     });
-    const districtStr = Array.from(districts).join(', ');
-    const cityStr = Array.from(cities).join(', ');
-    return cityStr ? `${districtStr} (${cityStr})` : districtStr;
+    
+    // Tạo chuỗi "District1, District2 (City)"
+    return Object.entries(cityGroups).map(([city, districts]) => {
+      const uniqueDistricts = [...new Set(districts)];
+      return `${uniqueDistricts.join(', ')} (${city})`;
+    });
   };
 
   const fetchAgents = async () => {
@@ -144,8 +64,8 @@ const AgentListPage = () => {
 
   const fetchAreas = async () => {
     try {
-      const response = await axiosPrivate.get('/api/areas/cities');
-      setAreas(response.data || []);
+      const provinces = await getProvinces();
+      setAreas(provinces.map(p => ({ id: p.code, code: p.code, name: p.name })));
     } catch (error) {
       console.error('Error fetching areas:', error);
     }
@@ -153,21 +73,22 @@ const AgentListPage = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axiosPrivate.get('/api/categories');
+      const response = await axiosClient.get('/api/categories');
       setCategories(response.data || []);
     } catch (error) {
       console.error('Error fetching categories:', error);
     }
   };
 
-  const filteredAgents = agentsWithAreaNames.filter(agent => {
+  const filteredAgents = agents.filter(agent => {
     const matchesSearch = agent.shopName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          agent.description?.toLowerCase().includes(searchTerm.toLowerCase());
      
-     // Xử lý trùng lặp khu vực trong filter
-     const uniqueAreaNames = agent.processedAreaNames ? [...new Set(agent.processedAreaNames)] : [];
+     // Xử lý filter theo khu vực
      const matchesArea = selectedArea === 'all' || 
-                        uniqueAreaNames.some(area => area.toLowerCase().includes(selectedArea.toLowerCase()));
+                        (agent.areaNames && agent.areaNames.some(area => 
+                          area.toLowerCase().includes(selectedArea.toLowerCase())
+                        ));
      
      const matchesCategory = selectedCategory === 'all' || 
                             agent.categoryIds?.includes(parseInt(selectedCategory));
@@ -183,7 +104,7 @@ const AgentListPage = () => {
           {agent.bannerUrl ? (
             <img
               alt="Banner"
-              src={`http://localhost:5134${agent.bannerUrl}`}
+              src={`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5134'}${agent.bannerUrl}`}
               style={{ width: '100%', height: 200, objectFit: 'cover' }}
             />
           ) : (
@@ -205,7 +126,7 @@ const AgentListPage = () => {
             <div className="agent-avatar-col">
               <Avatar
                 size={80}
-                src={agent.avatarUrl ? `http://localhost:5134${agent.avatarUrl}` : null}
+                src={agent.avatarUrl ? `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5134'}${agent.avatarUrl}` : null}
                 icon={<UserOutlined />}
                 className="agent-avatar"
               />
@@ -240,10 +161,9 @@ const AgentListPage = () => {
             <EnvironmentOutlined style={{ color: '#ff4d4f', marginRight: 8 }} />
             <span className="area-text">
               Khu vực: {(() => {
-                const areaNames = agent.processedAreaNames || agent.areaNames || [];
-                if (areaNames.length > 0) {
-                  const uniqueAreas = [...new Set(areaNames)];
-                  return uniqueAreas.join(', ');
+                const processedAreas = processAreaNames(agent.areaNames);
+                if (processedAreas.length > 0) {
+                  return processedAreas.join('; ');
                 }
                 return 'Chưa cập nhật';
               })()}

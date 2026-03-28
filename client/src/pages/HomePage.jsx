@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropertyCard from '../components/property/PropertyCard';
 import axiosClient from '../api/axiosClient';
 import './HomePage.css';
+import '../styles/animations.css';
 import { href, useNavigate } from 'react-router-dom';
 import { toTrieu } from '../utils/priceUtils';
 import axiosPrivate from '../api/axiosPrivate';
 import PopupMembership from '../components/PopupMembership';
 import { isProRole } from '../utils/roleUtils';
+import { getProvinces, getDistrictsByProvince, getWardsByDistrict } from '../api/vietnamAddressService';
 
 const TransactionType = {
   Sale: 0, 
@@ -39,11 +41,96 @@ const HomePage = () => {
   const [featuredProperties, setFeaturedProperties] = useState([]);
   const [searchPropertyType, setSearchPropertyType] = useState('');
   const [searchCityId, setSearchCityId] = useState('');
+  const [searchDistrictId, setSearchDistrictId] = useState('');
+  const [searchWardId, setSearchWardId] = useState('');
   const [searchPriceRange, setSearchPriceRange] = useState('');
+  const [searchDistricts, setSearchDistricts] = useState([]);
+  const [searchWards, setSearchWards] = useState([]);
+  const [showLocationPopup, setShowLocationPopup] = useState(false);
+
+  // Scroll reveal refs
+  const featuresRef = useRef(null);
+  const propertiesRef = useRef(null);
+  const statsRef = useRef(null);
+  const servicesRef = useRef(null);
+  const testimonialsRef = useRef(null);
+  const projectsRef = useRef(null);
+  const newsRef = useRef(null);
+
+  // Scroll reveal effect - animate sections and their children
+  useEffect(() => {
+    const observerOptions = {
+      threshold: 0.15,
+      rootMargin: '0px 0px -100px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          
+          // Animate children with stagger delay
+          const children = entry.target.querySelectorAll('.animate-item');
+          children.forEach((child, index) => {
+            setTimeout(() => {
+              child.classList.add('animate-visible');
+            }, index * 150); // 150ms delay giữa mỗi item
+          });
+        }
+      });
+    }, observerOptions);
+
+    const sections = [featuresRef, propertiesRef, statsRef, servicesRef, testimonialsRef, projectsRef, newsRef];
+    sections.forEach(ref => {
+      if (ref.current) observer.observe(ref.current);
+    });
+
+    return () => observer.disconnect();
+  }, [loading]); // Re-run when loading changes
 
   useEffect(() => {
     fetchData();
   }, []);
+
+  // Fetch districts khi chọn city
+  useEffect(() => {
+    const fetchDistricts = async () => {
+      if (searchCityId) {
+        try {
+          const districts = await getDistrictsByProvince(searchCityId);
+          setSearchDistricts(districts.map(d => ({ id: d.code, code: d.code, name: d.name })));
+        } catch (err) {
+          console.error('Error fetching districts:', err);
+          setSearchDistricts([]);
+        }
+      } else {
+        setSearchDistricts([]);
+        setSearchDistrictId('');
+        setSearchWards([]);
+        setSearchWardId('');
+      }
+    };
+    fetchDistricts();
+  }, [searchCityId]);
+
+  // Fetch wards khi chọn district
+  useEffect(() => {
+    const fetchWards = async () => {
+      if (searchDistrictId) {
+        try {
+          const wards = await getWardsByDistrict(searchDistrictId);
+          setSearchWards(wards.map(w => ({ id: w.code, code: w.code, name: w.name })));
+        } catch (err) {
+          console.error('Error fetching wards:', err);
+          setSearchWards([]);
+        }
+      } else {
+        setSearchWards([]);
+        setSearchWardId('');
+      }
+    };
+    fetchWards();
+  }, [searchDistrictId]);
 
   useEffect(() => {
     filterProperties();
@@ -65,11 +152,11 @@ const HomePage = () => {
       setLoading(true);
       setError(null);
       
-      // Fetch properties, categories, and cities
-      const [propertiesRes, categoriesRes, citiesRes] = await Promise.all([
+      // Fetch properties, categories, và cities từ API công khai
+      const [propertiesRes, categoriesRes, provincesData] = await Promise.all([
         axiosClient.get('/api/posts?isApproved=true&limit=8'),
         axiosClient.get('/api/categories'),
-        axiosPrivate.get('/api/areas/cities') // Fetch cities
+        getProvinces() // Lấy từ API công khai provinces.open-api.vn
       ]);
       
       if (propertiesRes.data) {
@@ -83,8 +170,13 @@ const HomePage = () => {
         setCategories(categoriesRes.data);
       }
 
-      if (citiesRes.data) {
-        setUniqueCities(citiesRes.data);
+      // Map provinces sang format tương thích
+      if (provincesData) {
+        setUniqueCities(provincesData.map(p => ({
+          id: p.code,
+          code: p.code,
+          name: p.name,
+        })));
       }
 
     } catch (error) {
@@ -116,11 +208,15 @@ const HomePage = () => {
       );
     }
 
-    // Lọc theo khu vực (cityId)
+    // Lọc theo khu vực (cityName)
     if (filters.area) {
-      filtered = filtered.filter(property => 
-        property.area?.cityId === parseInt(filters.area) // Filter by cityId
-      );
+      const selectedCity = uniqueCities.find(c => String(c.id) === String(filters.area) || String(c.code) === String(filters.area));
+      if (selectedCity) {
+        filtered = filtered.filter(property => 
+          property.cityName === selectedCity.name || // Dữ liệu mới
+          property.area?.city?.name === selectedCity.name // Dữ liệu cũ
+        );
+      }
     }
 
     // Lọc theo khoảng giá
@@ -187,6 +283,15 @@ const HomePage = () => {
     <div className="homepage">
       {/* Hero Section */}
       <section className="hero-section">
+        {/* Floating Particles */}
+        <div className="hero-particles">
+          <div className="particle"></div>
+          <div className="particle"></div>
+          <div className="particle"></div>
+          <div className="particle"></div>
+          <div className="particle"></div>
+        </div>
+        
         <div className="hero-content">
           <h1 className="hero-title">
             Tìm ngôi nhà <span className="hero-title-highlight">hoàn hảo</span><br />
@@ -214,15 +319,143 @@ const HomePage = () => {
                   </select>
                 </div>
 
-                {/* Location */}
-                <div className="search-field">
+                {/* Location - Click to open popup */}
+                <div className="search-field" style={{ position: 'relative' }}>
                   <label className="search-label">Khu vực</label>
-                  <select className="search-select" value={searchCityId} onChange={(e) => setSearchCityId(e.target.value)}>
-                    <option value="">Chọn khu vực</option>
-                    {uniqueCities.map((city) => (
-                      <option key={city.id} value={city.id}>{city.name}</option>
-                    ))}
-                  </select>
+                  <div 
+                    className="search-select" 
+                    onClick={() => setShowLocationPopup(!showLocationPopup)}
+                    style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+                  >
+                    <span>
+                      {searchWardId ? searchWards.find(w => String(w.id) === String(searchWardId))?.name :
+                       searchDistrictId ? searchDistricts.find(d => String(d.id) === String(searchDistrictId))?.name :
+                       searchCityId ? uniqueCities.find(c => String(c.id) === String(searchCityId))?.name :
+                       'Chọn khu vực'}
+                    </span>
+                    <span>▼</span>
+                  </div>
+                  
+                  {/* Location Popup */}
+                  {showLocationPopup && (
+                    <div style={{
+                      position: 'absolute',
+                      top: '100%',
+                      left: 0,
+                      right: 0,
+                      background: '#1a1a2e',
+                      border: '1px solid #333',
+                      borderRadius: 8,
+                      padding: 16,
+                      zIndex: 1000,
+                      minWidth: 300,
+                      boxShadow: '0 4px 20px rgba(0,0,0,0.3)'
+                    }}>
+                      <h4 style={{ color: '#fff', marginBottom: 12, textAlign: 'center' }}>Khu vực</h4>
+                      
+                      {/* Tỉnh/Thành phố */}
+                      <div style={{ marginBottom: 12 }}>
+                        <label style={{ color: '#aaa', fontSize: 12, marginBottom: 4, display: 'block' }}>
+                          Chọn tỉnh thành <span style={{ color: '#f97316' }}>*</span>
+                        </label>
+                        <select 
+                          value={searchCityId} 
+                          onChange={(e) => {
+                            setSearchCityId(e.target.value);
+                            setSearchDistrictId('');
+                            setSearchWardId('');
+                          }}
+                          style={{
+                            width: '100%',
+                            padding: '10px 12px',
+                            background: '#2a2a3e',
+                            border: '1px solid #444',
+                            borderRadius: 6,
+                            color: '#fff',
+                            fontSize: 14
+                          }}
+                        >
+                          <option value="">Toàn quốc</option>
+                          {uniqueCities.map((city) => (
+                            <option key={city.id} value={city.id}>{city.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                      
+                      {/* Quận/Huyện */}
+                      <div style={{ marginBottom: 12 }}>
+                        <label style={{ color: '#aaa', fontSize: 12, marginBottom: 4, display: 'block' }}>
+                          Chọn quận huyện <span style={{ color: '#f97316' }}>*</span>
+                        </label>
+                        <select 
+                          value={searchDistrictId} 
+                          onChange={(e) => {
+                            setSearchDistrictId(e.target.value);
+                            setSearchWardId('');
+                          }}
+                          disabled={!searchCityId}
+                          style={{
+                            width: '100%',
+                            padding: '10px 12px',
+                            background: searchCityId ? '#2a2a3e' : '#1a1a2e',
+                            border: '1px solid #444',
+                            borderRadius: 6,
+                            color: searchCityId ? '#fff' : '#666',
+                            fontSize: 14
+                          }}
+                        >
+                          <option value="">Tất cả quận/huyện</option>
+                          {searchDistricts.map((district) => (
+                            <option key={district.id} value={district.id}>{district.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                      
+                      {/* Phường/Xã */}
+                      <div style={{ marginBottom: 16 }}>
+                        <label style={{ color: '#aaa', fontSize: 12, marginBottom: 4, display: 'block' }}>
+                          Chọn phường xã <span style={{ color: '#f97316' }}>*</span>
+                        </label>
+                        <select 
+                          value={searchWardId} 
+                          onChange={(e) => setSearchWardId(e.target.value)}
+                          disabled={!searchDistrictId}
+                          style={{
+                            width: '100%',
+                            padding: '10px 12px',
+                            background: searchDistrictId ? '#2a2a3e' : '#1a1a2e',
+                            border: '1px solid #444',
+                            borderRadius: 6,
+                            color: searchDistrictId ? '#fff' : '#666',
+                            fontSize: 14
+                          }}
+                        >
+                          <option value="">Tất cả phường/xã</option>
+                          {searchWards.map((ward) => (
+                            <option key={ward.id} value={ward.id}>{ward.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                      
+                      {/* Áp dụng button */}
+                      <button 
+                        onClick={() => setShowLocationPopup(false)}
+                        style={{
+                          width: '100%',
+                          padding: '12px',
+                          background: '#f97316',
+                          border: 'none',
+                          borderRadius: 6,
+                          color: '#fff',
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          fontSize: 14
+                        }}
+                      >
+                        Áp dụng
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 {/* Price Range */}
@@ -241,7 +474,19 @@ const HomePage = () => {
                 <button className="search-btn" onClick={() => {
                   const params = new URLSearchParams();
                   if (searchPropertyType) params.set('category', searchPropertyType);
-                  if (searchCityId) params.set('cityId', searchCityId);
+                  // Gửi tên địa chỉ để lọc
+                  if (searchCityId) {
+                    const cityObj = uniqueCities.find(c => String(c.id) === String(searchCityId));
+                    if (cityObj) params.set('cityName', cityObj.name);
+                  }
+                  if (searchDistrictId) {
+                    const districtObj = searchDistricts.find(d => String(d.id) === String(searchDistrictId));
+                    if (districtObj) params.set('districtName', districtObj.name);
+                  }
+                  if (searchWardId) {
+                    const wardObj = searchWards.find(w => String(w.id) === String(searchWardId));
+                    if (wardObj) params.set('wardName', wardObj.name);
+                  }
                   if (searchPriceRange) params.set('priceRange', searchPriceRange);
                   const qs = params.toString();
                   navigate(qs ? `/posts?${qs}` : '/posts');
@@ -256,10 +501,10 @@ const HomePage = () => {
       </section>
       
       {/* Features Section */}
-      <section className="features-section section">
+      <section className="features-section section reveal-section" ref={featuresRef}>
         <div className="section-header">
           <h2 className="section-title">
-            Tại sao chọn <span className="section-title-highlight">RealEstateHub</span>?
+            Tại sao chọn <span className="section-title-highlight gradient-text">RealEstateHub</span>?
           </h2>
           <p className="section-subtitle">
             Chúng tôi mang đến trải nghiệm tìm kiếm bất động sản tốt nhất với những ưu điểm vượt trội
@@ -267,7 +512,7 @@ const HomePage = () => {
         </div>
         
         <div className="features-grid">
-          <div className="feature-item">
+          <div className="feature-item animate-item">
             <div className="feature-icon-wrapper">
               <i className="fas fa-shield-alt feature-icon"></i>
             </div>
@@ -276,7 +521,7 @@ const HomePage = () => {
               Tất cả thông tin BĐS được xác thực, đảm bảo độ tin cậy cao
             </p>
           </div>
-          <div className="feature-item">
+          <div className="feature-item animate-item">
             <div className="feature-icon-wrapper">
               <i className="fas fa-users feature-icon"></i>
             </div>
@@ -285,7 +530,7 @@ const HomePage = () => {
               Đội ngũ chuyên viên giàu kinh nghiệm hỗ trợ 24/7
             </p>
           </div>
-          <div className="feature-item">
+          <div className="feature-item animate-item">
             <div className="feature-icon-wrapper">
               <i className="fas fa-award feature-icon"></i>
             </div>
@@ -294,7 +539,7 @@ const HomePage = () => {
               Được tin tưởng bởi hàng triệu khách hàng trên toàn quốc
             </p>
           </div>
-          <div className="feature-item">
+          <div className="feature-item animate-item">
             <div className="feature-icon-wrapper">
               <i className="fas fa-clock feature-icon"></i>
             </div>
@@ -307,10 +552,10 @@ const HomePage = () => {
       </section>
 
       {/* Featured Properties Section */}
-      <section className="featured-properties section">
+      <section className="featured-properties section reveal-section" ref={propertiesRef}>
         <div className="section-header">
           <h2 className="section-title">
-            Bất động sản <span className="section-title-highlight">nổi bật</span>
+            Bất động sản <span className="section-title-highlight gradient-text">nổi bật</span>
           </h2>
           <p className="section-subtitle">
             Khám phá những bất động sản được quan tâm nhiều nhất
@@ -345,10 +590,10 @@ const HomePage = () => {
       
 
       {/* Projects Section */}
-      <section className="projects-section section">
+      <section className="projects-section section reveal-section" ref={projectsRef}>
         <div className="section-header">
           <h2 className="section-title">
-            Dự án <span className="section-title-highlight">nổi bật</span>
+            Dự án <span className="section-title-highlight gradient-text">nổi bật</span>
           </h2>
           <p className="section-subtitle">
             Khám phá các dự án bất động sản hot nhất hiện tại với mức giá hấp dẫn
@@ -356,7 +601,7 @@ const HomePage = () => {
         </div>
         
         <div className="projects-grid">
-          <a className="project-card" href="/du-an">
+          <a className="project-card animate-item" href="/du-an">
             <div className="project-image">
               <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Dự án nổi bật" />
               <span className="project-status status-active">Nổi bật</span>
@@ -375,7 +620,7 @@ const HomePage = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="stats-section section">
+      <section className="stats-section section reveal-section" ref={statsRef}>
         <div className="container">
           <div className="section-header">
             <h2 className="section-title" style={{color: 'white', fontSize: '2.5rem'}}>
@@ -386,28 +631,28 @@ const HomePage = () => {
             </p>
           </div>
           <div className="stats-grid">
-            <div className="stat-item">
+            <div className="stat-item animate-item">
               <div className="stat-number">177K+</div>
               <div className="stat-label">
                 <div>Tin đăng bất động sản</div>
                 <div>Được cập nhật liên tục</div>
               </div>
             </div>
-            <div className="stat-item">
+            <div className="stat-item animate-item">
               <div className="stat-number">50K+</div>
               <div className="stat-label">
                 <div>Khách hàng tin tưởng</div>
                 <div>Trên toàn quốc</div>
               </div>
             </div>
-            <div className="stat-item">
+            <div className="stat-item animate-item">
               <div className="stat-number">1000+</div>
               <div className="stat-label">
                 <div>Dự án hot</div>
                 <div>Đang mở bán</div>
               </div>
             </div>
-            <div className="stat-item">
+            <div className="stat-item animate-item">
               <div className="stat-number">24/7</div>
               <div className="stat-label">
                 <div>Hỗ trợ khách hàng</div>
@@ -419,17 +664,17 @@ const HomePage = () => {
       </section>
 
       {/* News Section */}
-      <section className="news-section section">
+      <section className="news-section section reveal-section" ref={newsRef}>
         <div className="section-header">
           <h2 className="section-title">
-            Tin tức <span className="section-title-highlight">bất động sản</span>
+            Tin tức <span className="section-title-highlight gradient-text">bất động sản</span>
           </h2>
           <p className="section-subtitle">
             Cập nhật những thông tin mới nhất về thị trường BĐS và các dự án hot
           </p>
         </div>
         <div className="news-grid">
-          <a className="news-card" href="/tin-tuc">
+          <a className="news-card animate-item" href="/tin-tuc">
             <div className="news-image">
               <img src="https://images.unsplash.com/photo-1560520653-9e0e4c89eb11?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Tin tức BĐS" />
               <span className="news-category">Tin tức</span>
@@ -443,36 +688,36 @@ const HomePage = () => {
       </section>
 
       {/* Services Section */}
-      <section className="services-section section" style={{backgroundColor: 'black'}}>
+      <section className="services-section section reveal-section" ref={servicesRef} style={{backgroundColor: 'black'}}>
         <div className="section-header">
-          <h2 className="section-title">Dịch vụ của RealEstateHub</h2>
+          <h2 className="section-title" style={{color: 'white'}}>Dịch vụ của <span className="gradient-text">RealEstateHub</span></h2>
           <p className="section-subtitle">
             Chúng tôi cung cấp đầy đủ các dịch vụ bất động sản chuyên nghiệp
           </p>
         </div>
         <div className="services-grid">
-          <div className="service-card">
+          <div className="service-card animate-item">
             <i className="fas fa-home service-icon" />
             <h3 className="service-title">Mua bán nhà đất</h3>
             <p className="service-desc">
               Tìm kiếm và giao dịch bất động sản nhanh chóng, an toàn.
             </p>
           </div>
-          <div className="service-card">
+          <div className="service-card animate-item">
             <i className="fas fa-key service-icon" />
             <h3 className="service-title">Cho thuê bất động sản</h3>
             <p className="service-desc">
               Quy trình chuyên nghiệp, minh bạch và hiệu quả.
             </p>
           </div>
-          <div className="service-card">
+          <div className="service-card animate-item">
             <i className="fas fa-chart-line service-icon" />
             <h3 className="service-title">Đầu tư bất động sản</h3>
             <p className="service-desc">
               Tư vấn sinh lời với phân tích thị trường chuyên sâu.
             </p>
           </div>
-          <div className="service-card">
+          <div className="service-card animate-item">
             <i className="fas fa-file-contract service-icon" />
             <h3 className="service-title">Pháp lý bất động sản</h3>
             <p className="service-desc">
@@ -483,15 +728,15 @@ const HomePage = () => {
       </section>
 
       {/* Testimonials Section */}
-      <section className="testimonials-section section">
+      <section className="testimonials-section section reveal-section" ref={testimonialsRef}>
         <div className="section-header">
-          <h2 className="section-title">Khách hàng nói gì</h2>
+          <h2 className="section-title">Khách hàng <span className="gradient-text">nói gì</span></h2>
           <p className="section-subtitle">
             Những đánh giá từ khách hàng đã sử dụng dịch vụ
           </p>
         </div>
         <div className="testimonial-grid">
-          <div className="testimonial-card">
+          <div className="testimonial-card animate-item">
             <p className="testimonial-text">
               "Dịch vụ chuyên nghiệp, tôi tìm được căn nhà ưng ý rất nhanh! Nhân viên tư vấn rất nhiệt tình và am hiểu thị trường."
             </p>
@@ -507,7 +752,7 @@ const HomePage = () => {
             </div>
           </div>
 
-          <div className="testimonial-card">
+          <div className="testimonial-card animate-item">
             <p className="testimonial-text">
               "RealEstateHub giúp tôi đầu tư bất động sản hiệu quả. Thông tin dự án chi tiết và chính xác, rất đáng tin cậy."
             </p>
@@ -523,7 +768,7 @@ const HomePage = () => {
             </div>
           </div>
 
-          <div className="testimonial-card">
+          <div className="testimonial-card animate-item">
             <p className="testimonial-text">
               "Quy trình thuê nhà rất đơn giản và nhanh chóng. Tôi đã tìm được căn hộ phù hợp với ngân sách chỉ trong 1 tuần."
             </p>

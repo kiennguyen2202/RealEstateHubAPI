@@ -1,9 +1,10 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useEffect, useState, useRef } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Card, Avatar, Button, Tag, Rate, Tabs, List, Spin, message, Row, Col, Divider } from 'antd';
 import axiosPrivate from '../../api/axiosPrivate.js';
+import axiosClient from '../../api/axiosClient.js';
 import { UserOutlined } from '@ant-design/icons';
-import { getCityById } from '../../services/agentProfileService.js';
+import { getCityById, getDistrictById, getCategoryById } from '../../services/agentProfileService.js';
 import { useAuth } from '../../auth/AuthContext.jsx';
 
 const { TabPane } = Tabs;
@@ -92,12 +93,12 @@ export default function AgentProfileOverviewPage() {
             const fetchedAreaCityPairs = await Promise.all(
               agentData.areaIds.map(async (areaId) => {
                 try {
-                  const area = await axiosPrivate.get(`/api/areas/districts/${areaId}`);
-                  if (area?.data?.cityId) {
-                    const city = await getCityById(area.data.cityId);
-                    return `${area.data.name}, ${city?.name || 'Unknown City'}`;
+                  const district = await getDistrictById(areaId);
+                  if (district?.cityId) {
+                    const city = await getCityById(district.cityId);
+                    return `${district.name}, ${city?.name || 'Unknown City'}`;
                   }
-                  return area?.data?.name || null;
+                  return district?.name || null;
                 } catch (err) {
                   console.log(`Failed to fetch area with ID ${areaId}:`, err);
                   return null;
@@ -114,15 +115,16 @@ export default function AgentProfileOverviewPage() {
             const fetchedCategoryNames = await Promise.all(
               agentData.categoryIds.map(async (categoryId) => {
                 try {
-                  const category = await axiosPrivate.get(`/api/categories/${categoryId}`);
-                  
-                  return category?.data?.name || null;
+                  const category = await getCategoryById(categoryId);
+                  console.log(`Category ${categoryId}:`, category);
+                  return category?.name || null;
                 } catch (err) {
                   console.error(`Failed to fetch category with ID ${categoryId}:`, err);
                   return null;
                 }
               })
             );
+            console.log('Fetched category names:', fetchedCategoryNames);
             setCategoryNames(fetchedCategoryNames.filter(name => name));
           }
         
@@ -203,20 +205,45 @@ export default function AgentProfileOverviewPage() {
     }
   };
 
+  // Hàm xử lý gộp các district cùng city từ areaNames backend
+  const processAreaNames = (areaNamesList) => {
+    if (!areaNamesList || areaNamesList.length === 0) return [];
+    
+    // Parse "District, City" format và gộp theo city
+    const cityGroups = {};
+    areaNamesList.forEach(name => {
+      const parts = name.split(', ');
+      if (parts.length >= 2) {
+        const district = parts[0];
+        const city = parts.slice(1).join(', ');
+        if (!cityGroups[city]) {
+          cityGroups[city] = [];
+        }
+        cityGroups[city].push(district);
+      }
+    });
+    
+    // Tạo chuỗi "District1, District2 (City)"
+    return Object.entries(cityGroups).map(([city, districts]) => {
+      const uniqueDistricts = [...new Set(districts)];
+      return `${uniqueDistricts.join(', ')} (${city})`;
+    });
+  };
+
   // Thêm hàm render khu vực hoạt động ưu tiên name
   const renderAreaNames = () => {
-   
     // Ưu tiên sử dụng AreaNames từ backend nếu có
     if (agent && Array.isArray(agent.areaNames) && agent.areaNames.length > 0) {
-      // Loại bỏ các khu vực trùng lặp
-      const uniqueAreas = [...new Set(agent.areaNames)];
-      return (
-        <>
-          {uniqueAreas.map((areaName, idx) => (
-            <div key={idx} style={{ marginBottom: 4 }}>{areaName}</div>
-          ))}
-        </>
-      );
+      const processedAreas = processAreaNames(agent.areaNames);
+      if (processedAreas.length > 0) {
+        return (
+          <>
+            {processedAreas.map((areaName, idx) => (
+              <div key={idx} style={{ marginBottom: 4 }}>{areaName}</div>
+            ))}
+          </>
+        );
+      }
     }
     // Fallback: sử dụng logic cũ
     if (agent && Array.isArray(agent.areas) && agent.areas.length > 0 && agent.areas[0].name) {
@@ -269,7 +296,7 @@ export default function AgentProfileOverviewPage() {
       {agent.bannerUrl && (
         <div style={{ width: '100%', marginBottom: 24 }}>
           <img
-            src={agent.bannerUrl.startsWith('http') ? agent.bannerUrl : `http://localhost:5134${agent.bannerUrl}`}
+            src={agent.bannerUrl.startsWith('http') ? agent.bannerUrl : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5134'}${agent.bannerUrl}`}
             alt="Banner"
             style={{
               width: '100%',
@@ -294,7 +321,7 @@ export default function AgentProfileOverviewPage() {
             <div style={{ textAlign: 'center', marginBottom: 16 }}>
               <Avatar
                 size={80}
-                src={agent.avatarUrl ? (agent.avatarUrl.startsWith('http') ? agent.avatarUrl : `http://localhost:5134${agent.avatarUrl}`) : null}
+                src={agent.avatarUrl ? (agent.avatarUrl.startsWith('http') ? agent.avatarUrl : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5134'}${agent.avatarUrl}`) : null}
                 icon={<UserOutlined />}
                 style={{ marginBottom: 8 }}
                 onError={(e) => {
@@ -421,7 +448,7 @@ export default function AgentProfileOverviewPage() {
                       <div>
                         <div style={{ color: '#ff4d4f', fontWeight: 600, fontSize: 18 }}>{item.price}</div>
                         <div style={{ color: '#aaa', fontSize: 12 }}>{item.time}</div>
-                        <span style={{ color: '#ffb300', fontSize: 18, marginRight: 8 }}>🏠</span>
+                        
                       </div>
                     }
                   />
