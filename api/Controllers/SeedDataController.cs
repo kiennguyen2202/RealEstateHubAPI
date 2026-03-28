@@ -17,7 +17,7 @@ namespace api.Controllers
             _context = context;
         }
 
-        [HttpPost("init-data")]
+        [HttpGet("init-data")]
         public async Task<ActionResult> InitData()
         {
             try 
@@ -30,8 +30,21 @@ namespace api.Controllers
                         Name = "Admin Quản Trị",
                         Phone = "0987654321",
                         Email = "admin@gmail.com",
-                        Password = "admin", 
+                        Password = "admin123", 
                         Role = "Admin",
+                        IsLocked = false
+                    });
+                }
+                // 2. Seed User
+                if (!await _context.Users.AnyAsync(u => u.Email == "user@gmail.com"))
+                {
+                    _context.Users.Add(new User
+                    {
+                        Name = "User",
+                        Phone = "0987654321",
+                        Email = "user@gmail.com",
+                        Password = "user123", 
+                        Role = "User",
                         IsLocked = false
                     });
                 }
