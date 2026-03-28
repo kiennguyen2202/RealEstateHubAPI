@@ -1840,7 +1840,7 @@ setCurrent(currentStep || 0);
 
       // Increase timeout for large panorama files (up to 2 minutes)
       const hasPanoramaData = panoTourData && panoTourData.scenes.length > 0;
-      const requestTimeout = hasPanoramaData ? 120000 : 20000; // 2 minutes for panorama, 20s for regular
+      const requestTimeout = hasPanoramaData ? 300000 : 120000; // 2 minutes for panorama, 20s for regular
 
 
       const response = await axiosPrivate.post("/api/posts?role=0", postData, {
@@ -1856,7 +1856,7 @@ setCurrent(currentStep || 0);
 
       if (response.data) {
         showMessage.success("Bài đăng đã được tạo thành công!");
-        navigate();
+        navigate(`/chi-tiet/${response.data.id}`);
       } else {
         throw new Error("Không nhận được dữ liệu từ server");
       }
