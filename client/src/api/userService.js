@@ -14,5 +14,10 @@ export const userService = {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
     return res.data;
+  },
+  // Lấy thông tin quota đăng tin
+  getPostQuota: async () => {
+    const res = await axiosClient.get('/api/users/post-quota');
+    return res.data;
   }
 };

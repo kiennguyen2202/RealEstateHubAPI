@@ -23,7 +23,8 @@ const Sidebar = () => {
     { key: '/admin/reports', icon: <ExclamationCircleOutlined />, label: 'Báo cáo' },
     { key: '/admin/categories', icon: <AppstoreOutlined />, label: 'Danh mục' },
     { key: '/admin/areas', icon: <MapIcon />, label: 'Khu vực' },
-    { key: '/admin/membership', icon: <AppstoreOutlined />, label: 'Membership' },
+    { key: '/admin/projects', icon: <AppstoreOutlined />, label: 'Dự án' },
+    { key: '/admin/articles', icon: <AppstoreOutlined />, label: 'Tin tức' },
   ];
 
   return (

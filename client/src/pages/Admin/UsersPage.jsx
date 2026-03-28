@@ -70,6 +70,7 @@ const UsersPage = () => {
         <Select.Option value="User">User</Select.Option>
         <Select.Option value="Admin">Admin</Select.Option>
         <Select.Option value="Membership">Membership</Select.Option>
+        <Select.Option value="Agent">Agent</Select.Option>
       </Select>
     ) },
     { title: 'Trạng thái', dataIndex: 'isLocked', key: 'isLocked', render: isLocked => (

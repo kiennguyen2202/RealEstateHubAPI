@@ -4,11 +4,11 @@ export const PriceUnit = {
     Triệu: 1
 };
 
-// Format price with appropriate unit
+
 export const formatPrice = (price, unit) => {
     if (!price) return 'Thỏa thuận';
     
-    // Convert price to string and add thousand separators
+   
     const formattedPrice = price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     
     switch (unit) {

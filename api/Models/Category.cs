@@ -12,7 +12,7 @@ namespace RealEstateHubAPI.Models
 
         public string Description { get; set; }
 
-        public string Icon { get; set; }  // Icon cho category
+        public string Icon { get; set; }  
 
         public bool IsActive { get; set; } = true;
     }

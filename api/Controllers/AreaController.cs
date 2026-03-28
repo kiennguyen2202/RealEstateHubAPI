@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using RealEstateHubAPI.DTOs;
 using RealEstateHubAPI.Model;
 using RealEstateHubAPI.Repositories;
@@ -18,6 +19,98 @@ namespace RealEstateHubAPI.Controllers
         {
             _areaRepository = areaRepository;
             _context = context;
+        }
+
+        /// <summary>
+        /// Tìm hoặc tạo Area dựa trên tên địa chỉ (City, District, Ward)
+        /// Endpoint này cho phép client gửi tên địa chỉ và nhận về AreaId
+        /// </summary>
+        [AllowAnonymous]
+        [HttpPost("find-or-create")]
+        public async Task<IActionResult> FindOrCreateArea([FromBody] FindOrCreateAreaDto dto)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(dto.CityName) || 
+                    string.IsNullOrWhiteSpace(dto.DistrictName) || 
+                    string.IsNullOrWhiteSpace(dto.WardName))
+                {
+                    return BadRequest("CityName, DistrictName, and WardName are required");
+                }
+
+                // Tìm hoặc tạo City
+                var city = await _context.Cities
+                    .FirstOrDefaultAsync(c => c.Name.ToLower() == dto.CityName.ToLower().Trim());
+                
+                if (city == null)
+                {
+                    city = new City { Name = dto.CityName.Trim() };
+                    _context.Cities.Add(city);
+                    await _context.SaveChangesAsync();
+                }
+
+                // Tìm hoặc tạo District
+                var district = await _context.Districts
+                    .FirstOrDefaultAsync(d => d.Name.ToLower() == dto.DistrictName.ToLower().Trim() && d.CityId == city.Id);
+                
+                if (district == null)
+                {
+                    district = new District { Name = dto.DistrictName.Trim(), CityId = city.Id };
+                    _context.Districts.Add(district);
+                    await _context.SaveChangesAsync();
+                }
+
+                // Tìm hoặc tạo Ward
+                var ward = await _context.Wards
+                    .FirstOrDefaultAsync(w => w.Name.ToLower() == dto.WardName.ToLower().Trim() && w.DistrictId == district.Id);
+                
+                if (ward == null)
+                {
+                    ward = new Ward { Name = dto.WardName.Trim(), DistrictId = district.Id };
+                    _context.Wards.Add(ward);
+                    await _context.SaveChangesAsync();
+                }
+
+                // Tìm hoặc tạo Area
+                var area = await _context.Areas
+                    .FirstOrDefaultAsync(a => a.CityId == city.Id && a.DistrictId == district.Id && a.WardId == ward.Id);
+                
+                if (area == null)
+                {
+                    area = new Area 
+                    { 
+                        CityId = city.Id, 
+                        DistrictId = district.Id, 
+                        WardId = ward.Id,
+                        Latitude = dto.Latitude,
+                        Longitude = dto.Longitude
+                    };
+                    _context.Areas.Add(area);
+                    await _context.SaveChangesAsync();
+                }
+                else if (dto.Latitude.HasValue && dto.Longitude.HasValue)
+                {
+                    // Cập nhật tọa độ nếu có
+                    area.Latitude = dto.Latitude;
+                    area.Longitude = dto.Longitude;
+                    await _context.SaveChangesAsync();
+                }
+
+                return Ok(new 
+                { 
+                    areaId = area.Id,
+                    cityId = city.Id,
+                    districtId = district.Id,
+                    wardId = ward.Id,
+                    cityName = city.Name,
+                    districtName = district.Name,
+                    wardName = ward.Name
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
         // City endpoints

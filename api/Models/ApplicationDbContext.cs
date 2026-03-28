@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using RealEstateHubAPI.Models;
+using api.Models;
 
 namespace RealEstateHubAPI.Model
 {
@@ -25,6 +26,12 @@ namespace RealEstateHubAPI.Model
         public DbSet<AgentProfileArea> AgentProfileAreas { get; set; }
         public DbSet<AgentProfileCategory> AgentProfileCategories { get; set; }
         public DbSet<AgentProfileTransactionType> AgentProfileTransactionTypes { get; set; }
+        public DbSet<PaymentHistory> PaymentHistories { get; set; }
+        public DbSet<Project> Projects { get; set; }
+        public DbSet<ProjectImage> ProjectImages { get; set; }
+        public DbSet<Article> Articles { get; set; }
+        public DbSet<PriceHistory> PriceHistories { get; set; }
+        
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -92,6 +99,26 @@ namespace RealEstateHubAPI.Model
                 .Property(p => p.Id)
                 .ValueGeneratedOnAdd();
 
+            modelBuilder.Entity<ProjectImage>()
+                .HasOne(pi => pi.Project)
+                .WithMany(p => p.Images)
+                .HasForeignKey(pi => pi.ProjectId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Project>()
+                .HasIndex(p => p.Slug)
+                .IsUnique();
+
+            modelBuilder.Entity<Project>()
+                .HasOne(p => p.Area)
+                .WithMany()
+                .HasForeignKey(p => p.AreaId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Article>()
+                .HasIndex(a => a.Slug)
+                .IsUnique();
+
             modelBuilder.Entity<User>()
                 .Property(u => u.Role)
                 .HasConversion<string>();
@@ -111,6 +138,8 @@ namespace RealEstateHubAPI.Model
                 .WithMany()
                 .HasForeignKey(m => m.ReceiverId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            
         }
     }
 }

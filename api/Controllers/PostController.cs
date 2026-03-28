@@ -30,13 +30,6 @@ namespace RealEstateHubAPI.Controllers
             _cache = cache;
         }
         
-        private List<string> GetUserRoles() {
-            return User
-                .Claims
-                .Where(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")
-                .Select(c => c.Value)
-                .ToList();
-        }
         
         private int? GetUserId()
         {
@@ -55,6 +48,63 @@ namespace RealEstateHubAPI.Controllers
             }
         }
 
+        // Get current user's posts
+        [Authorize]
+        [HttpGet("my-posts")]
+        public async Task<IActionResult> GetMyPosts()
+        {
+            var userId = GetUserId();
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var posts = await _context.Posts
+                .Where(p => p.UserId == userId)
+                .Include(p => p.User)
+                .Include(p => p.Category)
+                .Include(p => p.Images)
+                .Include(p => p.Area)
+                    .ThenInclude(a => a.Ward)
+                .Include(p => p.Area)
+                    .ThenInclude(a => a.District)
+                .Include(p => p.Area)
+                    .ThenInclude(a => a.City)
+                .OrderByDescending(p => p.Created)
+                .Select(p => new
+                {
+                    p.Id,
+                    p.Title,
+                    p.Description,
+                    p.Price,
+                    p.PriceUnit,
+                    p.Area_Size,
+                    p.Street_Name,
+                    p.TransactionType,
+                    p.IsApproved,
+                    
+                    p.ExpiryDate,
+                    p.Created,
+                    
+                    ContactCount = 0, 
+                    WardName = p.Area != null && p.Area.Ward != null ? p.Area.Ward.Name : null,
+                    DistrictName = p.Area != null && p.Area.District != null ? p.Area.District.Name : null,
+                    CityName = p.Area != null && p.Area.City != null ? p.Area.City.Name : null,
+                    Category = p.Category != null ? new { p.Category.Id, p.Category.Name } : null,
+                    Images = p.Images.Select(i => new { i.Id, i.Url }).ToList(),
+                    Area = p.Area != null ? new
+                    {
+                        p.Area.Id,
+                        Ward = p.Area.Ward != null ? new { p.Area.Ward.Id, p.Area.Ward.Name } : null,
+                        District = p.Area.District != null ? new { p.Area.District.Id, p.Area.District.Name } : null,
+                        City = p.Area.City != null ? new { p.Area.City.Id, p.Area.City.Name } : null
+                    } : null
+                })
+                .ToListAsync();
+
+            return Ok(posts);
+        }
+
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetPosts(
@@ -65,10 +115,6 @@ namespace RealEstateHubAPI.Controllers
             var posts = _context.Posts
                 .Include(p => p.User)
                 .Include(p => p.Category)
-                .Include(p => p.Area)
-                    .ThenInclude(a => a.Ward)
-                        .ThenInclude(w => w.District)
-                            .ThenInclude(d => d.City)
                 .Include(p => p.Images)
                 .AsQueryable();
 
@@ -116,10 +162,6 @@ namespace RealEstateHubAPI.Controllers
             {
                 var post = await _context.Posts
                     .Include(p => p.Category)
-                    .Include(p => p.Area)
-                        .ThenInclude(a => a.Ward)
-                            .ThenInclude(w => w.District)
-                                .ThenInclude(d => d.City)
                     .Include(p => p.User)
                     .Include(p => p.Images)
                     .FirstOrDefaultAsync(p => p.Id == id);
@@ -132,6 +174,7 @@ namespace RealEstateHubAPI.Controllers
             catch (Exception ex)
             {
                 // Log lỗi chi tiết hơn trong môi trường phát triển
+                _logger.LogError(ex, $"Error fetching post {id}");
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
@@ -179,9 +222,15 @@ namespace RealEstateHubAPI.Controllers
                 // Validate required fields
                 if (string.IsNullOrEmpty(dto.Title) || string.IsNullOrEmpty(dto.Description) || 
                     dto.Price <= 0 || dto.Area_Size <= 0 || string.IsNullOrEmpty(dto.Street_Name) || 
-                    dto.CategoryId <= 0 || dto.AreaId <= 0 || dto.UserId <= 0)
+                    dto.CategoryId <= 0 || dto.UserId <= 0)
                 {
                     return BadRequest("All required fields must be filled with valid values");
+                }
+
+                // Validate địa chỉ mới
+                if (string.IsNullOrEmpty(dto.CityName) || string.IsNullOrEmpty(dto.DistrictName) || string.IsNullOrEmpty(dto.WardName))
+                {
+                    return BadRequest("Vui lòng chọn đầy đủ địa chỉ (Tỉnh/Thành phố, Quận/Huyện, Phường/Xã)");
                 }
 
                 // Parse TransactionType from string to enum
@@ -197,30 +246,7 @@ namespace RealEstateHubAPI.Controllers
                     return BadRequest($"Category with ID {dto.CategoryId} not found");
                 }
 
-                // Verify Ward exists and create Area
-                var ward = await _context.Wards
-                    .Include(w => w.District)
-                    .ThenInclude(d => d.City)
-                    .FirstOrDefaultAsync(w => w.Id == dto.AreaId);
-
-                if (ward == null)
-                {
-                    _logger.LogWarning($"Ward with ID {dto.AreaId} not found");
-                    return BadRequest($"Ward with ID {dto.AreaId} not found. Please select a valid ward.");
-                }
-
-                // Create new Area
-                var area = new Area
-                {
-                    CityId = ward.District.CityId,
-                    DistrictId = ward.DistrictId,
-                    WardId = ward.Id
-                };
-
-                _context.Areas.Add(area);
-                await _context.SaveChangesAsync();
-
-                _logger.LogInformation($"Created new Area with ID: {area.Id} for Ward: {ward.Id}");
+                _logger.LogInformation($"Using address: {dto.WardName}, {dto.DistrictName}, {dto.CityName}");
 
                 // Verify User exists
                 var user = await _context.Users.FindAsync(dto.UserId);
@@ -252,7 +278,6 @@ namespace RealEstateHubAPI.Controllers
                     Area_Size = dto.Area_Size,
                     Created = DateTime.Now,
                     CategoryId = dto.CategoryId,
-                    AreaId = area.Id, 
                     UserId = GetUserId() ?? dto.UserId,
                     IsApproved = false,
                     ExpiryDate = expiryDate,
@@ -266,7 +291,12 @@ namespace RealEstateHubAPI.Controllers
                     DuongVao = dto.DuongVao,
                     PhapLy = dto.PhapLy,
                     PanoramaTourConfig = dto.PanoramaTourConfig,
-                    
+                    Latitude = dto.Latitude,
+                    Longitude = dto.Longitude,
+                    // Địa chỉ mới
+                    CityName = dto.CityName,
+                    DistrictName = dto.DistrictName,
+                    WardName = dto.WardName,
                 };
 
                 // Log post object before saving
@@ -454,8 +484,6 @@ namespace RealEstateHubAPI.Controllers
             {
                 var query = _context.Posts
                     .Include(p => p.Category)
-                    .Include(p => p.Area)
-
                     .Include(p => p.User)
                     .AsQueryable();
 
@@ -504,11 +532,6 @@ namespace RealEstateHubAPI.Controllers
               .Include(p => p.Images)
               .Include(p => p.Category)
               .Include(p => p.User)
-
-              .Include(p => p.Area)
-                .ThenInclude(a => a.Ward)
-                    .ThenInclude(w => w.District)
-                        .ThenInclude(d => d.City)
               .Where(p => p.UserId == userId)
 
               .OrderByDescending(p => p.Created)

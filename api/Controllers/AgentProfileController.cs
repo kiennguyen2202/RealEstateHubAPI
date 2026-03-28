@@ -109,6 +109,11 @@ namespace RealEstateHubAPI.Controllers
                 }
 
                 // 2. Tạo DTO với đường dẫn file tạm
+                Console.WriteLine($"CreatePreview - dto.AreaIds: {string.Join(",", dto.AreaIds ?? new List<int>())}");
+                Console.WriteLine($"CreatePreview - dto.AreaNames: {string.Join(",", dto.AreaNames ?? new List<string>())}");
+                Console.WriteLine($"CreatePreview - dto.CategoryIds: {string.Join(",", dto.CategoryIds ?? new List<int>())}");
+                Console.WriteLine($"CreatePreview - dto.TransactionTypes: {string.Join(",", dto.TransactionTypes ?? new List<string>())}");
+                
                 var previewDto = new CreateAgentProfileDTO
                 {
                     UserId = currentUserId,
@@ -117,7 +122,9 @@ namespace RealEstateHubAPI.Controllers
                     Address = dto.Address,
                     Slug = dto.Slug,
                     AreaIds = dto.AreaIds,
+                    AreaNames = dto.AreaNames,
                     CategoryIds = dto.CategoryIds,
+                    CategoryNames = dto.CategoryNames,
                     TransactionTypes = dto.TransactionTypes,
                     PhoneNumber = dto.PhoneNumber,
                     AvatarUrl = avatarUrl ?? dto.AvatarUrl ?? "", 
@@ -147,7 +154,41 @@ namespace RealEstateHubAPI.Controllers
         {
             if (_cache.TryGetValue(previewId, out CreateAgentProfileDTO previewDto))
             {
-                return Ok(previewDto);
+                // Sử dụng AreaNames từ frontend nếu có, không cần query database
+                var areaNames = previewDto.AreaNames ?? new List<string>();
+
+                // Sử dụng CategoryNames từ frontend nếu có
+                var categoryNames = previewDto.CategoryNames ?? new List<string>();
+                
+                // Fallback: Tạo CategoryNames từ CategoryIds nếu chưa có
+                if (categoryNames.Count == 0 && previewDto.CategoryIds != null && previewDto.CategoryIds.Count > 0)
+                {
+                    foreach (var categoryId in previewDto.CategoryIds)
+                    {
+                        var category = _context.Categories.FirstOrDefault(c => c.Id == categoryId);
+                        if (category != null)
+                        {
+                            categoryNames.Add(category.Name);
+                        }
+                    }
+                }
+
+                // Trả về DTO với AreaNames và CategoryNames
+                return Ok(new {
+                    previewDto.UserId,
+                    previewDto.ShopName,
+                    previewDto.Description,
+                    previewDto.AvatarUrl,
+                    previewDto.BannerUrl,
+                    previewDto.Address,
+                    previewDto.Slug,
+                    previewDto.AreaIds,
+                    previewDto.CategoryIds,
+                    previewDto.TransactionTypes,
+                    previewDto.PhoneNumber,
+                    AreaNames = areaNames,
+                    CategoryNames = categoryNames
+                });
             }
             return NotFound("Bản xem trước không tồn tại hoặc đã hết hạn.");
         }

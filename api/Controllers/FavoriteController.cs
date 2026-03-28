@@ -10,6 +10,7 @@ namespace RealEstateHubAPI.Controllers
 {
     [Route("api/favorites")]
     [ApiController]
+
     public class FavoriteController : ControllerBase
     {
         private readonly ApplicationDbContext _context;

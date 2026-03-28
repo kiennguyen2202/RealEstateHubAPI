@@ -37,7 +37,7 @@ namespace RealEstateHubAPI.Repositories
 
             existingCategory.Name = category.Name;
             
-            // Không sửa Create nếu bạn muốn giữ ngày tạo
+            
 
             await _context.SaveChangesAsync();
         }

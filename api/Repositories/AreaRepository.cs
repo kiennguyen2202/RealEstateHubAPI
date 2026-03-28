@@ -41,7 +41,7 @@ namespace RealEstateHubAPI.Repositories
             }
         }
 
-        // City methods
+        
         public async Task<IEnumerable<City>> GetCitiesAsync()
         {
             return await _context.Cities.ToListAsync();
@@ -76,7 +76,7 @@ namespace RealEstateHubAPI.Repositories
             }
         }
 
-        // District methods
+        
         public async Task<IEnumerable<District>> GetDistrictsAsync()
         {
             return await _context.Districts
@@ -123,7 +123,6 @@ namespace RealEstateHubAPI.Repositories
             }
         }
 
-        // Ward methods
         public async Task<IEnumerable<Ward>> GetWardsAsync()
         {
             return await _context.Wards

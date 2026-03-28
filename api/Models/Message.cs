@@ -18,6 +18,8 @@ namespace RealEstateHubAPI.Model
         public string Content { get; set; }
 
         public DateTime SentTime { get; set; } = DateTime.Now;
+        
+       
     }
 }
 

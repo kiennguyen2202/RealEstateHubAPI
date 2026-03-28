@@ -20,7 +20,7 @@ namespace RealEstateHubAPI.Services
         {
             model.OrderId = DateTime.UtcNow.Ticks.ToString();
             // Preserve the original OrderInfomation to avoid breaking payment parsing
-            // OrderInfomation already contains: "userId=123;plan=pro_month;previewId=456;type=membership"
+            // OrderInfomation example: "userId=123;plan=pro_month;previewId=456;type=membership"
             var orderInfo = model.OrderInfomation;
             Console.WriteLine($"MoMoService - Creating OrderInfo: {orderInfo}");
             

@@ -18,60 +18,47 @@ namespace RealEstateHubAPI.Repositories
 
         public async Task<IEnumerable<AgentProfile>> GetAllAsync()
         {
-            return await _context.AgentProfiles.Include(a => a.User)
-                                                .Include(a => a.AgentProfileCategories)
-                                                    .ThenInclude(apc => apc.Category)
-                                                .Include(a => a.AgentProfileAreas)
-                                                    .ThenInclude(apa => apa.Area)
-                                                        .ThenInclude(a => a.City)
-                                                .Include(a => a.AgentProfileAreas)
-                                                    .ThenInclude(apa => apa.Area)
-                                                        .ThenInclude(a => a.District)
-                                                .Include(a => a.AgentProfileTransactionTypes).ToListAsync();
+            return await _context.AgentProfiles
+                .Include(a => a.User)
+                .Include(a => a.AgentProfileCategories)
+                    .ThenInclude(apc => apc.Category)
+                .Include(a => a.AgentProfileAreas)
+                .Include(a => a.AgentProfileTransactionTypes)
+                .ToListAsync();
         }
 
         public async Task<AgentProfile> GetByIdAsync(int id)
         {
-            return await _context.AgentProfiles.Include(a => a.User)
-                                                .Include(a => a.AgentProfileCategories)
-                                                    .ThenInclude(apc => apc.Category)
-                                                .Include(a => a.AgentProfileAreas)
-                                                    .ThenInclude(apa => apa.Area)
-                                                        .ThenInclude(a => a.City)
-                                                .Include(a => a.AgentProfileAreas)
-                                                    .ThenInclude(apa => apa.Area)
-                                                        .ThenInclude(a => a.District)
-                                                .Include(a => a.AgentProfileTransactionTypes).FirstOrDefaultAsync(a => a.Id == id);
+            return await _context.AgentProfiles
+                .Include(a => a.User)
+                .Include(a => a.AgentProfileCategories)
+                    .ThenInclude(apc => apc.Category)
+                .Include(a => a.AgentProfileAreas)
+                .Include(a => a.AgentProfileTransactionTypes)
+                .FirstOrDefaultAsync(a => a.Id == id);
         }
 
         public async Task<AgentProfile> GetBySlugAsync(string slug)
         {
-            return await _context.AgentProfiles.Include(a => a.User)
-                                                .Include(a => a.AgentProfileCategories)
-                                                    .ThenInclude(apc => apc.Category)
-                                                .Include(a => a.AgentProfileAreas)
-                                                    .ThenInclude(apa => apa.Area)
-                                                        .ThenInclude(a => a.City)
-                                                .Include(a => a.AgentProfileAreas)
-                                                    .ThenInclude(apa => apa.Area)
-                                                        .ThenInclude(a => a.District)
-                                                .Include(a => a.AgentProfileTransactionTypes).FirstOrDefaultAsync(a => a.Slug == slug);
+            return await _context.AgentProfiles
+                .Include(a => a.User)
+                .Include(a => a.AgentProfileCategories)
+                    .ThenInclude(apc => apc.Category)
+                .Include(a => a.AgentProfileAreas)
+                .Include(a => a.AgentProfileTransactionTypes)
+                .FirstOrDefaultAsync(a => a.Slug == slug);
         }
 
         public async Task<AgentProfile> GetByUserIdAsync(int userId)
         {
-            return await _context.AgentProfiles.Include(a => a.User)
-                                                .Include(a => a.AgentProfileCategories)
-                                                    .ThenInclude(apc => apc.Category)
-                                                .Include(a => a.AgentProfileAreas)
-                                                    .ThenInclude(apa => apa.Area)
-                                                        .ThenInclude(a => a.City)
-                                                .Include(a => a.AgentProfileAreas)
-                                                    .ThenInclude(apa => apa.Area)
-                                                        .ThenInclude(a => a.District)
-                                                .Include(a => a.AgentProfileTransactionTypes)
-                                                .OrderByDescending(a => a.Id)
-                                                .FirstOrDefaultAsync(a => a.UserId == userId);
+            return await _context.AgentProfiles
+                .Include(a => a.User)
+                .Include(a => a.AgentProfileCategories)
+                    .ThenInclude(apc => apc.Category)
+                .Include(a => a.AgentProfileAreas)
+                .Include(a => a.AgentProfileTransactionTypes)
+                .OrderByDescending(a => a.Id)
+                .FirstOrDefaultAsync(a => a.UserId == userId);
         }
 
         public async Task<AgentProfile> AddAsync(AgentProfile agentProfile, List<int> areaIds, List<int> categoryIds, List<TransactionType> transactionTypes)

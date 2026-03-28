@@ -24,6 +24,7 @@ namespace RealEstateHubAPI.Controllers
         private readonly IVNPayService _vnPayService;
         private readonly IPaymentProcessingService _paymentProcessingService;
         private readonly IMomoService _momoService;
+        private readonly IPayOSService _payOSService;
 
 
         public PaymentController(
@@ -31,13 +32,15 @@ namespace RealEstateHubAPI.Controllers
             ApplicationDbContext context, 
             IVNPayService vnPayService,
             IPaymentProcessingService paymentProcessingService,
-            IMomoService momoService)
+            IMomoService momoService,
+            IPayOSService payOSService)
         {
             _env = env;
             _context = context;
             _vnPayService = vnPayService;
             _paymentProcessingService = paymentProcessingService;
             _momoService = momoService;
+            _payOSService = payOSService;
         }
 
         [HttpPost("confirm")]
@@ -110,20 +113,110 @@ namespace RealEstateHubAPI.Controllers
             }
         }
 
+        [HttpPost("payos/create")]
+        public async Task<IActionResult> CreatePaymentUrlPayOS([FromBody] PaymentInformationModel model)
+        {
+            try
+            {
+                var url = await _payOSService.CreatePaymentUrl(model);
+                return Ok(new { url });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = "Lỗi khi tạo thanh toán PayOS: " + ex.Message });
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpGet("payos-return")]
+        public async Task<IActionResult> PaymentCallbackPayOS()
+        {
+            Console.WriteLine($"PayOS Return Callback - Query: {Request.QueryString}");
+            
+            var response = _payOSService.ProcessPaymentReturn(Request.Query);
+            
+            if (response.Success && !string.IsNullOrEmpty(response.OrderInfo))
+            {
+                try
+                {
+                    var (processingSuccess, agentProfileId) = await _paymentProcessingService.ProcessSuccessfulPayment(response.OrderInfo);
+                    if (processingSuccess)
+                    {
+                        Console.WriteLine("PayOS payment processing completed successfully");
+                        if (agentProfileId.HasValue)
+                        {
+                            Console.WriteLine($"Agent profile created with ID: {agentProfileId.Value}");
+                            response.AgentProfileId = agentProfileId.Value;
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("PayOS payment processing failed");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error in PayOS payment processing: {ex.Message}");
+                    Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                }
+            }
+            
+            return Ok(response);
+        }
+
+        [AllowAnonymous]
+        [HttpPost("payos-webhook")]
+        public async Task<IActionResult> PayOSWebhook([FromBody] PayOSWebhookRequest webhookData)
+        {
+            Console.WriteLine($"PayOS Webhook received");
+            
+            try
+            {
+                // Verify signature
+                if (!_payOSService.VerifyWebhookSignature(webhookData))
+                {
+                    Console.WriteLine("PayOS Webhook signature verification failed");
+                    return BadRequest(new { success = false, message = "Invalid signature" });
+                }
+
+                if (webhookData.success && webhookData.data != null)
+                {
+                    var orderCode = webhookData.data.orderCode;
+                    Console.WriteLine($"PayOS Webhook - Order {orderCode} paid successfully");
+                    
+                    // Process payment if needed
+                    // Note: The return URL callback should handle most cases
+                }
+
+                return Ok(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"PayOS Webhook Error: {ex.Message}");
+                return StatusCode(500, new { success = false, message = ex.Message });
+            }
+        }
+
         [AllowAnonymous]
         [HttpGet("vnpay-return")]
         public async Task<IActionResult> PaymentCallbackVnpay()
         {
-    
+            Console.WriteLine($"VNPay Return Callback - Query: {Request.QueryString}");
+            
             var response = _vnPayService.PaymentExecute(Request.Query);
+            
+            Console.WriteLine($"VNPay Response - Success: {response.Success}, OrderInfo: {response.OrderInfo}");
  
             // Auto upgrade user role if payment successful
             if (response.Success && response.OrderInfo != null)
             {
+                Console.WriteLine($"Processing successful VNPay payment with OrderInfo: {response.OrderInfo}");
                 
                 try
                 {
                     var (processingSuccess, agentProfileId) = await _paymentProcessingService.ProcessSuccessfulPayment(response.OrderInfo);
+                    Console.WriteLine($"Payment processing result - Success: {processingSuccess}, AgentProfileId: {agentProfileId}");
+                    
                     if (processingSuccess)
                     {
                         
@@ -346,6 +439,83 @@ namespace RealEstateHubAPI.Controllers
         {
             var response = await _momoService.CreatePaymentAsync(model);
             return Redirect(response.PayUrl);
+        }
+
+        // Lấy lịch sử giao dịch của user
+        [Authorize]
+        [HttpGet("history")]
+        public async Task<IActionResult> GetPaymentHistory([FromQuery] int userId)
+        {
+            try
+            {
+                var history = await _context.PaymentHistories
+                    .Where(p => p.UserId == userId)
+                    .OrderByDescending(p => p.CreatedAt)
+                    .Select(p => new {
+                        id = p.Id,
+                        description = p.Plan ?? p.OrderInfo ?? "Thanh toán dịch vụ",
+                        amount = p.Amount,
+                        status = p.Status == "Success" || p.Status == "Completed" ? "success" : "failed",
+                        paymentMethod = p.PaymentMethod,
+                        transactionId = p.TransactionId,
+                        createdAt = p.CreatedAt
+                    })
+                    .ToListAsync();
+
+                return Ok(history);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error getting payment history: {ex.Message}");
+                return StatusCode(500, new { error = "Không thể lấy lịch sử giao dịch" });
+            }
+        }
+
+        // Test endpoint để tạo payment history thủ công
+        [HttpPost("test-create-history")]
+        public async Task<IActionResult> TestCreatePaymentHistory([FromBody] TestPaymentHistoryDto dto)
+        {
+            try
+            {
+                var user = await _context.Users.FindAsync(dto.UserId);
+                if (user == null)
+                {
+                    return NotFound(new { error = "User not found" });
+                }
+
+                var paymentHistory = new PaymentHistory
+                {
+                    UserId = dto.UserId,
+                    UserName = user.Name,
+                    Plan = dto.Plan ?? "Test Payment",
+                    Amount = dto.Amount,
+                    PaymentMethod = dto.PaymentMethod ?? "VNPAY",
+                    TransactionId = Guid.NewGuid().ToString(),
+                    OrderInfo = $"userId={dto.UserId};plan={dto.Plan};amount={dto.Amount}",
+                    Status = "Success",
+                    CreatedAt = DateTime.Now,
+                    ProcessedAt = DateTime.Now
+                };
+
+                _context.PaymentHistories.Add(paymentHistory);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { 
+                    success = true, 
+                    message = "Payment history created",
+                    paymentHistory = new {
+                        id = paymentHistory.Id,
+                        userId = paymentHistory.UserId,
+                        amount = paymentHistory.Amount,
+                        plan = paymentHistory.Plan
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error creating test payment history: {ex.Message}");
+                return StatusCode(500, new { error = ex.Message });
+            }
         }
 
         [HttpPost("test-momo")]

@@ -6,15 +6,20 @@ using RealEstateHubAPI.Repositories;
 using System.Linq;
 using System;
 using RealEstateHubAPI.Model;
+using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
 namespace RealEstateHubAPI.Services
 {
     public class AgentProfileService : IAgentProfileService
     {
         private readonly IAgentProfileRepository _repo;
-        public AgentProfileService(IAgentProfileRepository repo)
+        private readonly ApplicationDbContext _context;
+        
+        public AgentProfileService(IAgentProfileRepository repo, ApplicationDbContext context)
         {
             _repo = repo;
+            _context = context;
         }
 
         public async Task<IEnumerable<AgentProfileDTO>> GetAllAsync()
@@ -61,7 +66,19 @@ namespace RealEstateHubAPI.Services
                     CreatedAt = System.DateTime.UtcNow,
                     UpdatedAt = System.DateTime.UtcNow,
                     PhoneNumber = dto.PhoneNumber,
-                    Address = dto.Address
+                    Address = dto.Address,
+                    // Lưu AreaNames từ frontend dưới dạng JSON
+                    AreaNamesJson = dto.AreaNames != null && dto.AreaNames.Count > 0 
+                        ? JsonSerializer.Serialize(dto.AreaNames) 
+                        : null,
+                    // Lưu CategoryNames từ frontend dưới dạng JSON
+                    CategoryNamesJson = dto.CategoryNames != null && dto.CategoryNames.Count > 0
+                        ? JsonSerializer.Serialize(dto.CategoryNames)
+                        : null,
+                    // Lưu TransactionTypes từ frontend dưới dạng JSON
+                    TransactionTypesJson = dto.TransactionTypes != null && dto.TransactionTypes.Count > 0
+                        ? JsonSerializer.Serialize(dto.TransactionTypes)
+                        : null
                 };
 
                 // Parse and deduplicate transaction types
@@ -110,6 +127,92 @@ namespace RealEstateHubAPI.Services
 
         private AgentProfileDTO MapToDTO(AgentProfile a)
         {
+            // Ưu tiên đọc AreaNames từ AreaNamesJson (đã lưu từ frontend)
+            var areaNames = new List<string>();
+            if (!string.IsNullOrEmpty(a.AreaNamesJson))
+            {
+                try
+                {
+                    areaNames = JsonSerializer.Deserialize<List<string>>(a.AreaNamesJson) ?? new List<string>();
+                }
+                catch
+                {
+                    areaNames = new List<string>();
+                }
+            }
+            
+            // Fallback: Tạo AreaNames từ AgentProfileAreas nếu chưa có
+            if (areaNames.Count == 0 && a.AgentProfileAreas != null)
+            {
+                foreach (var apa in a.AgentProfileAreas)
+                {
+                    // AreaId trong AgentProfileArea là District ID/Code
+                    var district = _context.Districts
+                        .Include(d => d.City)
+                        .FirstOrDefault(d => d.Id == apa.AreaId);
+                    
+                    if (district != null)
+                    {
+                        var cityName = district.City?.Name ?? "";
+                        var districtName = district.Name ?? "";
+                        if (!string.IsNullOrEmpty(districtName) && !string.IsNullOrEmpty(cityName))
+                        {
+                            areaNames.Add($"{districtName}, {cityName}");
+                        }
+                        else if (!string.IsNullOrEmpty(districtName))
+                        {
+                            areaNames.Add(districtName);
+                        }
+                    }
+                }
+            }
+
+            // Ưu tiên đọc CategoryNames từ CategoryNamesJson
+            var categoryNames = new List<string>();
+            if (!string.IsNullOrEmpty(a.CategoryNamesJson))
+            {
+                try
+                {
+                    categoryNames = JsonSerializer.Deserialize<List<string>>(a.CategoryNamesJson) ?? new List<string>();
+                }
+                catch
+                {
+                    categoryNames = new List<string>();
+                }
+            }
+            
+            // Fallback: Tạo CategoryNames từ AgentProfileCategories nếu chưa có
+            if (categoryNames.Count == 0 && a.AgentProfileCategories != null)
+            {
+                foreach (var apc in a.AgentProfileCategories)
+                {
+                    if (apc.Category != null)
+                    {
+                        categoryNames.Add(apc.Category.Name);
+                    }
+                }
+            }
+
+            // Ưu tiên đọc TransactionTypes từ TransactionTypesJson
+            var transactionTypes = new List<string>();
+            if (!string.IsNullOrEmpty(a.TransactionTypesJson))
+            {
+                try
+                {
+                    transactionTypes = JsonSerializer.Deserialize<List<string>>(a.TransactionTypesJson) ?? new List<string>();
+                }
+                catch
+                {
+                    transactionTypes = new List<string>();
+                }
+            }
+            
+            // Fallback: Tạo TransactionTypes từ AgentProfileTransactionTypes nếu chưa có
+            if (transactionTypes.Count == 0 && a.AgentProfileTransactionTypes != null)
+            {
+                transactionTypes = a.AgentProfileTransactionTypes.Select(aptt => aptt.TransactionType.ToString()).ToList();
+            }
+
             return new AgentProfileDTO
             {
                 Id = a.Id,
@@ -119,18 +222,15 @@ namespace RealEstateHubAPI.Services
                 AvatarUrl = a.AvatarUrl,
                 BannerUrl = a.BannerUrl,
                 Slug = a.Slug,
-                AreaIds = a.AgentProfileAreas.Select(apa => apa.AreaId).ToList(),
-                CategoryIds = a.AgentProfileCategories.Select(apc => apc.CategoryId).ToList(),
-                TransactionTypes = a.AgentProfileTransactionTypes.Select(aptt => aptt.TransactionType.ToString()).ToList(),
+                AreaIds = a.AgentProfileAreas?.Select(apa => apa.AreaId).ToList() ?? new List<int>(),
+                CategoryIds = a.AgentProfileCategories?.Select(apc => apc.CategoryId).ToList() ?? new List<int>(),
+                CategoryNames = categoryNames,
+                TransactionTypes = transactionTypes,
                 CreatedAt = a.CreatedAt,
                 UpdatedAt = a.UpdatedAt,
                 PhoneNumber = a.PhoneNumber,
                 Address = a.Address,
-                AreaNames = a.AgentProfileAreas.Select(apa => 
-                    apa.Area != null && apa.Area.District != null ? 
-                        $"{apa.Area.District.Name}, {apa.Area.City?.Name ?? "N/A"}" : 
-                        "N/A"
-                ).ToList()
+                AreaNames = areaNames
             };  
         }
     }

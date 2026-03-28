@@ -153,7 +153,7 @@ const PanoramaTourEditor = ({ visible, onClose, onSave, initialData }) => {
     message.success("Đã cập nhật thông tin scene!");
   };
 
-  // ===== HOTSPOT HELPERS =====
+  
   const addHotspotToSelectedScene = () => {
     if (!selectedScene) {
       message.warning("Vui lòng chọn một scene trước khi thêm hotspot!");

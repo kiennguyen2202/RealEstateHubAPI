@@ -19,6 +19,7 @@ namespace RealEstateHubAPI.DTOs
         public DateTime UpdatedAt { get; set; }
         public List<int> AreaIds { get; set; }
         public List<int> CategoryIds { get; set; }
+        public List<string> CategoryNames { get; set; }
         public List<string> TransactionTypes { get; set; }
         public string PhoneNumber { get; set; }
         public List<string> AreaNames { get; set; } 
@@ -38,7 +39,9 @@ namespace RealEstateHubAPI.DTOs
         [MaxLength(100)]
         public string Slug { get; set; }
         public List<int> AreaIds { get; set; }
+        public List<string> AreaNames { get; set; }
         public List<int> CategoryIds { get; set; }
+        public List<string> CategoryNames { get; set; }
         public List<string> TransactionTypes { get; set; }
         [MaxLength(20)]
         public string PhoneNumber { get; set; }

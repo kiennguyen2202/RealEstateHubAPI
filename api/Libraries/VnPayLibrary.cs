@@ -1,4 +1,4 @@
-﻿using System.Net.Sockets;
+using System.Net.Sockets;
 using System.Net;
 using RealEstateHubAPI.Models;
 using System.Text;
@@ -28,10 +28,10 @@ namespace RealEstateHubAPI.Libraries
             var vnpSecureHash =
                 collection.FirstOrDefault(k => k.Key == "vnp_SecureHash").Value; //hash của dữ liệu trả về
             var orderInfo = vnPay.GetResponseData("vnp_OrderInfo");
-            
+
             Console.WriteLine($"VnPayLibrary - OrderInfo from VNPAY: {orderInfo}");
             Console.WriteLine($"VnPayLibrary - ResponseCode: {vnpResponseCode}");
-            
+
             var checkSignature =
                 vnPay.ValidateSignature(vnpSecureHash, hashSecret); //check Signature
             if (!checkSignature)
@@ -42,14 +42,14 @@ namespace RealEstateHubAPI.Libraries
                     Success = false
                 };
             }
-            
+
             Console.WriteLine("VnPayLibrary - Signature validation successful");
             return new PaymentResponseModel()
             {
                 Success = true,
                 PaymentMethod = "VnPay",
                 OrderDescription = orderInfo,
-                OrderInfo = orderInfo, 
+                OrderInfo = orderInfo,
                 OrderId = orderId.ToString(),
                 PaymentId = vnPayTranId.ToString(),
                 TransactionId = vnPayTranId.ToString(),
@@ -191,4 +191,3 @@ public class VnPayCompare : IComparer<string>
         return vnpCompare.Compare(x, y, CompareOptions.Ordinal);
     }
 }
-

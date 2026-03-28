@@ -1,0 +1,402 @@
+.mortgage-calculator {
+  background: #111;
+  border-radius: 12px;
+  padding: 24px;
+  margin: 20px 0;
+}
+
+.mortgage-calculator h3 {
+  color: #fff;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 24px 0;
+}
+
+.mortgage-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+
+/* Inputs */
+.mortgage-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.input-group label {
+  display: block;
+  color: #9ca3af;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.slider-input {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.slider-input input[type="range"] {
+  flex: 1;
+  height: 6px;
+  -webkit-appearance: none;
+  background: #222;
+  border-radius: 3px;
+  outline: none;
+}
+
+.slider-input input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  background: #3b82f6;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.slider-input input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
+
+.input-value {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #222;
+  border-radius: 6px;
+  padding: 8px 12px;
+  min-width: 80px;
+}
+
+.input-value input {
+  width: 50px;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 14px;
+  text-align: right;
+  outline: none;
+}
+
+.input-value span {
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+/* Payment Method */
+.payment-method {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.payment-method label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+.payment-method input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #3b82f6;
+}
+
+/* Results */
+.mortgage-results {
+  background: #1a1a1a;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.mortgage-results h4 {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 20px 0;
+}
+
+/* Donut Chart */
+.donut-chart-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.donut-chart {
+  position: relative;
+  width: 180px;
+  height: 180px;
+}
+
+.donut-chart svg {
+  width: 100%;
+  height: 100%;
+}
+
+.donut-segment {
+  transition: stroke-width 0.2s ease, filter 0.2s ease;
+}
+
+.donut-segment.hovered {
+  stroke-width: 24;
+  filter: brightness(1.2);
+}
+
+.donut-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+}
+
+.donut-value {
+  display: block;
+  color: #fff;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.donut-label {
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+/* Donut Tooltip */
+.donut-tooltip {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(17, 17, 17, 0.95);
+  border: 2px solid;
+  border-radius: 8px;
+  padding: 12px 16px;
+  text-align: center;
+  min-width: 140px;
+  z-index: 10;
+  animation: tooltipFadeIn 0.2s ease;
+}
+
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.tooltip-label {
+  color: #9ca3af;
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+.tooltip-percent {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.tooltip-value {
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Result Summary */
+.result-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.result-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.result-label {
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+.result-value {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.result-value.cyan {
+  color: #22d3ee;
+}
+
+.result-value.blue {
+  color: #3b82f6;
+}
+
+.result-value.pink {
+  color: #ec4899;
+}
+
+/* Monthly Payment */
+.monthly-payment {
+  background: #0a0a0a;
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.monthly-label {
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+.monthly-value {
+  color: #fff;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+/* Export Buttons */
+.export-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.export-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.export-btn.csv {
+  background: #22c55e;
+  color: #fff;
+}
+
+.export-btn.csv:hover {
+  background: #16a34a;
+}
+
+.export-btn.pdf {
+  background: #3b82f6;
+  color: #fff;
+}
+
+.export-btn.pdf:hover {
+  background: #2563eb;
+}
+
+/* Schedule Preview */
+.schedule-preview {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #222;
+}
+
+.schedule-preview h4 {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+}
+
+.schedule-table-wrapper {
+  overflow-x: auto;
+}
+
+.schedule-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.schedule-table th,
+.schedule-table td {
+  padding: 10px 12px;
+  text-align: right;
+  border-bottom: 1px solid #222;
+}
+
+.schedule-table th {
+  background: #1a1a1a;
+  color: #9ca3af;
+  font-weight: 500;
+  position: sticky;
+  top: 0;
+}
+
+.schedule-table td {
+  color: #fff;
+}
+
+.schedule-table tr:hover td {
+  background: #1a1a1a;
+}
+
+.schedule-table td:first-child,
+.schedule-table th:first-child {
+  text-align: center;
+}
+
+.schedule-note {
+  color: #6b7280;
+  font-size: 12px;
+  margin-top: 12px;
+  font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .mortgage-content {
+    grid-template-columns: 1fr;
+  }
+
+  .donut-chart {
+    width: 140px;
+    height: 140px;
+  }
+
+  .donut-value {
+    font-size: 24px;
+  }
+
+  .monthly-value {
+    font-size: 20px;
+  }
+
+  .schedule-table {
+    font-size: 11px;
+  }
+
+  .schedule-table th,
+  .schedule-table td {
+    padding: 8px 6px;
+  }
+}

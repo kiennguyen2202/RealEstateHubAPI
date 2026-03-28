@@ -8,6 +8,6 @@
         public string OrderInfo { get; set; }
         public bool Success { get; set; }
         public string Message { get; set; }
-        public int? AgentProfileId { get; set; } // ID of the created agent profile
+        public int? AgentProfileId { get; set; } 
     }
 }

@@ -27,5 +27,6 @@ namespace RealEstateHubAPI.Repositories
         Task<Ward> AddWardAsync(Ward ward);
         Task<Ward> UpdateWardAsync(Ward ward);
         Task DeleteWardAsync(int id);
+        
     }
 }

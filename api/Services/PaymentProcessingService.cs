@@ -6,6 +6,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
 using RealEstateHubAPI.DTOs;
+using Microsoft.AspNetCore.SignalR;
 
 namespace RealEstateHubAPI.Services
 {
@@ -16,19 +17,22 @@ namespace RealEstateHubAPI.Services
         private readonly IMemoryCache _cache;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IAgentProfileService _agentProfileService;
+        private readonly IHubContext<NotificationHub> _hubContext;
 
         public PaymentProcessingService(
-            ApplicationDbContext context, 
+            ApplicationDbContext context,
             ILogger<PaymentProcessingService> logger,
             IMemoryCache cache,
             IWebHostEnvironment webHostEnvironment,
-            IAgentProfileService agentProfileService)
+            IAgentProfileService agentProfileService,
+            IHubContext<NotificationHub> hubContext)
         {
             _context = context;
             _logger = logger;
             _cache = cache;
             _webHostEnvironment = webHostEnvironment;
             _agentProfileService = agentProfileService;
+            _hubContext = hubContext;
         }
 
         public async Task<(bool success, int? agentProfileId)> ProcessSuccessfulPayment(string orderInfo)
@@ -105,9 +109,14 @@ namespace RealEstateHubAPI.Services
                 if (userId.HasValue)
                 {
                     _logger.LogInformation($"Starting to save payment history for user {userId.Value}");
+                    
+                    // Get user info
+                    var user = await _context.Users.FindAsync(userId.Value);
+                    var userName = user?.Name ?? "Unknown";
+                    
                     // Add transaction type to orderInfo for better tracking
                     var enhancedOrderInfo = $"{orderInfo};transactionType={(!string.IsNullOrEmpty(previewIdString) ? "agent_profile" : "membership")}";
-                    
+
                     // Parse amount safely from string
                     decimal parsedAmount = 0;
                     if (!string.IsNullOrEmpty(amount))
@@ -121,17 +130,25 @@ namespace RealEstateHubAPI.Services
                             _logger.LogWarning($"Failed to parse amount: {amount}, using 0 as default");
                         }
                     }
-                    
+
+                    // Determine plan description
+                    var planDescription = !string.IsNullOrEmpty(previewIdString) 
+                        ? "Đăng ký môi giới" 
+                        : GetPlanDisplayName(plan);
+
                     var paymentHistory = new PaymentHistory
                     {
                         UserId = userId.Value,
+                        UserName = userName,
+                        Plan = planDescription,
                         Amount = parsedAmount,
                         CreatedAt = DateTime.Now,
                         Status = "Success",
                         PreviewId = previewIdString,
                         OrderInfo = enhancedOrderInfo,
                         PaymentMethod = "VNPAY",
-                        TransactionId = Guid.NewGuid().ToString()
+                        TransactionId = Guid.NewGuid().ToString(),
+                        ProcessedAt = DateTime.Now
                     };
 
                     _context.PaymentHistories.Add(paymentHistory);
@@ -147,8 +164,9 @@ namespace RealEstateHubAPI.Services
                     _logger.LogWarning($"Cannot save payment history or create notifications - userId is null");
                 }
 
-                // Fallback: if agent profile ID is still null,find by userId 
-                if (createdAgentProfileId == null && userId.HasValue)
+                // Fallback: if agent profile ID is still null AND this is an agent profile payment, find by userId 
+                // Chỉ lookup nếu đây là thanh toán agent profile (có previewId)
+                if (createdAgentProfileId == null && userId.HasValue && !string.IsNullOrEmpty(previewIdString))
                 {
                     try
                     {
@@ -182,22 +200,22 @@ namespace RealEstateHubAPI.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error processing successful payment: {ex.Message}");
-                
+
                 return (false, null);
             }
         }
 
-        
+
 
         private int? ExtractUserId(string orderDesc)
         {
             _logger.LogInformation($"Extracting userId from: {orderDesc}");
-            
+
             if (orderDesc.Contains("userId="))
             {
                 var userIdMatch = Regex.Match(orderDesc, @"userId=(\d+)");
                 _logger.LogInformation($"UserId regex match: {userIdMatch.Success}");
-                
+
                 if (userIdMatch.Success && int.TryParse(userIdMatch.Groups[1].Value, out int parsedUserId))
                 {
                     _logger.LogInformation($"Successfully extracted userId: {parsedUserId}");
@@ -231,24 +249,24 @@ namespace RealEstateHubAPI.Services
         private int? ExtractPreviewId(string orderDesc)
         {
             _logger.LogInformation($"Extracting previewId from: {orderDesc}");
-            
+
             if (orderDesc.Contains("previewId="))
             {
                 var previewIdMatch = Regex.Match(orderDesc, @"previewId=([^;]+)");
                 _logger.LogInformation($"PreviewId regex match: {previewIdMatch.Success}");
-                
+
                 if (previewIdMatch.Success)
                 {
                     var previewIdStr = previewIdMatch.Groups[1].Value.Trim();
                     _logger.LogInformation($"Extracted previewId string: '{previewIdStr}'");
-                    
+
                     // Try to parse as int first (for numeric IDs)
                     if (int.TryParse(previewIdStr, out int numericId))
                     {
                         _logger.LogInformation($"Successfully parsed numeric previewId: {numericId}");
                         return numericId;
                     }
-                    
+
                     // If it's a GUID string, we'll use it as is
                     _logger.LogInformation($"Using previewId as string: {previewIdStr}");
                     return null; // We'll handle GUID strings differently
@@ -268,7 +286,7 @@ namespace RealEstateHubAPI.Services
         private string? ExtractPreviewIdAsString(string orderDesc)
         {
             _logger.LogInformation($"Extracting previewId as string from: {orderDesc}");
-            
+
             if (orderDesc.Contains("previewId="))
             {
                 var previewIdMatch = Regex.Match(orderDesc, @"previewId=([^;]+)");
@@ -284,12 +302,29 @@ namespace RealEstateHubAPI.Services
 
         private string? ExtractAmount(string orderInfo)
         {
-            // Amount is the last numeric token; try to find the last number in the string
-            var match = Regex.Matches(orderInfo, @"(\d+)");
-            if (match.Count > 0)
+            _logger.LogInformation($"Extracting amount from: {orderInfo}");
+            
+            // Try to extract amount from orderInfo format: amount=199000
+            if (orderInfo.Contains("amount="))
             {
-                return match[^1].Value; // last match
+                var amountMatch = Regex.Match(orderInfo, @"amount=(\d+)");
+                if (amountMatch.Success)
+                {
+                    _logger.LogInformation($"Extracted amount: {amountMatch.Groups[1].Value}");
+                    return amountMatch.Groups[1].Value;
+                }
             }
+            
+            // Fallback: try to find amount at the end of string (old format)
+            // Format: "userId=1;plan=pro_month;type=membership 199000"
+            var spaceMatch = Regex.Match(orderInfo, @"\s(\d+)$");
+            if (spaceMatch.Success)
+            {
+                _logger.LogInformation($"Extracted amount from end: {spaceMatch.Groups[1].Value}");
+                return spaceMatch.Groups[1].Value;
+            }
+            
+            _logger.LogWarning($"Could not extract amount from orderInfo: {orderInfo}");
             return null;
         }
 
@@ -298,14 +333,14 @@ namespace RealEstateHubAPI.Services
             try
             {
                 _logger.LogInformation($"Saving payment history - UserId: {userId}, Amount: {amount}, PreviewId: {previewId}");
-                
+
                 // Try to parse amount safely
                 if (!decimal.TryParse(amount, out decimal parsedAmount))
                 {
                     _logger.LogWarning($"Failed to parse amount: {amount}, using 0 as default");
                     parsedAmount = 0;
                 }
-                
+
                 var paymentHistory = new PaymentHistory
                 {
                     UserId = userId,
@@ -335,48 +370,39 @@ namespace RealEstateHubAPI.Services
         {
             try
             {
-                _logger.LogInformation($"Attempting to upgrade user {userId} to Membership with plan: {plan}");
-                
+                _logger.LogInformation($"Attempting to upgrade user {userId} with plan: {plan}");
+
                 var user = await _context.Users.FindAsync(userId);
                 if (user == null)
                 {
                     _logger.LogWarning($"User with ID {userId} not found");
                     return false;
                 }
-                
+
                 _logger.LogInformation($"Found user: {user.Id} ({user.Name}) with current role: {user.Role}");
-                
-                if (user.Role != "Membership")
+
+                // Map plan to role: Pro_1, Pro_3, Pro_12
+                var newRole = plan switch
                 {
-                    var oldRole = user.Role;
-                    user.Role = "Membership";
-                    
-                    // Calculate membership expiry date based on plan
-                    var expiryDate = plan switch
-                    {
-                        "pro_month" => DateTime.Now.AddMonths(1),
-                        "pro_quarter" => DateTime.Now.AddMonths(3),
-                        "pro_year" => DateTime.Now.AddYears(1),
-                        _ => DateTime.Now.AddMonths(1) // Default to 1 month
-                    };
-                    
-                    // Add a MembershipExpiryDate field to User model if needed
-                    // user.MembershipExpiryDate = expiryDate;
-                    
-                    await _context.SaveChangesAsync();
-                    
-                    _logger.LogInformation($"Successfully upgraded user {user.Id} ({user.Name}) from {oldRole} to Membership with plan: {plan}, expires: {expiryDate}");
-                    return true;
-                }
-                else
-                {
-                    _logger.LogInformation($"User {user.Id} ({user.Name}) is already a Membership user");
-                    return true; // Consider it successful if already membership
-                }
+                    "pro_month" => "Pro_1",
+                    "pro_quarter" => "Pro_3",
+                    "pro_year" => "Pro_12",
+                    "basic" => "Pro_1",
+                    "premium" => "Pro_3",
+                    _ => "Pro_1" // Default to Pro_1
+                };
+
+                var oldRole = user.Role;
+                user.Role = newRole;
+
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation($"Successfully upgraded user {user.Id} ({user.Name}) from {oldRole} to {newRole} with plan: {plan}");
+                return true;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error upgrading user {userId} to Membership: {ex.Message}");
+                _logger.LogError(ex, $"Error upgrading user {userId} with plan {plan}: {ex.Message}");
                 return false;
             }
         }
@@ -482,15 +508,15 @@ namespace RealEstateHubAPI.Services
             try
             {
                 _logger.LogInformation($"Creating payment notifications for user {userId}, plan: {plan}, previewId: {previewId}, agentProfileId: {agentProfileId}");
-                
+
                 // Get user info for notification
                 var user = await _context.Users.FindAsync(userId);
-                if (user == null) 
+                if (user == null)
                 {
                     _logger.LogWarning($"User {userId} not found, cannot create notifications");
                     return;
                 }
-                
+
                 _logger.LogInformation($"Found user: {user.Id} ({user.Name})");
 
                 var notifications = new List<Notification>();
@@ -505,28 +531,29 @@ namespace RealEstateHubAPI.Services
                     IsRead = false,
                     CreatedAt = DateTime.Now
                 });
-                
+
                 _logger.LogInformation($"Added payment_success notification for user {userId}");
 
-                // Create membership upgrade notification if applicable
+                // Create Pro upgrade notification if applicable
                 if (string.IsNullOrEmpty(previewId))
                 {
-                    _logger.LogInformation($"Creating membership upgrade notification for user {userId} with plan {plan}");
+                    _logger.LogInformation($"Creating Pro upgrade notification for user {userId} with plan {plan}");
                     var planName = GetPlanDisplayName(plan);
+                    var roleName = GetRoleName(plan);
                     notifications.Add(new Notification
                     {
                         UserId = userId,
-                        Title = "Nâng cấp Membership thành công! 👑",
+                        Title = $"Nâng cấp {roleName} thành công! 👑",
                         Message = $"Tài khoản của bạn đã được nâng cấp lên {planName}. Bạn có thể đăng bài không giới hạn và được ưu tiên hiển thị trong tìm kiếm!",
                         Type = "membership_upgrade",
                         IsRead = false,
                         CreatedAt = DateTime.Now
                     });
-                    _logger.LogInformation($"Added membership_upgrade notification for user {userId}");
+                    _logger.LogInformation($"Added Pro upgrade notification for user {userId}");
                 }
                 else
                 {
-                    _logger.LogInformation($"Skipping membership notification for user {userId} because previewId exists: {previewId}");
+                    _logger.LogInformation($"Skipping Pro notification for user {userId} because previewId exists: {previewId}");
                 }
 
                 // Create agent profile notification if applicable
@@ -554,6 +581,43 @@ namespace RealEstateHubAPI.Services
                 var saveResult = await _context.SaveChangesAsync();
                 _logger.LogInformation($"Saved {saveResult} notifications to database for user {userId}");
 
+                // Push notifications via SignalR
+                foreach (var notification in notifications)
+                {
+                    try
+                    {
+                        // Push to user group (for clients that join group)
+                        await _hubContext.Clients.Group($"user_{userId}").SendAsync("ReceiveNotification", new
+                        {
+                            id = notification.Id,
+                            userId = notification.UserId,
+                            title = notification.Title,
+                            message = notification.Message,
+                            type = notification.Type,
+                            isRead = notification.IsRead,
+                            createdAt = notification.CreatedAt
+                        });
+                        
+                        // Also push to user (for authenticated connections)
+                        await _hubContext.Clients.User(userId.ToString()).SendAsync("ReceiveNotification", new
+                        {
+                            id = notification.Id,
+                            userId = notification.UserId,
+                            title = notification.Title,
+                            message = notification.Message,
+                            type = notification.Type,
+                            isRead = notification.IsRead,
+                            createdAt = notification.CreatedAt
+                        });
+                        
+                        _logger.LogInformation($"Pushed {notification.Type} notification via SignalR to user {userId}");
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogWarning(ex, $"Failed to push notification via SignalR to user {userId}: {ex.Message}");
+                    }
+                }
+
                 _logger.LogInformation($"Created {notifications.Count} notifications for user {userId}");
             }
             catch (Exception ex)
@@ -567,11 +631,24 @@ namespace RealEstateHubAPI.Services
             return plan switch
             {
                 "pro_month" => "Pro 1 Tháng",
-                "pro_quarter" => "Pro 3 Tháng", 
+                "pro_quarter" => "Pro 3 Tháng",
                 "pro_year" => "Pro 12 Tháng",
                 "basic" => "Gói Cơ Bản",
                 "premium" => "Gói Cao Cấp",
-                _ => "Membership"
+                _ => "Pro"
+            };
+        }
+
+        private string GetRoleName(string? plan)
+        {
+            return plan switch
+            {
+                "pro_month" => "Pro_1",
+                "pro_quarter" => "Pro_3",
+                "pro_year" => "Pro_12",
+                "basic" => "Pro_1",
+                "premium" => "Pro_3",
+                _ => "Pro_1"
             };
         }
     }

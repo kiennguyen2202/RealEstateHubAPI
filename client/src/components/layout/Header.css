@@ -294,6 +294,7 @@
 .user-dropdown button {
   display: flex;
   align-items: center;
+  gap: 8px;
   width: 100%;
   padding: 10px 16px;
   text-align: left;
@@ -304,6 +305,7 @@
   cursor: pointer;
   transition: all 0.2s ease;
   position: relative;
+  text-decoration: none;
 }
 
 .user-dropdown a::before,

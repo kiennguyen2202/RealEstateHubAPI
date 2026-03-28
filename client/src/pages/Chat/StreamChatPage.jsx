@@ -47,7 +47,7 @@ const StreamChatPage = () => {
           const normalizedImage = user.avatarUrl
             ? (String(user.avatarUrl).startsWith('http')
                 ? user.avatarUrl
-                : `http://localhost:5134/${user.avatarUrl}`)
+                : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5134'}/${user.avatarUrl}`)
             : undefined;
           await streamClient.connectUser(
             {
@@ -59,6 +59,7 @@ const StreamChatPage = () => {
           );
         }
 
+        // Message notifications are handled globally by useMessageNotifications hook
         setClient(streamClient);
         // Active channel will be chosen from ChannelList
       } catch (err) {
@@ -107,7 +108,7 @@ const PostPreviewCard = ({ post }) => {
     <div className="post-preview-card">
       {post.image && (
         <div className="post-preview-image">
-          <img src={post.image.startsWith('http') ? post.image : `http://localhost:5134/${post.image}`} alt={post.title} />
+          <img src={post.image.startsWith('http') ? post.image : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5134'}/${post.image}`} alt={post.title} />
         </div>
       )}
       <div className="post-preview-content">
@@ -164,8 +165,8 @@ const CustomChannelPreview = (props) => {
         if (!(needsUsername || needsAvatar || needsPrice || needsPostImage)) return;
         const post = await postService.getPostById(data.postId);
         if (!post) return;
-        const ownerAvatar = post?.user?.avatarUrl ? `http://localhost:5134/${post.user.avatarUrl}` : data?.image;
-        const firstImage = Array.isArray(post?.images) && post.images.length > 0 ? `http://localhost:5134${post.images[0].url ?? ''}` : data?.postImage;
+        const ownerAvatar = post?.user?.avatarUrl ? `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5134'}/${post.user.avatarUrl}` : data?.image;
+        const firstImage = Array.isArray(post?.images) && post.images.length > 0 ? `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5134'}${post.images[0].url ?? ''}` : data?.postImage;
         setLocalMeta({
           postUsername: post?.user?.name,
           image: ownerAvatar,
@@ -187,7 +188,7 @@ const CustomChannelPreview = (props) => {
   // Normalize partner avatar to absolute URL
   const partnerImage = localMeta.image || partner?.image || data.otherUserAvatarUrl || data.image;
   const displayAvatar = partnerImage
-    ? (String(partnerImage).startsWith('http') ? partnerImage : `http://localhost:5134/${partnerImage.replace(/^\//,'')}`)
+    ? (String(partnerImage).startsWith('http') ? partnerImage : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5134'}/${partnerImage.replace(/^\//,'')}`)
     : undefined;
   
 
@@ -279,8 +280,8 @@ const ChatUI = ({ user, location, filters, sort, options }) => {
               if (postId && !postTitle) {
                 const post = await postService.getPostById(postId);
                 postTitle = post?.title || postTitle;
-                image = post?.user?.avatarUrl ? `http://localhost:5134/${post.user.avatarUrl}` : avatarFromParams || undefined;
-                postImage = Array.isArray(post?.images) && post.images.length > 0 ? `http://localhost:5134${post.images[0].url ?? ''}` : undefined;
+                image = post?.user?.avatarUrl ? `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5134'}/${post.user.avatarUrl}` : avatarFromParams || undefined;
+                postImage = Array.isArray(post?.images) && post.images.length > 0 ? `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5134'}${post.images[0].url ?? ''}` : undefined;
                 postPrice = post?.price;
                 postPriceUnit = post?.priceUnit;
                 postUsername = post?.user?.name;
@@ -450,7 +451,7 @@ const CustomHeader = () => {
   const partner = memberUsers.find(u => String(u.id) !== meId);
   // Normalize header avatar
   const headerImageRaw = partner?.image || data?.image || data?.otherUserAvatarUrl;
-  const image = headerImageRaw ? (String(headerImageRaw).startsWith('http') ? headerImageRaw : `http://localhost:5134/${String(headerImageRaw).replace(/^\//,'')}`) : undefined; // avatar of the other user (post owner)
+  const image = headerImageRaw ? (String(headerImageRaw).startsWith('http') ? headerImageRaw : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5134'}/${String(headerImageRaw).replace(/^\//,'')}`) : undefined; // avatar of the other user (post owner)
   const postOwnerName = partner?.name || data?.postUsername || data?.otherUserName || 'Người đăng';
   const priceText = (data?.price !== undefined && data?.priceUnit !== undefined) ? formatPrice(data.price, data.priceUnit) : undefined;
   const navigateTo = useNavigate();
@@ -467,8 +468,8 @@ const CustomHeader = () => {
         if (!(needsAvatar || needsPostImage || needsPrice)) return;
         const post = await postService.getPostById(data.postId);
         if (!post) return;
-        const ownerAvatar = post?.user?.avatarUrl ? `http://localhost:5134/${post.user.avatarUrl}` : undefined;
-        const firstImage = Array.isArray(post?.images) && post.images.length > 0 ? `http://localhost:5134${post.images[0].url ?? ''}` : undefined;
+        const ownerAvatar = post?.user?.avatarUrl ? `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5134'}/${post.user.avatarUrl}` : undefined;
+        const firstImage = Array.isArray(post?.images) && post.images.length > 0 ? `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5134'}${post.images[0].url ?? ''}` : undefined;
         // Avoid server-side patch (403); just show in header via local variables
         if (ownerAvatar) data.image = data.image || ownerAvatar;
         if (firstImage) data.postImage = data.postImage || firstImage;

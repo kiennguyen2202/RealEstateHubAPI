@@ -26,12 +26,17 @@ namespace RealEstateHubAPI.Model
         public string? ImageURL { get; set; } 
         public int UserId { get; set; }
         public int CategoryId { get; set; }
-        public int AreaId { get; set; }
+        public int? AreaId { get; set; } // Deprecated - giữ lại để tương thích với dữ liệu cũ
         public bool IsApproved { get; set; }
         public DateTime? ExpiryDate { get; set; }
         public virtual User? User { get; set; }
         public virtual Category? Category { get; set; }
         public virtual Area? Area { get; set; }
+
+        // Địa chỉ mới - lưu trực tiếp tên thay vì foreign key
+        public string? CityName { get; set; }
+        public string? DistrictName { get; set; }
+        public string? WardName { get; set; }
 
         public List<PostImage>? Images { get; set; }
 
@@ -49,5 +54,10 @@ namespace RealEstateHubAPI.Model
         
         public string? PanoramaTourConfig { get; set; }
 
+        // Tọa độ GPS - dùng float để khớp với database (real/float)
+        [Column(TypeName = "real")]
+        public float? Latitude { get; set; }
+        [Column(TypeName = "real")]
+        public float? Longitude { get; set; }
     }
 }

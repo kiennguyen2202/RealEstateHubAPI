@@ -17,25 +17,35 @@ function ReportPost() {
   });
 
   useEffect(() => {
+    console.log("ReportPost component mounted or dependencies changed.");
+    console.log("Current user:", user);
+    console.log("Post ID from URL (id):", id);
+
     if (!user) {
+      console.log("User not logged in, navigating to home.");
       navigate("/");
       return;
     }
 
     const fetchPost = async () => {
+      console.log("Fetching post details for ID:", id);
       try {
         const response = await axiosPrivate.get(`/api/posts/${id}`);
+        console.log("Fetched post data:", response.data);
         setPost(response.data);
       } catch (err) {
         setError("Không thể tải thông tin bài viết");
-        console.error(err);
+        console.error("Error fetching post:", err);
       } finally {
         setLoading(false);
+        console.log("Loading finished.");
       }
     };
 
     fetchPost();
   }, [id, user, navigate]);
+
+  console.log("Rendering ReportPost. Loading:", loading, "Post:", post, "Error:", error);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -88,7 +98,7 @@ function ReportPost() {
             <p className="text-gray-600 text-sm mb-2">{post.description}</p>
             <div className="flex justify-between text-sm text-gray-500">
               <span>{post.area_Size} m²</span>
-              <span>{post.area?.ward}, {post.area?.district}</span>
+              <span>{post.area?.ward?.name}, {post.area?.district?.name}</span>
             </div>
           </div>
 

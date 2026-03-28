@@ -25,6 +25,15 @@ namespace RealEstateHubAPI.Models
         public string? BannerUrl { get; set; }
         public string PhoneNumber { get; set; }
         public string Address { get; set; }
+        
+        // Lưu AreaNames dưới dạng JSON string để tránh phụ thuộc vào Districts table
+        public string? AreaNamesJson { get; set; }
+        
+        // Lưu CategoryNames dưới dạng JSON string
+        public string? CategoryNamesJson { get; set; }
+        
+        // Lưu TransactionTypes dưới dạng JSON string
+        public string? TransactionTypesJson { get; set; }
 
         public string Slug { get; set; } 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

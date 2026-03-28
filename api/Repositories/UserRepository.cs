@@ -38,7 +38,7 @@ namespace RealEstateHubAPI.Repositories
             existingUser.Phone = user.Phone;
             existingUser.Email = user.Email;
             existingUser.Password = user.Password;
-            // Không sửa Create nếu bạn muốn giữ ngày tạo
+            
 
             await _context.SaveChangesAsync();
         }

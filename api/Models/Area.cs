@@ -10,7 +10,10 @@ namespace RealEstateHubAPI.Model
         public int CityId { get; set; }
         public int DistrictId { get; set; }
         public int WardId { get; set; }
+        
+        [Column(TypeName = "real")]
         public float? Longitude { get; set; }
+        [Column(TypeName = "real")]
         public float? Latitude { get; set; }
 
 

@@ -1,0 +1,126 @@
+.admin-dashboard-content {
+  margin: 24px 16px;
+  padding: 24px;
+  background: #141414;
+  min-height: calc(100vh - 48px);
+}
+
+.dashboard-title {
+  color: #fff;
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+/* Stats Cards */
+.stats-row .stat-card {
+  background: #1f1f1f;
+  border: 1px solid #303030;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.stats-row .stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.stats-row .stat-card .ant-card-body {
+  padding: 20px;
+}
+
+.stat-title {
+  color: #8c8c8c;
+  font-size: 13px;
+}
+
+.stats-row .stat-card .ant-statistic-content-prefix {
+  margin-right: 8px;
+  font-size: 20px;
+}
+
+.stats-row .stat-card.blue { border-top: 3px solid #1890ff; }
+.stats-row .stat-card.green { border-top: 3px solid #52c41a; }
+.stats-row .stat-card.yellow { border-top: 3px solid #faad14; }
+.stats-row .stat-card.red { border-top: 3px solid #ff4d4f; }
+.stats-row .stat-card.purple { border-top: 3px solid #722ed1; }
+.stats-row .stat-card.cyan { border-top: 3px solid #13c2c2; }
+
+/* Chart Cards */
+.chart-card {
+  background: #1f1f1f;
+  border: 1px solid #303030;
+  border-radius: 12px;
+  position: relative;
+}
+
+.chart-card .ant-card-body {
+  padding: 20px;
+}
+
+.chart-title {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  text-align: center;
+}
+
+.chart-container {
+  position: relative;
+  height: 220px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.chart-center-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+}
+
+.center-value {
+  display: block;
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.center-label {
+  display: block;
+  font-size: 12px;
+  color: #8c8c8c;
+  margin-top: 4px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .admin-dashboard-content {
+    margin: 12px 8px;
+    padding: 16px;
+  }
+
+  .dashboard-title {
+    font-size: 22px;
+  }
+
+  .chart-container {
+    height: 180px;
+  }
+
+  .center-value {
+    font-size: 22px;
+  }
+}

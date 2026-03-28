@@ -74,6 +74,49 @@ namespace RealEstateHubAPI.Controllers
             return Ok(user);
         }
 
+        // Lấy thông tin quota đăng tin của user
+        [HttpGet("post-quota")]
+        public async Task<IActionResult> GetPostQuota()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim)) return Unauthorized();
+            var userId = int.Parse(userIdClaim);
+            
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null) return NotFound();
+
+            var roleName = user.Role ?? "User";
+            int limit;
+            int windowDays;
+            switch (roleName)
+            {
+                case "Pro_1":
+                    limit = 100; windowDays = 30; break;
+                case "Pro_3":
+                    limit = 300; windowDays = 90; break;
+                case "Pro_12":
+                    limit = 1200; windowDays = 365; break;
+                default:
+                    limit = 5; windowDays = 7; break;
+            }
+
+            var cutoff = DateTime.Now.AddDays(-windowDays);
+            var usedPosts = await _context.Posts
+                .Where(p => p.UserId == userId && p.Created >= cutoff)
+                .CountAsync();
+
+            var remainingPosts = Math.Max(0, limit - usedPosts);
+
+            return Ok(new
+            {
+                limit = limit,
+                windowDays = windowDays,
+                usedPosts = usedPosts,
+                remainingPosts = remainingPosts,
+                role = roleName
+            });
+        }
+
 
         [HttpPut("profile")]
         public async Task<IActionResult> UpdateProfile([FromBody] User updateUser)

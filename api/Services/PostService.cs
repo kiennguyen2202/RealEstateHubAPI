@@ -39,32 +39,46 @@ namespace RealEstateHubAPI.Services
                 var posts = await _context.Posts 
                                             .Where(p => p.UserId == agentProfile.UserId) 
                                             .Include(p => p.Area)
-                                            
+                                                .ThenInclude(a => a.City)
+                                            .Include(p => p.Area)
                                                 .ThenInclude(a => a.District) 
-                                                    .ThenInclude(d => d.City)
-                                            
+                                            .Include(p => p.Area)
+                                                .ThenInclude(a => a.Ward)
                                             .Include(p => p.Category) 
                                             .Include(p => p.Images)
                                             .OrderByDescending(p => p.Created)
                                             .ToListAsync();
 
                 // Map sang PostDto
-                var postDTOs = posts.Select(p => new PostDto
-                {
-                    Id = p.Id,
-                    Title = p.Title,
-                    Price = p.Price,
-                    Area_Size= p.Area_Size,
-                    TimeAgo = FormatTimeAgo(p.Created), 
-                    ImageUrls = p.Images?.Select(i => new PostImage
+                var postDTOs = posts.Select(p => {
+                    // Ưu tiên dùng cityName, districtName từ Post nếu có
+                    var cityName = !string.IsNullOrEmpty(p.CityName) ? p.CityName : p.Area?.City?.Name;
+                    var districtName = !string.IsNullOrEmpty(p.DistrictName) ? p.DistrictName : p.Area?.District?.Name;
+                    
+                    // Tạo areaName từ district và city
+                    var areaNameParts = new List<string>();
+                    if (!string.IsNullOrEmpty(districtName)) areaNameParts.Add(districtName);
+                    if (!string.IsNullOrEmpty(cityName)) areaNameParts.Add(cityName);
+                    
+                    return new PostDto
                     {
-                        Id = i.Id,
-                        Url = i.Url
-                    }).ToList() ?? new List<PostImage>(),
-                    Street_Name = p.Street_Name,
-                    AreaName = $"{p.Area?.City?.Name}, {p.Area?.District?.Name}",
-                    
-                    
+                        Id = p.Id,
+                        Title = p.Title,
+                        Price = p.Price,
+                        PriceUnit = p.PriceUnit,
+                        Area_Size = p.Area_Size,
+                        TimeAgo = FormatTimeAgo(p.Created), 
+                        ImageUrls = p.Images?.Select(i => new PostImage
+                        {
+                            Id = i.Id,
+                            Url = i.Url
+                        }).ToList() ?? new List<PostImage>(),
+                        Street_Name = p.Street_Name,
+                        AreaName = string.Join(", ", areaNameParts),
+                        CityName = cityName,
+                        DistrictName = districtName,
+                        WardName = !string.IsNullOrEmpty(p.WardName) ? p.WardName : p.Area?.Ward?.Name
+                    };
                 }).ToList();
 
                 return postDTOs;

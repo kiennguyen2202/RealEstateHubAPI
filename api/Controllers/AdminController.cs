@@ -47,6 +47,78 @@ namespace RealEstateHubAPI.Controllers
             return Ok(stats);
         }
 
+        // Get detailed stats for charts
+        [HttpGet("stats/detailed")]
+        public async Task<IActionResult> GetDetailedStats()
+        {
+            // Posts by status
+            var totalPosts = await _context.Posts.CountAsync();
+            var approvedPosts = await _context.Posts.CountAsync(p => p.IsApproved);
+            var pendingPosts = await _context.Posts.CountAsync(p => !p.IsApproved);
+            var expiredPosts = await _context.Posts.CountAsync(p => p.ExpiryDate <= DateTime.Now);
+
+            // Users by role
+            var totalUsers = await _context.Users.CountAsync();
+            var adminUsers = await _context.Users.CountAsync(u => u.Role == "Admin");
+            var proUsers = await _context.Users.CountAsync(u => u.Role == "Pro_1" || u.Role == "Pro_3" || u.Role == "Pro_12");
+            var normalUsers = await _context.Users.CountAsync(u => u.Role == "User" || u.Role == null);
+
+            // Posts by transaction type
+            var salePosts = await _context.Posts.CountAsync(p => p.TransactionType == TransactionType.Sale);
+            var rentPosts = await _context.Posts.CountAsync(p => p.TransactionType == TransactionType.Rent);
+
+            // Reports by status
+            var totalReports = await _context.Reports.CountAsync();
+            var handledReports = await _context.Reports.CountAsync(r => r.IsHandled);
+            var pendingReports = await _context.Reports.CountAsync(r => !r.IsHandled);
+
+            // Payment stats
+            var totalPayments = await _context.PaymentHistories.CountAsync();
+            var successPayments = await _context.PaymentHistories.CountAsync(p => p.Status == "Success");
+            var failedPayments = await _context.PaymentHistories.CountAsync(p => p.Status != "Success");
+            var totalRevenue = await _context.PaymentHistories
+                .Where(p => p.Status == "Success")
+                .SumAsync(p => p.Amount);
+
+            // Agent profiles
+            var totalAgents = await _context.AgentProfiles.CountAsync();
+
+            var stats = new
+            {
+                posts = new {
+                    total = totalPosts,
+                    approved = approvedPosts,
+                    pending = pendingPosts,
+                    expired = expiredPosts
+                },
+                users = new {
+                    total = totalUsers,
+                    admin = adminUsers,
+                    pro = proUsers,
+                    normal = normalUsers
+                },
+                transactions = new {
+                    sale = salePosts,
+                    rent = rentPosts
+                },
+                reports = new {
+                    total = totalReports,
+                    handled = handledReports,
+                    pending = pendingReports
+                },
+                payments = new {
+                    total = totalPayments,
+                    success = successPayments,
+                    failed = failedPayments,
+                    revenue = totalRevenue
+                },
+                agents = new {
+                    total = totalAgents
+                }
+            };
+            return Ok(stats);
+        }
+
         // Get recent posts
         [HttpGet("recent-posts")]
         public async Task<IActionResult> GetRecentPosts()
@@ -109,8 +181,18 @@ namespace RealEstateHubAPI.Controllers
             _context.Notifications.Add(notification);
             await _context.SaveChangesAsync();
 
-            
-            await _hubContext.Clients.User(post.User.Id.ToString()).SendAsync("ReceiveNotification", notification);
+            // Push to group instead of user
+            await _hubContext.Clients.Group($"user_{post.User.Id}").SendAsync("ReceiveNotification", new
+            {
+                id = notification.Id,
+                userId = notification.UserId,
+                postId = notification.PostId,
+                title = notification.Title,
+                message = notification.Message,
+                type = notification.Type,
+                isRead = notification.IsRead,
+                createdAt = notification.CreatedAt
+            });
 
             
             //await _emailService.SendAsync(post.User.Email, notification.Title, notification.Message);

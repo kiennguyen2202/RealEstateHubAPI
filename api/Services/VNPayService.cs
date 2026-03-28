@@ -10,10 +10,31 @@ namespace RealEstateHubAPI.Services
     {
         private readonly IConfiguration _configuration;
 
-
         public VNPayService(IConfiguration configuration)
         {
             _configuration = configuration;
+        }
+
+        private string RemoveVietnameseDiacritics(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return text;
+            
+            // Only allow alphanumeric, spaces, and basic punctuation
+            var normalized = text.Normalize(System.Text.NormalizationForm.FormD);
+            var sb = new StringBuilder();
+            foreach (var c in normalized)
+            {
+                var unicodeCategory = System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c);
+                if (unicodeCategory != System.Globalization.UnicodeCategory.NonSpacingMark)
+                {
+                    // Only keep ASCII printable characters
+                    if (c <= 127)
+                    {
+                        sb.Append(c);
+                    }
+                }
+            }
+            return sb.ToString();
         }
 
 
@@ -21,9 +42,14 @@ namespace RealEstateHubAPI.Services
         {
             var timeZoneById = TimeZoneInfo.FindSystemTimeZoneById(_configuration["TimeZoneId"]);
             var timeNow = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZoneById);
-            var tick = DateTime.Now.Ticks.ToString();
+            var txnRef = DateTime.Now.ToString("yyyyMMddHHmmss");
             var pay = new VnPayLibrary();
             var urlCallBack = _configuration["PaymentCallBack:ReturnUrl"];
+
+            // Log config values
+            Console.WriteLine($"VNPayService - TmnCode: {_configuration["Vnpay:TmnCode"]}");
+            Console.WriteLine($"VNPayService - HashSecret: {_configuration["Vnpay:HashSecret"]}");
+            Console.WriteLine($"VNPayService - ReturnUrl: {urlCallBack}");
 
             pay.AddRequestData("vnp_Version", _configuration["Vnpay:Version"]);
             pay.AddRequestData("vnp_Command", _configuration["Vnpay:Command"]);
@@ -34,15 +60,14 @@ namespace RealEstateHubAPI.Services
             pay.AddRequestData("vnp_IpAddr", pay.GetIpAddress(context));
             pay.AddRequestData("vnp_Locale", _configuration["Vnpay:Locale"]);
 
-            // Create OrderInfo using only OrderDescription to avoid parsing issues
-            // OrderDescription example : "userId=123;plan=pro_month;previewId=456;type=membership"
-
+            // Create OrderInfo - remove special characters to avoid signature issues
             var orderInfo = model.OrderDescription;
+            orderInfo = RemoveVietnameseDiacritics(orderInfo);
             Console.WriteLine($"VNPayService - Creating OrderInfo: {orderInfo}");
             pay.AddRequestData("vnp_OrderInfo", orderInfo);
             pay.AddRequestData("vnp_OrderType", model.OrderType);
             pay.AddRequestData("vnp_ReturnUrl", urlCallBack);
-            pay.AddRequestData("vnp_TxnRef", tick);
+            pay.AddRequestData("vnp_TxnRef", txnRef);
 
             var paymentUrl =
                 pay.CreateRequestUrl(_configuration["Vnpay:BaseUrl"], _configuration["Vnpay:HashSecret"]);

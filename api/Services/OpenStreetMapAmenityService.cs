@@ -104,35 +104,70 @@ namespace RealEstateHubAPI.Services
 
         private async Task<(double? lat, double? lon)> GeocodeAddressAsync(string address, CancellationToken cancellationToken)
         {
+            // Thử nhiều cách geocode khác nhau
+            var searchQueries = new List<string> { address };
+            
+            // Thêm các biến thể của địa chỉ
+            var parts = address.Split(new[] { ", " }, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length > 1)
+            {
+                // Thử bỏ phần đầu (phường/xã) và chỉ giữ quận/huyện + thành phố
+                searchQueries.Add(string.Join(", ", parts.Skip(1)) + ", Vietnam");
+                // Thử chỉ thành phố
+                if (parts.Length > 2)
+                {
+                    searchQueries.Add(parts[^1] + ", Vietnam");
+                }
+            }
+            
+            // Thêm ", Vietnam" nếu chưa có
+            if (!address.Contains("Vietnam", StringComparison.OrdinalIgnoreCase))
+            {
+                searchQueries.Insert(1, address + ", Vietnam");
+            }
+
             var client = _httpClientFactory.CreateClient(nameof(OpenStreetMapAmenityService));
-            var builder = new StringBuilder("https://nominatim.openstreetmap.org/search?format=json&limit=1&q=");
-            builder.Append(WebUtility.UrlEncode(address));
-            if (!string.IsNullOrWhiteSpace(_nominatimEmail))
+
+            foreach (var query in searchQueries)
             {
-                builder.Append("&email=").Append(WebUtility.UrlEncode(_nominatimEmail));
+                try
+                {
+                    var builder = new StringBuilder("https://nominatim.openstreetmap.org/search?format=json&limit=1&q=");
+                    builder.Append(WebUtility.UrlEncode(query));
+                    if (!string.IsNullOrWhiteSpace(_nominatimEmail))
+                    {
+                        builder.Append("&email=").Append(WebUtility.UrlEncode(_nominatimEmail));
+                    }
+
+                    using var request = new HttpRequestMessage(HttpMethod.Get, builder.ToString());
+                    request.Headers.UserAgent.ParseAdd(_userAgent);
+
+                    using var response = await client.SendAsync(request, cancellationToken);
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        _logger.LogWarning("Nominatim geocode request failed: {Status} for query: {Query}", response.StatusCode, query);
+                        continue;
+                    }
+
+                    var payload = await response.Content.ReadAsStringAsync(cancellationToken);
+                    var results = JsonSerializer.Deserialize<List<NominatimResult>>(payload, JsonOptions);
+                    var first = results?.FirstOrDefault();
+                    
+                    if (first != null &&
+                        double.TryParse(first.lat, NumberStyles.Float, CultureInfo.InvariantCulture, out var lat) &&
+                        double.TryParse(first.lon, NumberStyles.Float, CultureInfo.InvariantCulture, out var lon))
+                    {
+                        _logger.LogInformation("Geocoded '{Query}' to ({Lat}, {Lon})", query, lat, lon);
+                        return (lat, lon);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Geocode attempt failed for query: {Query}", query);
+                }
             }
 
-            using var request = new HttpRequestMessage(HttpMethod.Get, builder.ToString());
-            request.Headers.UserAgent.ParseAdd(_userAgent);
-
-            using var response = await client.SendAsync(request, cancellationToken);
-            if (!response.IsSuccessStatusCode)
-            {
-                _logger.LogWarning("Nominatim geocode request failed: {Status}", response.StatusCode);
-                return (null, null);
-            }
-
-            var payload = await response.Content.ReadAsStringAsync(cancellationToken);
-            var results = JsonSerializer.Deserialize<List<NominatimResult>>(payload, JsonOptions);
-            var first = results?.FirstOrDefault();
-            if (first is null) return (null, null);
-
-            if (double.TryParse(first.lat, NumberStyles.Float, CultureInfo.InvariantCulture, out var lat) &&
-                double.TryParse(first.lon, NumberStyles.Float, CultureInfo.InvariantCulture, out var lon))
-            {
-                return (lat, lon);
-            }
-
+            _logger.LogWarning("Failed to geocode address: {Address}", address);
             return (null, null);
         }
 
