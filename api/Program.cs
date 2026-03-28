@@ -199,8 +199,14 @@ app.UseHttpsRedirection();
 
 
 // Configure static files with CORS support
+if (!Directory.Exists(app.Environment.WebRootPath))
+{
+    Directory.CreateDirectory(app.Environment.WebRootPath);
+}
+
 var staticFileOptions = new StaticFileOptions
 {
+    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(app.Environment.WebRootPath),
     OnPrepareResponse = ctx =>
     {
         var origin = ctx.Context.Request.Headers["Origin"].FirstOrDefault() ?? "*";
