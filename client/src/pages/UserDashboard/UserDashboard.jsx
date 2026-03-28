@@ -185,15 +185,25 @@ const UserDashboard = () => {
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
     try {
-      const formData = new FormData();
-      formData.append('fullName', profileForm.fullName);
-      formData.append('phone', profileForm.phone);
+      let avatarUrl = user?.avatarUrl;
+      
       if (profileForm.avatar) {
+        const formData = new FormData();
         formData.append('avatar', profileForm.avatar);
+        const res = await userService.uploadAvatar(formData);
+        avatarUrl = res.avatarUrl;
       }
-      await axiosClient.put('/api/users/dashboard', formData);
+      
+      await userService.updateProfile({
+        name: profileForm.fullName,
+        phone: profileForm.phone,
+        email: profileForm.email,
+        avatarUrl: avatarUrl
+      });
+      
       alert('Cập nhật thông tin thành công!');
       setEditProfile(false);
+      window.location.reload();
     } catch (error) {
       alert('Không thể cập nhật thông tin');
     }
