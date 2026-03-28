@@ -23,6 +23,7 @@ import { useAuth } from "../../auth/AuthContext.jsx";
 import MessageProvider from "../../components/MessageProvider.jsx";
 import { userService } from "../../api/userService.js";
 import MapComponent from "../../components/MapComponent.jsx";
+import { toast } from "react-toastify";
 import MapPicker from "../../components/MapPicker.jsx";
 import PanoramaTourEditor from "../../components/PanoramaTourEditor.jsx";
 import { getProvinces, getDistrictsByProvince, getWardsByDistrict } from "../../api/vietnamAddressService.js";
@@ -1855,7 +1856,7 @@ setCurrent(currentStep || 0);
 
 
       if (response.data) {
-        showMessage.success("Bài đăng đã được tạo thành công!");
+        toast.success("Bài đăng đã được tạo thành công!");
         navigate(`/chi-tiet/${response.data.id}`);
       } else {
         throw new Error("Không nhận được dữ liệu từ server");
@@ -2208,6 +2209,7 @@ setCurrent(currentStep || 0);
               <Button
                 type="primary"
                 htmlType="submit"
+                loading={loading}
                 style={{ minWidth: 120 }}
               >
                 Đăng tin
