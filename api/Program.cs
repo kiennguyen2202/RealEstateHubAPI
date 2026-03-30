@@ -24,7 +24,19 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks;
 
-var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions {
+    Args = args,
+    ContentRootPath = Directory.GetCurrentDirectory()
+});
+
+builder.Configuration.GetSection("spring").Bind(new { });
+builder.Host.ConfigureAppConfiguration((hostingContext, config) =>
+{
+    foreach (var source in config.Sources.OfType<Microsoft.Extensions.Configuration.Json.JsonConfigurationSource>())
+    {
+        source.ReloadOnChange = false;
+    }
+});
 
 if (string.IsNullOrWhiteSpace(builder.Environment.WebRootPath))
 {
